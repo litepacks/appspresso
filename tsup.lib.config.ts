@@ -214,7 +214,7 @@ export default defineConfig({
   format: ["esm"],
   outDir: "dist-lib",
   splitting: true,
-  sourcemap: true,
+  sourcemap: process.env.CI !== "true",
   clean: true,
   treeshake: true,
   dts: true,

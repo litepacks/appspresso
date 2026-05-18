@@ -68,8 +68,8 @@ Only `VITE_*` keys are exposed to the client (never put secrets there).
 | `npm run demo:dev` | Build library, then run the **demo** Vite app |
 | `npm run demo:build` | Build library, then build the demo app |
 | `npm run doctor` | Same as `appspresso doctor` from the repo root. |
-| `npm run ci:native:android` | Demo web build + `cap sync` + `assembleDebug` (same as CI `native-android` job). |
-| `npm run ci:native:ios` | Demo web build + `cap sync ios` + Xcode simulator build (CI `native-ios` on `macos-14`). |
+| `npm run ci:native:android` | `cap sync android` + `assembleDebug` (CI downloads `demo/dist` + `dist-lib` from the `build` job). |
+| `npm run ci:native:ios` | `cap sync ios` + Xcode simulator build (CI downloads web assets from `build`; run `npm run demo:build` locally first). |
 | `npm run create:sync-template` | Refresh `packages/create-appspresso/template` from `demo/` (run before publishing the CLI) |
 
 ## Playbooks (`docs/playbooks`)
