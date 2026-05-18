@@ -31,17 +31,15 @@ function backgroundRunnerForCapacitorPlugin(
 ): Record<string, unknown> | undefined {
   if (runner?.enabled !== true) return undefined;
   const label = runner.label ?? (appId ? `${appId}.background` : undefined);
-  const src = runner.src ?? "runners/background.js";
-  const event = runner.event ?? "appspressoBackgroundTask";
-  const cap: Record<string, unknown> = {
-    src,
-    event,
+  if (!label) return undefined;
+  return {
+    label,
+    src: runner.src ?? "runners/background.js",
+    event: runner.event ?? "appspressoBackgroundTask",
     repeat: runner.repeat ?? false,
     interval: runner.interval ?? 15,
     autoStart: runner.autoStart ?? true,
   };
-  if (label) cap.label = label;
-  return cap;
 }
 
 function statusBarForCapacitorPlugin(
@@ -134,7 +132,7 @@ export function defineAppspressoProject(options: AppspressoProjectOptions): {
       ...(mergedBackgroundRunner
         ? { BackgroundRunner: mergedBackgroundRunner }
         : {}),
-    },
+    } as CapacitorConfig["plugins"],
   };
 
   return { vite, capacitor, app: options.app };

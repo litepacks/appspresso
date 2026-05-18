@@ -35,7 +35,7 @@ describe("isGeolocationSupported", () => {
     vi.stubGlobal("navigator", {
       ...globalThis.navigator,
       geolocation: undefined,
-    } as Navigator);
+    } as unknown as Navigator);
     expect(isGeolocationSupported()).toBe(false);
   });
 });
@@ -57,7 +57,7 @@ describe("useNativeLocation", () => {
       useNativeLocation({ requestOnMount: false }),
     );
 
-    let snap: Awaited<ReturnType<typeof result.current.refresh>>;
+    let snap!: Awaited<ReturnType<typeof result.current.refresh>>;
     await act(async () => {
       snap = await result.current.refresh();
     });
@@ -113,7 +113,7 @@ describe("useNativeLocation", () => {
     vi.stubGlobal("navigator", {
       ...globalThis.navigator,
       geolocation: undefined,
-    } as Navigator);
+    } as unknown as Navigator);
 
     const { result } = renderHook(() =>
       useNativeLocation({ requestOnMount: false }),

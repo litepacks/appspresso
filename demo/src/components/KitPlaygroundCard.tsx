@@ -546,7 +546,7 @@ export function KitPlaygroundCard() {
           </Button>
           <pre className="max-h-32 overflow-auto rounded-lg bg-muted/40 p-2 text-xs">
             {loc.location
-              ? `${loc.coords.latitude.toFixed(5)}, ${loc.coords.longitude.toFixed(5)} (±${Math.round(loc.coords.accuracy)}m)`
+              ? `${loc.location.coords.latitude.toFixed(5)}, ${loc.location.coords.longitude.toFixed(5)} (±${Math.round(loc.location.coords.accuracy)}m)`
               : loc.error
                 ? `${t(`${pk}.locErr`)} (${loc.error.code})`
                 : t(`${pk}.locationWait`)}

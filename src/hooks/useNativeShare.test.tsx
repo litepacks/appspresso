@@ -24,7 +24,7 @@ describe("isNavigatorShareSupported", () => {
     vi.stubGlobal("navigator", {
       ...globalThis.navigator,
       share: undefined,
-    } as Navigator);
+    } as unknown as Navigator);
     expect(isNavigatorShareSupported()).toBe(false);
   });
 });
@@ -73,7 +73,7 @@ describe("useNativeShare", () => {
     vi.stubGlobal("navigator", {
       ...globalThis.navigator,
       share: undefined,
-    } as Navigator);
+    } as unknown as Navigator);
     const { result } = renderHook(() => useNativeShare());
     await waitFor(() => {
       expect(result.current.supported).toBe(false);

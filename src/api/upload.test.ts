@@ -83,14 +83,17 @@ describe("upload helpers", () => {
       const f1 = new File(["a"], "one.txt");
       const f2 = new File(["b"], "two.txt");
       // DataTransfer not always in jsdom; FileList-like object is enough
-      const list = {
+      const list: FileList = {
         length: 2,
         0: f1,
         1: f2,
-        item(this: typeof list, i: number) {
-          return i === 0 ? this[0] : i === 1 ? this[1] : null;
+        item(i: number) {
+          return i === 0 ? f1 : i === 1 ? f2 : null;
         },
-      };
+        [Symbol.iterator]() {
+          return [f1, f2][Symbol.iterator]();
+        },
+      } as FileList;
       Object.defineProperty(input, "files", {
         value: list,
         configurable: true,

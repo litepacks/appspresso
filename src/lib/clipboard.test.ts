@@ -36,7 +36,7 @@ describe("clipboard lib", () => {
     vi.stubGlobal("navigator", {
       ...globalThis.navigator,
       clipboard: undefined,
-    } as Navigator);
+    } as unknown as Navigator);
     expect(isClipboardWriteSupported()).toBe(false);
     await expect(writeClipboardText("a")).rejects.toThrow(/not supported/);
   });

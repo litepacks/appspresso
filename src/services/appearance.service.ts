@@ -49,9 +49,11 @@ async function attachStatusBarHiddenMaintenance(): Promise<void> {
   });
 
   if (Capacitor.getPlatform() === "android") {
-    let scrollRehideTimer: ReturnType<typeof setTimeout>;
+    let scrollRehideTimer: number | undefined;
     const scheduleRehideFromScroll = () => {
-      window.clearTimeout(scrollRehideTimer);
+      if (scrollRehideTimer !== undefined) {
+        window.clearTimeout(scrollRehideTimer);
+      }
       scrollRehideTimer = window.setTimeout(() => void rehideStatusBar(), 100);
     };
     document.addEventListener("scroll", scheduleRehideFromScroll, true);

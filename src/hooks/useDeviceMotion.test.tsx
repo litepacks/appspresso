@@ -19,9 +19,6 @@ describe("useDeviceMotion", () => {
           x: 0.1,
           y: 0.2,
           z: 0.3,
-          toJSON() {
-            return this;
-          },
         };
         this.accelerationIncludingGravity = null;
         this.rotationRate = null;

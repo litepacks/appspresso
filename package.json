@@ -13,7 +13,7 @@
   ],
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "npm run build:lib && tsc -b && vite build",
     "build:lib": "tsup --config tsup.lib.config.ts",
     "preview": "vite preview",
     "lint": "biome check .",
