@@ -44,6 +44,8 @@ export default defineConfig({
       "**/dist/**",
       "**/dist-lib/**",
       "**/src/test/integration/**",
+      /** Run via `npm run test:cli` (Node test runner, not Vitest). */
+      "packages/cli-shared/**",
     ],
     coverage: sharedCoverageSettings,
   },

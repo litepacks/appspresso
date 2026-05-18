@@ -1,6 +1,6 @@
 # Appspresso — Capacitor + Vite + React + TypeScript template
 
-A production-minded starter for **mobile (Android/iOS) and web**: no Ionic, UI follows **[shadcn/ui](https://ui.shadcn.com/)** patterns (Tailwind + `cva`; primitives are native HTML / small helpers, no Radix dependency), state **Jotai** (single `appStore`), server state **TanStack Query** (persist), API **Axios**, routing **React Router** (lazy + nested layouts), i18n **i18next**, native **Capacitor 7** with selected plugins.
+A production-minded starter for **mobile (Android/iOS) and web**: UI follows **[shadcn/ui](https://ui.shadcn.com/)** patterns (Tailwind + `cva`; primitives are native HTML / small helpers, no Radix dependency), state **Jotai** (single `appStore`), server state **TanStack Query** (persist), API **Axios**, routing **React Router** (lazy + nested layouts), i18n **i18next**, native **Capacitor 7** with selected plugins.
 
 ## Requirements
 

@@ -128,7 +128,7 @@ export async function runProgram(argv = process.argv) {
 
   cli.help();
 
-  cli.parse(argv, { run: false });
+  cli.parse(normalizeArgv(argv), { run: false });
 
   if (!cli.matchedCommand && !cli.options.help && !cli.options.version) {
     cli.outputHelp();
@@ -137,6 +137,15 @@ export async function runProgram(argv = process.argv) {
 
   const result = cli.runMatchedCommand();
   if (result instanceof Promise) await result;
+}
+
+/** Map `appspresso help` → `appspresso --help` (backward compatible with pre-cac CLI). */
+function normalizeArgv(argv) {
+  const args = [...argv];
+  if (args[2] === "help") {
+    args[2] = "--help";
+  }
+  return args;
 }
 
 /**

@@ -43,6 +43,9 @@ jobs:
       - name: Unit tests
         run: npm run test:run
 
+      - name: CLI tests (node:test)
+        run: npm run test:cli
+
   integration:
     runs-on: ubuntu-latest
     timeout-minutes: 15

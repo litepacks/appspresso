@@ -3,7 +3,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 /**
- * Ionic-style horizontal segment (single select). Accessibility: Radix RadioGroup.
+ * Horizontal segment control (single select). Accessibility: Radix RadioGroup.
  */
 const Segment = React.forwardRef<
   React.ElementRef<typeof RadioGroupPrimitive.Root>,

@@ -471,7 +471,7 @@ export function KitPlaygroundCard() {
                 size="sm"
                 onClick={() =>
                   void browser
-                    .openExternal("https://ionic.io")
+                    .openExternal("https://capacitorjs.com")
                     .catch((e: unknown) =>
                       toast.error(
                         t(`${pk}.inAppBrowserErr`, {

@@ -19,7 +19,7 @@ export type AppModalProps = {
   closeOnBackdrop?: boolean;
   /** Close on Escape (default: true) */
   closeOnEscape?: boolean;
-  /** Thin handle bar on top — Ionic-like (default: true) */
+  /** Thin handle bar on top of sheet modals (default: true) */
   showHandle?: boolean;
   /** Lock body scroll while open (default: true) */
   lockScroll?: boolean;
