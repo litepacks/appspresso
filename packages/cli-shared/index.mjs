@@ -1,9 +1,9 @@
-export { formatVersionBanner, APPSPRESSO_MOTTO } from "./branding.mjs";
+export { APPSPRESSO_MOTTO, formatVersionBanner } from "./branding.mjs";
 export { runDoctor } from "./doctor.mjs";
-export { runInit, printInitHelp } from "./init.mjs";
+export { printInitHelp, runInit } from "./init.mjs";
 export {
-  assertNpmPackageName,
   assertAppId,
+  assertNpmPackageName,
   defaultPaths,
   loadManifestFile,
   normalizeManifest,

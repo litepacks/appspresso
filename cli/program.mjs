@@ -1,18 +1,18 @@
-import cac from "cac";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import {
   APPSPRESSO_MOTTO,
   formatVersionBanner,
   readPackageVersion,
-  runDoctor as runSharedDoctor,
   runInit,
+  runDoctor as runSharedDoctor,
 } from "@appspresso/cli-shared";
+import cac from "cac";
 import { runCapConfig } from "./cap-config.mjs";
 import { routeNative } from "./native.mjs";
-import { npmScriptCommands, runNpmScriptCommand } from "./scripts.mjs";
 import { findCapacitorCli, findViteCli } from "./paths.mjs";
-import { runViteCommand, subToViteArgs } from "./vite.mjs";
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
+import { npmScriptCommands, runNpmScriptCommand } from "./scripts.mjs";
+import { runViteCommand } from "./vite.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const packageRoot = join(__dirname, "..");
@@ -130,11 +130,7 @@ export async function runProgram(argv = process.argv) {
 
   cli.parse(argv, { run: false });
 
-  if (
-    !cli.matchedCommand &&
-    !cli.options.help &&
-    !cli.options.version
-  ) {
+  if (!cli.matchedCommand && !cli.options.help && !cli.options.version) {
     cli.outputHelp();
     process.exit(1);
   }
@@ -151,9 +147,11 @@ function buildInitArgv(dir, options) {
   const args = [];
   if (dir) args.push(dir);
   if (options.config) args.push("--config", String(options.config));
-  if (options.packageName) args.push("--package-name", String(options.packageName));
+  if (options.packageName)
+    args.push("--package-name", String(options.packageName));
   if (options.scope) args.push("--scope", String(options.scope));
-  if (options.displayName) args.push("--display-name", String(options.displayName));
+  if (options.displayName)
+    args.push("--display-name", String(options.displayName));
   if (options.appId) args.push("--app-id", String(options.appId));
   if (options.srcDir) args.push("--src-dir", String(options.srcDir));
   if (options.publicDir) args.push("--public-dir", String(options.publicDir));

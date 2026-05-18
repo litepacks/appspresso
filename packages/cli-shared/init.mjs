@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as p from "@clack/prompts";
@@ -16,11 +16,7 @@ import {
   writeInitManifest,
 } from "./manifest.mjs";
 import { parseInitArgs } from "./parse-init-args.mjs";
-import {
-  ensureProjectDir,
-  runNpmInstall,
-  runScaffold,
-} from "./scaffold.mjs";
+import { ensureProjectDir, runNpmInstall, runScaffold } from "./scaffold.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -32,7 +28,8 @@ function isInteractive(flags) {
  * @param {"create"|"init"} entry
  */
 export function printInitHelp(entry) {
-  const cmd = entry === "create" ? "npm create appspresso@latest" : "appspresso init";
+  const cmd =
+    entry === "create" ? "npm create appspresso@latest" : "appspresso init";
   console.log(`Usage:
   ${cmd} <directory> [options]
 
@@ -121,7 +118,9 @@ async function resolveManifest(flags, projectDir, dirArg, mode) {
 
   if (flags.packageName) {
     if (flags.scope && !flags.packageName.includes("/")) {
-      const scope = flags.scope.startsWith("@") ? flags.scope : `@${flags.scope}`;
+      const scope = flags.scope.startsWith("@")
+        ? flags.scope
+        : `@${flags.scope}`;
       base.packageName = `${scope}/${flags.packageName}`;
     } else {
       base.packageName = flags.packageName;
@@ -268,13 +267,15 @@ async function resolveManifest(flags, projectDir, dirArg, mode) {
 }
 
 function slugFromDir(dirArg) {
-  return dirArg
-    .replace(/\\/g, "/")
-    .split("/")
-    .pop()
-    ?.replace(/[^a-z0-9-]/gi, "-")
-    .toLowerCase()
-    .replace(/^-+|-+$/g, "") || "my-app";
+  return (
+    dirArg
+      .replace(/\\/g, "/")
+      .split("/")
+      .pop()
+      ?.replace(/[^a-z0-9-]/gi, "-")
+      .toLowerCase()
+      .replace(/^-+|-+$/g, "") || "my-app"
+  );
 }
 
 /**
@@ -339,8 +340,7 @@ export async function runInit(argv, opts = {}) {
   );
 
   const templateDir =
-    opts.templateDir ??
-    join(__dirname, "..", "create-appspresso", "template");
+    opts.templateDir ?? join(__dirname, "..", "create-appspresso", "template");
 
   if (mode === "scaffold") {
     runScaffold({ templateDir, projectDir, manifest });

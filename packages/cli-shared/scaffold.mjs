@@ -50,9 +50,7 @@ export function applyPathRemap(projectDir, manifest) {
   if (pub !== "public" && existsSync(join(projectDir, "public"))) {
     const dest = join(projectDir, pub);
     if (existsSync(dest)) {
-      throw new Error(
-        `Cannot remap public → ${pub}: "${dest}" already exists`,
-      );
+      throw new Error(`Cannot remap public → ${pub}: "${dest}" already exists`);
     }
     renameSync(join(projectDir, "public"), dest);
   }

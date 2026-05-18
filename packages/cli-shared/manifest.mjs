@@ -2,8 +2,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import semver from "semver";
 
-const NPM_NAME_RE =
-  /^(?:@[a-z0-9-~][a-z0-9-._~]*\/)?[a-z0-9-~][a-z0-9-._~]*$/i;
+const NPM_NAME_RE = /^(?:@[a-z0-9-~][a-z0-9-._~]*\/)?[a-z0-9-~][a-z0-9-._~]*$/i;
 const APP_ID_RE = /^[a-z][a-z0-9]*(\.[a-z][a-z0-9]*)+$/;
 const SAFE_SEGMENT_RE = /^[a-zA-Z0-9._-]+$/;
 
@@ -176,7 +175,11 @@ export function loadManifestFile(configPath) {
  * @param {InitManifest} manifest
  * @param {string} [filename]
  */
-export function writeInitManifest(projectDir, manifest, filename = "appspresso.init.json") {
+export function writeInitManifest(
+  projectDir,
+  manifest,
+  filename = "appspresso.init.json",
+) {
   const out = {
     $schema: "https://appspresso.dev/schemas/init.v1.json",
     packageName: manifest.packageName,
@@ -188,7 +191,10 @@ export function writeInitManifest(projectDir, manifest, filename = "appspresso.i
     capacitor: manifest.capacitor,
     appspressoVersion: manifest.appspressoVersion,
   };
-  writeFileSync(join(projectDir, filename), `${JSON.stringify(out, null, 2)}\n`);
+  writeFileSync(
+    join(projectDir, filename),
+    `${JSON.stringify(out, null, 2)}\n`,
+  );
 }
 
 /**

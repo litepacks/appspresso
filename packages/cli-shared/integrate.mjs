@@ -1,6 +1,6 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { applyCapacitorLayer, appendWebOnlyNote } from "./scaffold.mjs";
+import { appendWebOnlyNote, applyCapacitorLayer } from "./scaffold.mjs";
 
 const APPSPRESSO_SCRIPTS = {
   dev: "appspresso dev",
