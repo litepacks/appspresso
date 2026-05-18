@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { parseViteDoubleJson } from "@/build/inject-env";
+import { parseInjectedDefine } from "@/build/inject-env";
 import { defineAppspressoProject } from "@/build/project-config";
 
-describe("parseViteDoubleJson", () => {
+describe("parseInjectedDefine", () => {
   it("unwraps double-stringified payload", () => {
     const inner = JSON.stringify({ a: 1, b: "two" });
     const raw = JSON.stringify(inner);
-    expect(parseViteDoubleJson<{ a: number; b: string }>(raw)).toEqual({
+    expect(parseInjectedDefine<{ a: number; b: string }>(raw)).toEqual({
       a: 1,
       b: "two",
     });
@@ -14,12 +14,12 @@ describe("parseViteDoubleJson", () => {
 
   it("returns null for JSON null payload", () => {
     expect(
-      parseViteDoubleJson(JSON.stringify(JSON.stringify(null))),
+      parseInjectedDefine(JSON.stringify(JSON.stringify(null))),
     ).toBeNull();
   });
 
   it("returns null on invalid input", () => {
-    expect(parseViteDoubleJson("{")).toBeNull();
+    expect(parseInjectedDefine("{")).toBeNull();
   });
 });
 

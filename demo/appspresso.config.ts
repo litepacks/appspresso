@@ -98,6 +98,12 @@ const { vite, capacitor, app } = defineAppspressoProject({
       defaultDirectory: "DATA",
       basePath: "demo",
     },
+    /** `@capacitor-community/sqlite` → `capacitor.plugins.CapacitorSQLite`. */
+    sqlite: {
+      iosDatabaseLocation: "Library/CapacitorDatabase",
+      iosIsEncryption: false,
+      androidIsEncryption: false,
+    },
   },
   host: {
     hostBanner: {
@@ -107,8 +113,15 @@ const { vite, capacitor, app } = defineAppspressoProject({
     },
   },
   /**
-   * Native projects live beside the web app (`demo/android`, `demo/ios`).
-   * For Capacitor: `npm run demo:cap-config` → `capacitor.config.json` (in sync with `appspresso.config.ts`).
+   * Capacitor CLI config (single source with `app` above).
+   * `defineAppspressoProject` sets `webDir`, `appId`, `appName` and merges plugins:
+   * - `app.splash` → `plugins.SplashScreen`
+   * - `app.statusBar` → `plugins.StatusBar` (+ `_appspressoAndroidImmersive` when `hidden`)
+   * - `app.backgroundRunner` → `plugins.BackgroundRunner`
+   * - `app.sqlite` → `plugins.CapacitorSQLite`
+   *
+   * Emit JSON: `npm run demo:cap-config` → `capacitor.config.json`.
+   * Capacitor CLI can also load `capacitor.config.ts` (re-exports the same object).
    */
   capacitor: {
     android: {
@@ -118,13 +131,8 @@ const { vite, capacitor, app } = defineAppspressoProject({
     ios: {
       path: "ios",
     },
-    plugins: {
-      CapacitorSQLite: {
-        iosDatabaseLocation: "Library/CapacitorDatabase",
-        iosIsEncryption: false,
-        androidIsEncryption: false,
-      },
-    },
+    /** Extra plugin keys or overrides (`capacitor.plugins.*` wins over `app.*`). */
+    plugins: {},
   },
 });
 

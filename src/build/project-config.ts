@@ -6,6 +6,7 @@ import type {
   AppspressoAppMeta,
   AppspressoBackgroundRunnerMeta,
   AppspressoSplashMeta,
+  AppspressoSqliteMeta,
   AppspressoStatusBarMeta,
 } from "./app-meta";
 
@@ -40,6 +41,23 @@ function backgroundRunnerForCapacitorPlugin(
     interval: runner.interval ?? 15,
     autoStart: runner.autoStart ?? true,
   };
+}
+
+function sqliteForCapacitorPlugin(
+  sqlite: AppspressoSqliteMeta | undefined,
+): Record<string, unknown> | undefined {
+  if (sqlite == null) return undefined;
+  const cap: Record<string, unknown> = {};
+  if (sqlite.iosDatabaseLocation !== undefined) {
+    cap.iosDatabaseLocation = sqlite.iosDatabaseLocation;
+  }
+  if (sqlite.iosIsEncryption !== undefined) {
+    cap.iosIsEncryption = sqlite.iosIsEncryption;
+  }
+  if (sqlite.androidIsEncryption !== undefined) {
+    cap.androidIsEncryption = sqlite.androidIsEncryption;
+  }
+  return Object.keys(cap).length === 0 ? undefined : cap;
 }
 
 function statusBarForCapacitorPlugin(
@@ -103,6 +121,7 @@ export function defineAppspressoProject(options: AppspressoProjectOptions): {
     options.app?.backgroundRunner,
     options.app?.id,
   );
+  const fromSqlite = sqliteForCapacitorPlugin(options.app?.sqlite);
   const mergedSplashScreen =
     fromSplash || userPlugins.SplashScreen
       ? { ...(fromSplash ?? {}), ...userPlugins.SplashScreen }
@@ -121,6 +140,11 @@ export function defineAppspressoProject(options: AppspressoProjectOptions): {
         }
       : undefined;
 
+  const mergedCapacitorSqlite =
+    fromSqlite || userPlugins.CapacitorSQLite
+      ? { ...(fromSqlite ?? {}), ...userPlugins.CapacitorSQLite }
+      : undefined;
+
   const capacitor: CapacitorConfig = {
     webDir: "dist",
     ...fromApp,
@@ -131,6 +155,9 @@ export function defineAppspressoProject(options: AppspressoProjectOptions): {
       ...(mergedStatusBar ? { StatusBar: mergedStatusBar } : {}),
       ...(mergedBackgroundRunner
         ? { BackgroundRunner: mergedBackgroundRunner }
+        : {}),
+      ...(mergedCapacitorSqlite
+        ? { CapacitorSQLite: mergedCapacitorSqlite }
         : {}),
     } as CapacitorConfig["plugins"],
   };
@@ -143,6 +170,7 @@ export type {
   AppspressoBackgroundRunnerMeta,
   AppspressoOrientationMeta,
   AppspressoSplashMeta,
+  AppspressoSqliteMeta,
   AppspressoStatusBarMeta,
   AppspressoThemePalette,
   AppspressoThemePaletteSlots,

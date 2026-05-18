@@ -366,6 +366,11 @@
       "types": "./dist-lib/build/injected-app-meta.d.ts",
       "import": "./dist-lib/build/injected-app-meta.js",
       "default": "./dist-lib/build/injected-app-meta.js"
+    },
+    "./build/injected-runtime": {
+      "types": "./dist-lib/build/injected-runtime.d.ts",
+      "import": "./dist-lib/build/injected-runtime.js",
+      "default": "./dist-lib/build/injected-runtime.js"
     }
   }
 }

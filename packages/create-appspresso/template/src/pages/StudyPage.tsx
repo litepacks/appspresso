@@ -19,7 +19,7 @@ export function StudyPage() {
 
   useEffect(() => {
     setRevealed(false);
-  }, []);
+  }, [current?.id]);
 
   if (current == null) {
     return <p className="text-muted-foreground text-sm">{t("study.empty")}</p>;

@@ -131,15 +131,10 @@ function applyCapacitorLayer(projectDir) {
   };
   writeFileSync(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`);
   const cap = `import type { CapacitorConfig } from "@capacitor/cli";
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
+import { capacitor } from "./appspresso.config";
 
-/** Run \`npm run cap:config\` after editing appspresso.config.ts. */
-const config = JSON.parse(
-  readFileSync(join(__dirname, "capacitor.config.json"), "utf8"),
-) as CapacitorConfig;
-
-export default config;
+/** Edit appspresso.config.ts; run \`npm run cap:config\` to refresh capacitor.config.json. */
+export default capacitor satisfies CapacitorConfig;
 `;
   if (!existsSync(join(projectDir, "capacitor.config.ts"))) {
     writeFileSync(join(projectDir, "capacitor.config.ts"), cap);

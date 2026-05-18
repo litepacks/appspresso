@@ -157,6 +157,11 @@ function collectEntries(): Record<string, string> {
       "build",
       "injected-app-meta.ts",
     ),
+    "build/injected-runtime": path.join(
+      "src",
+      "build",
+      "injected-runtime.ts",
+    ),
   };
 }
 

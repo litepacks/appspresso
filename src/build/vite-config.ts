@@ -8,7 +8,7 @@ import type { AppspressoViteHostConfig } from "./inject-env";
 import { appspressoTailwindPreset } from "./tailwind-preset";
 
 export type { AppspressoViteHostConfig } from "./inject-env";
-export { parseViteDoubleJson } from "./inject-env";
+export { parseInjectedDefine } from "./inject-env";
 
 /** Default Tailwind `content` globs (monorepo `dist-lib` + published `appspresso` package). */
 export const appspressoTailwindContent = [
@@ -66,8 +66,7 @@ export function faviconLinkTagsFromAppIcon(
 
 /**
  * Vite + PostCSS + Tailwind defaults for a host `appspresso.config.ts`.
- * - `__APSPRESSO_HOST__` — parse with `parseViteDoubleJson` from `appspresso/build/inject-env` in `main.tsx` (not this module — it pulls Tailwind into the client).
- * - `__APSPRESSO_APP__` — same; `null` when no `app` meta. `ThemeProvider` applies `theme.palette` at runtime when present.
+ * - `__APSPRESSO_HOST__` / `__APSPRESSO_APP__` — read via `getAppspressoInjectedConfig()` from `appspresso/build/injected-runtime` in host `main.tsx`.
  * Host banner `title` falls back to `app.displayName` when `app` is set.
  */
 export function createAppspressoViteConfig(options?: {

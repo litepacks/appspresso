@@ -19,11 +19,13 @@ export type AppspressoViteHostConfig = {
   };
 };
 
+declare const __APSPRESSO_HOST__: string | undefined;
+
 /**
- * Parse Vite `define` values produced with `JSON.stringify(JSON.stringify(data))`.
- * Returns `null` when the injected payload is JSON `null`.
+ * Parse a Vite `define` string (`JSON.stringify(JSON.stringify(data))`).
+ * Returns `null` when the payload is JSON `null` or invalid.
  */
-export function parseViteDoubleJson<T>(raw: string): T | null {
+export function parseInjectedDefine<T>(raw: string): T | null {
   try {
     let v: unknown = JSON.parse(raw);
     if (typeof v === "string") v = JSON.parse(v);
@@ -33,3 +35,25 @@ export function parseViteDoubleJson<T>(raw: string): T | null {
     return null;
   }
 }
+
+/**
+ * `createAppspressoViteConfig` → `__APSPRESSO_HOST__` (mount, host banner, …).
+ * @throws when the host app was not built with Appspresso Vite defaults.
+ */
+export function getInjectedHostConfig(): AppspressoViteHostConfig {
+  const raw =
+    typeof __APSPRESSO_HOST__ !== "undefined" ? __APSPRESSO_HOST__ : undefined;
+  if (raw === undefined) {
+    throw new Error(
+      "Appspresso: missing __APSPRESSO_HOST__. Use createAppspressoViteConfig() in your Vite config.",
+    );
+  }
+  const host = parseInjectedDefine<AppspressoViteHostConfig>(raw);
+  if (!host) {
+    throw new Error("Appspresso: invalid __APSPRESSO_HOST__ payload.");
+  }
+  return host;
+}
+
+/** @deprecated Use {@link parseInjectedDefine}. */
+export const parseViteDoubleJson = parseInjectedDefine;

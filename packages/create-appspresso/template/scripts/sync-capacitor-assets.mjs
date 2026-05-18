@@ -4,7 +4,7 @@
  * Copies them under `assets/` for @capacitor/assets and generates Android (and iOS if present)
  * icon / splash rasters.
  *
- * Run from project root: `npm run cap:assets`
+ * Run from demo root: `npm run cap:assets`
  */
 import { spawnSync } from "node:child_process";
 import { cpSync, mkdirSync } from "node:fs";

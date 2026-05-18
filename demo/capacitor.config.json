@@ -10,11 +10,6 @@
     "path": "ios"
   },
   "plugins": {
-    "CapacitorSQLite": {
-      "iosDatabaseLocation": "Library/CapacitorDatabase",
-      "iosIsEncryption": false,
-      "androidIsEncryption": false
-    },
     "SplashScreen": {
       "launchShowDuration": 3000,
       "launchAutoHide": false,
@@ -33,12 +28,17 @@
       "_appspressoAndroidImmersive": true
     },
     "BackgroundRunner": {
+      "label": "com.example.capacitorvitepoc.background",
       "src": "runners/background.js",
       "event": "appspressoDemoPing",
       "repeat": false,
       "interval": 15,
-      "autoStart": false,
-      "label": "com.example.capacitorvitepoc.background"
+      "autoStart": false
+    },
+    "CapacitorSQLite": {
+      "iosDatabaseLocation": "Library/CapacitorDatabase",
+      "iosIsEncryption": false,
+      "androidIsEncryption": false
     }
   }
 }

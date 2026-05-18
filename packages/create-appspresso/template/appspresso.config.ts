@@ -9,7 +9,7 @@ const { vite, capacitor, app } = defineAppspressoProject({
       "Sample vocabulary app: Jotai, React Router, i18n. Full template lives at the monorepo root (npm run dev).",
     /**
      * Web: favicon / apple-touch in Vite `index.html` (`./icon.svg`).
-     * Android / iOS launcher icons need raster assets — at project root:
+     * Android / iOS launcher icons need raster assets — at demo root:
      * `npm run cap:assets` (`public/icon.svg` + `public/splash.svg` → `@capacitor/assets`).
      */
     icon: "public/icon.svg",
@@ -80,7 +80,7 @@ const { vite, capacitor, app } = defineAppspressoProject({
     /**
      * Background Runner (`@capacitor/background-runner` — optional peer).
      * `npm run demo:cap-config` → `capacitor.plugins.BackgroundRunner`.
-     * Runner file: `public/runners/background.js` → `dist/runners/…` after build.
+     * Runner file: `demo/public/runners/background.js` → `dist/runners/…` after build.
      * Native: iOS Background Modes + AppDelegate, Android `build.gradle` flatDir — Capacitor docs.
      * Demo uses `autoStart: false`; trigger manually via `appspressoDemoPing` from the playground.
      */
@@ -98,6 +98,12 @@ const { vite, capacitor, app } = defineAppspressoProject({
       defaultDirectory: "DATA",
       basePath: "demo",
     },
+    /** `@capacitor-community/sqlite` → `capacitor.plugins.CapacitorSQLite`. */
+    sqlite: {
+      iosDatabaseLocation: "Library/CapacitorDatabase",
+      iosIsEncryption: false,
+      androidIsEncryption: false,
+    },
   },
   host: {
     hostBanner: {
@@ -107,8 +113,15 @@ const { vite, capacitor, app } = defineAppspressoProject({
     },
   },
   /**
-   * Native projects live beside the web app (`android`, `ios`).
-   * For Capacitor: `npm run cap:config` → `capacitor.config.json` (in sync with `appspresso.config.ts`).
+   * Capacitor CLI config (single source with `app` above).
+   * `defineAppspressoProject` sets `webDir`, `appId`, `appName` and merges plugins:
+   * - `app.splash` → `plugins.SplashScreen`
+   * - `app.statusBar` → `plugins.StatusBar` (+ `_appspressoAndroidImmersive` when `hidden`)
+   * - `app.backgroundRunner` → `plugins.BackgroundRunner`
+   * - `app.sqlite` → `plugins.CapacitorSQLite`
+   *
+   * Emit JSON: `npm run demo:cap-config` → `capacitor.config.json`.
+   * Capacitor CLI can also load `capacitor.config.ts` (re-exports the same object).
    */
   capacitor: {
     android: {
@@ -118,13 +131,8 @@ const { vite, capacitor, app } = defineAppspressoProject({
     ios: {
       path: "ios",
     },
-    plugins: {
-      CapacitorSQLite: {
-        iosDatabaseLocation: "Library/CapacitorDatabase",
-        iosIsEncryption: false,
-        androidIsEncryption: false,
-      },
-    },
+    /** Extra plugin keys or overrides (`capacitor.plugins.*` wins over `app.*`). */
+    plugins: {},
   },
 });
 

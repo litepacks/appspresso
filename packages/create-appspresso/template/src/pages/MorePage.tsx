@@ -38,6 +38,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "appspresso/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "appspresso/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "appspresso/components/ui/tabs";
 import { Toggle } from "appspresso/components/ui/toggle";
 import type { ThemePreference } from "appspresso/config/types";
@@ -50,6 +60,7 @@ import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { z } from "zod";
+import { KitPlaygroundCard } from "../components/KitPlaygroundCard";
 
 export function MorePage() {
   const { t } = useTranslation("demo");
@@ -191,6 +202,76 @@ export function MorePage() {
       <Card>
         <CardHeader className="p-4">
           <CardTitle className="text-base">
+            {t("more.tableCardTitle")}
+          </CardTitle>
+          <p className="text-muted-foreground text-sm leading-relaxed">
+            {t("more.tableCardBody")}
+          </p>
+        </CardHeader>
+        <CardContent className="p-4 pt-0">
+          <Table>
+            <TableCaption>{t("more.tableCaption")}</TableCaption>
+            <TableHeader>
+              <TableRow>
+                <TableHead>{t("more.tableColName")}</TableHead>
+                <TableHead>{t("more.tableColWhere")}</TableHead>
+                <TableHead className="hidden sm:table-cell">
+                  {t("more.tableColNote")}
+                </TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow>
+                <TableCell className="font-medium">
+                  {t("more.tableRowTable")}
+                </TableCell>
+                <TableCell className="font-mono text-xs">
+                  {t("more.tableRowTablePath")}
+                </TableCell>
+                <TableCell className="hidden text-muted-foreground text-xs sm:table-cell">
+                  {t("more.tableRowTableNote")}
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell className="font-medium">
+                  {t("more.tableRowButton")}
+                </TableCell>
+                <TableCell className="font-mono text-xs">
+                  {t("more.tableRowButtonPath")}
+                </TableCell>
+                <TableCell className="hidden text-muted-foreground text-xs sm:table-cell">
+                  {t("more.tableRowButtonNote")}
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell className="font-medium">
+                  {t("more.tableRowImage")}
+                </TableCell>
+                <TableCell className="font-mono text-xs">
+                  {t("more.tableRowImagePath")}
+                </TableCell>
+                <TableCell className="hidden text-muted-foreground text-xs sm:table-cell">
+                  {t("more.tableRowImageNote")}
+                </TableCell>
+              </TableRow>
+            </TableBody>
+            <TableFooter>
+              <TableRow>
+                <TableCell
+                  className="text-muted-foreground text-xs"
+                  colSpan={3}
+                >
+                  {t("more.tableFooterSummary")}
+                </TableCell>
+              </TableRow>
+            </TableFooter>
+          </Table>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="p-4">
+          <CardTitle className="text-base">
             {t("more.imageCardTitle")}
           </CardTitle>
           <p className="text-muted-foreground text-sm leading-relaxed">
@@ -229,6 +310,7 @@ export function MorePage() {
                 fill
                 fit="cover"
                 previewModal
+                previewModalImmersive
                 previewModalTitle={t("more.imageDemoModalTitle")}
                 previewModalFit="contain"
                 previewModalAriaLabel={t("more.imageDemoModalAria")}
@@ -445,6 +527,8 @@ export function MorePage() {
           </Form>
         </CardHeader>
       </Card>
+
+      <KitPlaygroundCard />
 
       <AppModal
         open={modalOpen}

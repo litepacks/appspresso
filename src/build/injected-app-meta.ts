@@ -1,5 +1,5 @@
 import type { AppspressoAppMeta } from "@/build/app-meta";
-import { parseViteDoubleJson } from "@/build/inject-env";
+import { parseInjectedDefine } from "@/build/inject-env";
 
 declare const __APSPRESSO_APP__: string | undefined;
 
@@ -10,7 +10,7 @@ export function getInjectedAppMeta(): AppspressoAppMeta | null {
   try {
     const raw =
       typeof __APSPRESSO_APP__ !== "undefined" ? __APSPRESSO_APP__ : "null";
-    return parseViteDoubleJson<AppspressoAppMeta>(raw);
+    return parseInjectedDefine<AppspressoAppMeta>(raw);
   } catch {
     return null;
   }

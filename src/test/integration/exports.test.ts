@@ -141,10 +141,10 @@ describe("appspresso dist-lib module resolution", () => {
   it("build/vite-config", async () => {
     const { createAppspressoViteConfig, appspressoTailwindContent } =
       await import("appspresso/build/vite-config");
-    const { parseViteDoubleJson } = await import("appspresso/build/inject-env");
+    const { parseInjectedDefine } = await import("appspresso/build/inject-env");
     expect(appspressoTailwindContent.length).toBeGreaterThan(0);
-    expect(parseViteDoubleJson<{ a: number }>('"{\\"a\\":1}"')?.a).toBe(1);
-    expect(parseViteDoubleJson("null")).toBeNull();
+    expect(parseInjectedDefine<{ a: number }>('"{\\"a\\":1}"')?.a).toBe(1);
+    expect(parseInjectedDefine("null")).toBeNull();
     const cfg = createAppspressoViteConfig();
     expect(cfg.define).toBeDefined();
     expect(cfg.define?.__APSPRESSO_HOST__).toContain("root");

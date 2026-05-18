@@ -1,5 +1,4 @@
-import type { AppspressoAppMeta, AppspressoSplashMeta } from "@/build/app-meta";
-import { parseViteDoubleJson } from "@/build/inject-env";
+import type { AppspressoSplashMeta } from "@/build/app-meta";
 import { getInjectedAppMeta } from "@/build/injected-app-meta";
 import {
   SPLASH_BACKGROUND_DARK,
@@ -9,8 +8,6 @@ import {
   parseSplashWebAnimation,
   type SplashWebAnimationKind,
 } from "@/motion/splash-web-animations";
-
-declare const __APSPRESSO_APP__: string | undefined;
 
 const DEFAULT_MIN_MS = 900;
 const DEFAULT_EXIT_MS = 450;
@@ -28,10 +25,6 @@ export type SplashBootstrapTiming = {
 };
 
 function readSplashMeta(): AppspressoSplashMeta | undefined {
-  if (typeof __APSPRESSO_APP__ !== "undefined") {
-    const app = parseViteDoubleJson<AppspressoAppMeta>(__APSPRESSO_APP__);
-    return app?.splash;
-  }
   return getInjectedAppMeta()?.splash;
 }
 

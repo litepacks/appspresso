@@ -68,6 +68,13 @@ export type AppspressoStatusBarMeta = {
  * `src` is relative to the web root (e.g. `public/runners/background.js` → `runners/background.js`).
  * iOS/Android native setup: Capacitor Background Runner docs (Background Modes, AppDelegate, gradle).
  */
+/** `@capacitor-community/sqlite` — merges into `capacitor.plugins.CapacitorSQLite`. */
+export type AppspressoSqliteMeta = {
+  iosDatabaseLocation?: string;
+  iosIsEncryption?: boolean;
+  androidIsEncryption?: boolean;
+};
+
 export type AppspressoFilesystemMeta = {
   /** Capacitor `Directory.*` key — e.g. `"DATA"`, `"DOCUMENTS"`. */
   defaultDirectory?:
@@ -170,6 +177,8 @@ export type AppspressoAppMeta = {
   backgroundRunner?: AppspressoBackgroundRunnerMeta;
   /** `FilesystemProvider` defaults (`useFilesystem`). */
   filesystem?: AppspressoFilesystemMeta;
+  /** Offline DB / sync scaffold (`@capacitor-community/sqlite`). */
+  sqlite?: AppspressoSqliteMeta;
   /**
    * Optional color tokens; `ThemeProvider` reads them from `__APSPRESSO_APP__` and writes CSS variables.
    * Base styles live in `appspresso/theme/index.css`.

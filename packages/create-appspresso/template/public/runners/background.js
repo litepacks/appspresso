@@ -1,5 +1,5 @@
 /**
- * Demo runner — aligned with `app.backgroundRunner.event` in `appspresso.config.ts`.
+ * Demo runner — aligned with `backgroundRunner.event` in `demo/appspresso.config.ts`.
  */
 
 addEventListener("appspressoBackgroundTask", (resolve, reject) => {

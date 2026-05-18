@@ -16,10 +16,11 @@
     "test:integration": "appspresso test:integration",
     "test:integration:coverage": "appspresso test:integration:coverage",
     "test:integration:watch": "appspresso test:integration:watch",
-    "cap:config": "appspresso demo:cap-config",
+    "cap:config": "appspresso cap:config",
     "cap:assets": "node scripts/sync-capacitor-assets.mjs",
     "android:sync": "npm run cap:config && appspresso native sync android",
-    "android:apk": "npm run build:lib && npm run cap:config && appspresso native sync android && appspresso native assemble android"
+    "android:apk": "npm run build:lib && npm run cap:config && appspresso native sync android && appspresso native assemble android",
+    "ios:build": "npm run cap:config && appspresso native sync ios && appspresso native assemble ios"
   },
   "dependencies": {
     "appspresso": "%%APSPRESSO_VERSION%%",
