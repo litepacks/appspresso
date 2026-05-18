@@ -1,0 +1,29 @@
+{
+  "name": "appspresso-demo",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "appspresso dev",
+    "build": "appspresso build",
+    "preview": "appspresso preview",
+    "build:lib": "appspresso build:lib",
+    "lint": "appspresso lint",
+    "lint:fix": "appspresso lint:fix",
+    "test": "appspresso test",
+    "test:run": "appspresso test:run",
+    "test:coverage": "appspresso test:coverage",
+    "test:coverage:watch": "appspresso test:coverage:watch",
+    "test:integration": "appspresso test:integration",
+    "test:integration:coverage": "appspresso test:integration:coverage",
+    "test:integration:watch": "appspresso test:integration:watch",
+    "cap:config": "appspresso cap:config",
+    "cap:assets": "node scripts/sync-capacitor-assets.mjs",
+    "android:sync": "npm run cap:config && appspresso native sync android",
+    "android:apk": "npm run build:lib && npm run cap:config && appspresso native sync android && appspresso native assemble android",
+    "ios:build": "npm run cap:config && appspresso native sync ios && appspresso native assemble ios"
+  },
+  "dependencies": {
+    "appspresso": "file:.."
+  }
+}

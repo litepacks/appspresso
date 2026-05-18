@@ -1,0 +1,35 @@
+{
+  "webDir": "dist",
+  "appId": "com.example.capacitorvitepoc",
+  "appName": "Word practice (demo)",
+  "android": {
+    "path": "android",
+    "adjustMarginsForEdgeToEdge": "disable"
+  },
+  "ios": {
+    "path": "ios"
+  },
+  "plugins": {
+    "CapacitorSQLite": {
+      "iosDatabaseLocation": "Library/CapacitorDatabase",
+      "iosIsEncryption": false,
+      "androidIsEncryption": false
+    },
+    "SplashScreen": {
+      "launchShowDuration": 1500,
+      "launchAutoHide": true,
+      "backgroundColor": "#ffffff",
+      "androidSplashResourceName": "splash",
+      "androidScaleType": "CENTER_CROP",
+      "splashFullScreen": true,
+      "splashImmersive": true,
+      "showSpinner": false
+    },
+    "StatusBar": {
+      "style": "DARK",
+      "backgroundColor": "#ffffff",
+      "overlaysWebView": true,
+      "_appspressoAndroidImmersive": true
+    }
+  }
+}

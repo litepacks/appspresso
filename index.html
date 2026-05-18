@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#ffffff" />
+    <title>Appspresso</title>
+    <script>
+      (() => {
+        let raw;
+        let pref;
+        let dark;
+        try {
+          raw = localStorage.getItem("appkit_app_theme");
+          pref = "system";
+          try {
+            if (raw) pref = JSON.parse(raw);
+          } catch (_) {}
+          dark =
+            pref === "dark" ||
+            (pref !== "light" &&
+              pref !== "dark" &&
+              window.matchMedia("(prefers-color-scheme: dark)").matches);
+          document.documentElement.classList.toggle("dark", !!dark);
+        } catch (_) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,370 @@
+{
+  "name": "appspresso",
+  "private": true,
+  "version": "0.0.1",
+  "description": "Appspresso — Capacitor + Vite + React template with a publishable library layer and subpath exports.",
+  "type": "module",
+  "sideEffects": false,
+  "bin": {
+    "appspresso": "./bin/appspresso.mjs"
+  },
+  "workspaces": [
+    "demo",
+    "packages/create-appspresso"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "build:lib": "tsup --config tsup.lib.config.ts",
+    "preview": "vite preview",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:coverage:watch": "vitest --coverage",
+    "test:integration": "npm run build:lib && vitest run --config vitest.integration.config.ts",
+    "test:integration:coverage": "npm run build:lib && vitest run --config vitest.integration.config.ts --coverage",
+    "test:integration:watch": "npm run build:lib && vitest --config vitest.integration.config.ts",
+    "demo:dev": "npm run build:lib && npm run dev -w demo",
+    "demo:build": "npm run build:lib && npm run build -w demo",
+    "demo:cap-config": "npm run cap:config -w demo",
+    "doctor": "appspresso doctor",
+    "create:sync-template": "node scripts/sync-create-template.mjs",
+    "cap:sync": "npm run demo:cap-config && appspresso native sync",
+    "ci:native:android": "npm run demo:build && npm run cap:sync && appspresso native assemble android",
+    "ci:native:ios": "npm run demo:build && npm run demo:cap-config && node scripts/ensure-ios-platform.mjs && npx cap sync ios && appspresso native assemble ios",
+    "cap:open:android": "appspresso native open android",
+    "cap:open:ios": "appspresso native open ios",
+    "android:sync": "npm run cap:sync",
+    "ios:sync": "npm run cap:sync",
+    "prepublishOnly": "npm run build:lib"
+  },
+  "peerDependencies": {
+    "@aparajita/capacitor-secure-storage": "^6.0.0",
+    "@capacitor-community/sqlite": "^7.0.0",
+    "@capacitor/action-sheet": "^7.0.0",
+    "@capacitor/background-runner": "^2.1.0",
+    "@capacitor/core": "^7.0.0",
+    "@capacitor/dialog": "^7.0.0",
+    "@capacitor/filesystem": "^7.0.0",
+    "@capacitor/inappbrowser": "^2.5.0",
+    "@capacitor/keyboard": "^7.0.0",
+    "@capacitor/share": "^7.0.0",
+    "@heroicons/react": "^2.0.0",
+    "@hookform/resolvers": "^5.0.0",
+    "@radix-ui/react-accordion": "^1.2.0",
+    "@radix-ui/react-checkbox": "^1.2.0",
+    "@radix-ui/react-radio-group": "^1.2.0",
+    "@radix-ui/react-select": "^2.2.6",
+    "@radix-ui/react-slider": "^1.2.0",
+    "@radix-ui/react-slot": "^1.2.0",
+    "@radix-ui/react-switch": "^1.2.0",
+    "@revenuecat/purchases-capacitor": "^11.0.0",
+    "@supabase/supabase-js": "^2.0.0",
+    "@tanstack/query-sync-storage-persister": "^5.100.0",
+    "@tanstack/react-query": "^5.100.0",
+    "@tanstack/react-query-persist-client": "^5.100.0",
+    "axios": "^1.6.0",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.0.0",
+    "dayjs": "^1.11.13",
+    "firebase": "^11.0.0",
+    "i18next": "^26.0.0",
+    "imask": "^7.0.0",
+    "jotai": "^2.0.0",
+    "motion": "^12.0.0",
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0",
+    "react-hook-form": "^7.0.0",
+    "react-i18next": "^17.0.0",
+    "react-imask": "^7.0.0",
+    "react-router-dom": "^7.0.0",
+    "sonner": "^2.0.3",
+    "tailwind-merge": "^2.0.0 || ^3.0.0",
+    "tailwindcss-animate": "^1.0.7",
+    "zod": "^4.4.3"
+  },
+  "peerDependenciesMeta": {
+    "@supabase/supabase-js": {
+      "optional": true
+    },
+    "firebase": {
+      "optional": true
+    },
+    "@capacitor/background-runner": {
+      "optional": true
+    },
+    "@capacitor/filesystem": {
+      "optional": true
+    },
+    "@capacitor/inappbrowser": {
+      "optional": true
+    },
+    "@capacitor/share": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@aparajita/capacitor-secure-storage": "^6.0.0",
+    "@capacitor-community/sqlite": "^7.0.0",
+    "@capacitor/action-sheet": "^7.0.0",
+    "@capacitor/android": "^7.4.4",
+    "@capacitor/app": "^7.1.0",
+    "@capacitor/cli": "^7.4.4",
+    "@capacitor/core": "^7.0.0",
+    "@capacitor/device": "^7.0.2",
+    "@capacitor/dialog": "^7.0.0",
+    "@capacitor/ios": "^7.4.4",
+    "@capacitor/keyboard": "^7.0.0",
+    "@capacitor/local-notifications": "^7.0.3",
+    "@capacitor/network": "^7.0.2",
+    "@capacitor/push-notifications": "^7.0.3",
+    "@capacitor/splash-screen": "^7.0.3",
+    "@capacitor/status-bar": "^7.0.3",
+    "@heroicons/react": "^2.0.0",
+    "@hookform/resolvers": "^5.0.0",
+    "@radix-ui/react-accordion": "^1.2.0",
+    "@radix-ui/react-checkbox": "^1.2.0",
+    "@radix-ui/react-radio-group": "^1.2.0",
+    "@radix-ui/react-select": "^2.2.6",
+    "@radix-ui/react-slider": "^1.2.0",
+    "@radix-ui/react-slot": "^1.2.0",
+    "@radix-ui/react-switch": "^1.2.0",
+    "@radix-ui/react-tooltip": "^1.2.8",
+    "@revenuecat/purchases-capacitor": "^11.0.0",
+    "@tanstack/query-sync-storage-persister": "^5.100.0",
+    "@tanstack/react-query": "^5.100.0",
+    "@tanstack/react-query-persist-client": "^5.100.0",
+    "axios": "^1.6.0",
+    "class-variance-authority": "^0.7.0",
+    "clsx": "^2.0.0",
+    "dayjs": "^1.11.13",
+    "i18next": "^26.0.0",
+    "imask": "^7.0.0",
+    "jotai": "^2.0.0",
+    "motion": "^12.0.0",
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0",
+    "react-hook-form": "^7.0.0",
+    "react-i18next": "^17.0.0",
+    "react-imask": "^7.0.0",
+    "react-router-dom": "^7.0.0",
+    "sonner": "^2.0.3",
+    "tailwind-merge": "^2.0.0 || ^3.0.0",
+    "tailwindcss-animate": "^1.0.7",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.14",
+    "@capacitor/background-runner": "^2.3.1",
+    "@capacitor/filesystem": "^7.1.8",
+    "@capacitor/inappbrowser": "^2.5.5",
+    "@capacitor/share": "^7.0.4",
+    "@supabase/supabase-js": "^2.49.0",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/node": "^24.12.2",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.1",
+    "@vitest/coverage-v8": "^4.1.5",
+    "autoprefixer": "^10.5.0",
+    "firebase": "^11.0.0",
+    "jsdom": "^29.1.1",
+    "postcss": "^8.5.14",
+    "tailwindcss": "^3.4.17",
+    "tsup": "^8.5.1",
+    "tsx": "^4.21.0",
+    "typescript": "~6.0.2",
+    "vite": "^8.0.10",
+    "vitest": "^4.1.5"
+  },
+  "files": [
+    "bin",
+    "cli",
+    "scripts/emit-capacitor-config.ts",
+    "dist-lib",
+    "README.md"
+  ],
+  "exports": {
+    "./package.json": "./package.json",
+    "./i18n": {
+      "types": "./dist-lib/i18n.d.ts",
+      "import": "./dist-lib/i18n.js",
+      "default": "./dist-lib/i18n.js"
+    },
+    "./pages/*": {
+      "types": "./dist-lib/pages/*.d.ts",
+      "import": "./dist-lib/pages/*.js",
+      "default": "./dist-lib/pages/*.js"
+    },
+    "./api/*": {
+      "types": "./dist-lib/api/*.d.ts",
+      "import": "./dist-lib/api/*.js",
+      "default": "./dist-lib/api/*.js"
+    },
+    "./config": {
+      "types": "./dist-lib/config/index.d.ts",
+      "import": "./dist-lib/config/index.js",
+      "default": "./dist-lib/config/index.js"
+    },
+    "./config/*": {
+      "types": "./dist-lib/config/*.d.ts",
+      "import": "./dist-lib/config/*.js",
+      "default": "./dist-lib/config/*.js"
+    },
+    "./sync/*": {
+      "types": "./dist-lib/sync/*.d.ts",
+      "import": "./dist-lib/sync/*.js",
+      "default": "./dist-lib/sync/*.js"
+    },
+    "./db/*": {
+      "types": "./dist-lib/db/*.d.ts",
+      "import": "./dist-lib/db/*.js",
+      "default": "./dist-lib/db/*.js"
+    },
+    "./state/*": {
+      "types": "./dist-lib/state/*.d.ts",
+      "import": "./dist-lib/state/*.js",
+      "default": "./dist-lib/state/*.js"
+    },
+    "./lib/*": {
+      "types": "./dist-lib/lib/*.d.ts",
+      "import": "./dist-lib/lib/*.js",
+      "default": "./dist-lib/lib/*.js"
+    },
+    "./theme/index.css": "./dist-lib/theme/index.css",
+    "./theme/*": {
+      "types": "./dist-lib/theme/*.d.ts",
+      "import": "./dist-lib/theme/*.js",
+      "default": "./dist-lib/theme/*.js"
+    },
+    "./permissions/*": {
+      "types": "./dist-lib/permissions/*.d.ts",
+      "import": "./dist-lib/permissions/*.js",
+      "default": "./dist-lib/permissions/*.js"
+    },
+    "./deeplink/*": {
+      "types": "./dist-lib/deeplink/*.d.ts",
+      "import": "./dist-lib/deeplink/*.js",
+      "default": "./dist-lib/deeplink/*.js"
+    },
+    "./auth/*": {
+      "types": "./dist-lib/auth/*.d.ts",
+      "import": "./dist-lib/auth/*.js",
+      "default": "./dist-lib/auth/*.js"
+    },
+    "./filesystem": {
+      "types": "./dist-lib/filesystem/index.d.ts",
+      "import": "./dist-lib/filesystem/index.js",
+      "default": "./dist-lib/filesystem/index.js"
+    },
+    "./services/*": {
+      "types": "./dist-lib/services/*.d.ts",
+      "import": "./dist-lib/services/*.js",
+      "default": "./dist-lib/services/*.js"
+    },
+    "./hooks/*": {
+      "types": "./dist-lib/hooks/*.d.ts",
+      "import": "./dist-lib/hooks/*.js",
+      "default": "./dist-lib/hooks/*.js"
+    },
+    "./motion": {
+      "types": "./dist-lib/motion/index.d.ts",
+      "import": "./dist-lib/motion/index.js",
+      "default": "./dist-lib/motion/index.js"
+    },
+    "./components/ui/*": {
+      "types": "./dist-lib/components/ui/*.d.ts",
+      "import": "./dist-lib/components/ui/*.js",
+      "default": "./dist-lib/components/ui/*.js"
+    },
+    "./components/shell": {
+      "types": "./dist-lib/components/shell/index.d.ts",
+      "import": "./dist-lib/components/shell/index.js",
+      "default": "./dist-lib/components/shell/index.js"
+    },
+    "./components/shell/*": {
+      "types": "./dist-lib/components/shell/*.d.ts",
+      "import": "./dist-lib/components/shell/*.js",
+      "default": "./dist-lib/components/shell/*.js"
+    },
+    "./components/form": {
+      "types": "./dist-lib/components/form/index.d.ts",
+      "import": "./dist-lib/components/form/index.js",
+      "default": "./dist-lib/components/form/index.js"
+    },
+    "./components/LoadingFallback": {
+      "types": "./dist-lib/components/LoadingFallback.d.ts",
+      "import": "./dist-lib/components/LoadingFallback.js",
+      "default": "./dist-lib/components/LoadingFallback.js"
+    },
+    "./components/ErrorBoundary": {
+      "types": "./dist-lib/components/ErrorBoundary.d.ts",
+      "import": "./dist-lib/components/ErrorBoundary.js",
+      "default": "./dist-lib/components/ErrorBoundary.js"
+    },
+    "./components/OutletErrorBoundary": {
+      "types": "./dist-lib/components/OutletErrorBoundary.d.ts",
+      "import": "./dist-lib/components/OutletErrorBoundary.js",
+      "default": "./dist-lib/components/OutletErrorBoundary.js"
+    },
+    "./components/BottomTabBar": {
+      "types": "./dist-lib/components/BottomTabBar.d.ts",
+      "import": "./dist-lib/components/BottomTabBar.js",
+      "default": "./dist-lib/components/BottomTabBar.js"
+    },
+    "./components/AuthLayout": {
+      "types": "./dist-lib/components/AuthLayout.d.ts",
+      "import": "./dist-lib/components/AuthLayout.js",
+      "default": "./dist-lib/components/AuthLayout.js"
+    },
+    "./app/providers/*": {
+      "types": "./dist-lib/app/providers/*.d.ts",
+      "import": "./dist-lib/app/providers/*.js",
+      "default": "./dist-lib/app/providers/*.js"
+    },
+    "./app/*": {
+      "types": "./dist-lib/app/*.d.ts",
+      "import": "./dist-lib/app/*.js",
+      "default": "./dist-lib/app/*.js"
+    },
+    "./dev/*": {
+      "types": "./dist-lib/dev/*.d.ts",
+      "import": "./dist-lib/dev/*.js",
+      "default": "./dist-lib/dev/*.js"
+    },
+    "./build/tailwind-preset": {
+      "types": "./dist-lib/build/tailwind-preset.d.ts",
+      "import": "./dist-lib/build/tailwind-preset.js",
+      "default": "./dist-lib/build/tailwind-preset.js"
+    },
+    "./build/app-meta": {
+      "types": "./dist-lib/build/app-meta.d.ts",
+      "import": "./dist-lib/build/app-meta.js",
+      "default": "./dist-lib/build/app-meta.js"
+    },
+    "./build/inject-env": {
+      "types": "./dist-lib/build/inject-env.d.ts",
+      "import": "./dist-lib/build/inject-env.js",
+      "default": "./dist-lib/build/inject-env.js"
+    },
+    "./build/vite-config": {
+      "types": "./dist-lib/build/vite-config.d.ts",
+      "import": "./dist-lib/build/vite-config.js",
+      "default": "./dist-lib/build/vite-config.js"
+    },
+    "./build/project-config": {
+      "types": "./dist-lib/build/project-config.d.ts",
+      "import": "./dist-lib/build/project-config.js",
+      "default": "./dist-lib/build/project-config.js"
+    },
+    "./build/injected-app-meta": {
+      "types": "./dist-lib/build/injected-app-meta.d.ts",
+      "import": "./dist-lib/build/injected-app-meta.js",
+      "default": "./dist-lib/build/injected-app-meta.js"
+    }
+  }
+}

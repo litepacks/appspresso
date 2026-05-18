@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <linearGradient
+      id="demo-icon-bg"
+      x1="96"
+      y1="64"
+      x2="416"
+      y2="448"
+      gradientUnits="userSpaceOnUse"
+    >
+      <stop stop-color="#14b8a6" />
+      <stop offset="1" stop-color="#0d9488" />
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="108" fill="url(#demo-icon-bg)" />
+  <g opacity="0.95">
+    <path
+      fill="#ffffff"
+      d="M132 148h208c13.255 0 24 10.745 24 24v148c0 13.255-10.745 24-24 24h-36l-44 40v-40c0-13.255-10.745-24-24-24H132c-13.255 0-24-10.745-24-24V172c0-13.255 10.745-24 24-24z"
+    />
+    <path
+      fill="#ccfbf1"
+      d="M180 120h208c13.255 0 24 10.745 24 24v148l-36 34V172c0-13.255-10.745-24-24H180c-13.255 0-24-10.745-24-24v-28c0-13.255 10.745-24 24-24z"
+    />
+  </g>
+  <path
+    stroke="#0f766e"
+    stroke-linecap="round"
+    stroke-width="20"
+    d="M196 212h104M196 260h72"
+  />
+</svg>

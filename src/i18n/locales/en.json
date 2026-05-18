@@ -1,0 +1,97 @@
+{
+  "app": { "title": "Home", "loading": "Loading…" },
+  "nav": {
+    "home": "Home",
+    "tabBar": "Main tabs",
+    "settings": "Settings",
+    "database": "Database",
+    "purchase": "Purchase",
+    "referral": "Referral",
+    "notifications": "Notifications",
+    "notFound": "Not found"
+  },
+  "common": { "retry": "Retry", "back": "Back" },
+  "errorBoundary": {
+    "title": "Something went wrong",
+    "description": "Please try again.",
+    "tryAgain": "Try again",
+    "reloadApp": "Reload app"
+  },
+  "onboarding": {
+    "step1Title": "Welcome",
+    "step1Description": "This is a Capacitor + Vite template.",
+    "step2Title": "Permissions",
+    "step2Description": "We will ask only when needed.",
+    "next": "Next",
+    "back": "Back",
+    "skip": "Skip",
+    "finish": "Get started",
+    "progress": "Step {{current}} / {{total}}"
+  },
+  "auth": {
+    "loginTitle": "Sign in",
+    "loginHint": "This template uses the demo auth adapter (local token). In production, pass createFirebaseAuthAdapter, createSupabaseAuthAdapter, or createCustomAuthAdapter to AuthProvider or AppspressoRootProviders authAdapter.",
+    "signInCta": "Continue",
+    "alreadySignedIn": "You are already signed in. Go back to the app or sign out to see the sign-in form again.",
+    "goHome": "Back to app"
+  },
+  "home": {
+    "device": "Device",
+    "network": "Network",
+    "lifecycle": "Lifecycle",
+    "sync": "Sync",
+    "sqlite": "SQLite",
+    "purchase": "Purchase",
+    "notifications": "Notifications",
+    "nativeTest": "Refresh native summary",
+    "httpProbe": "HTTP sample",
+    "localeNote": "This template ships with English UI copy only."
+  },
+  "settings": {
+    "title": "Settings",
+    "theme": "Theme",
+    "theme_system": "System",
+    "theme_light": "Light",
+    "theme_dark": "Dark",
+    "auth": "Auth",
+    "signIn": "Sign in (demo)",
+    "signOut": "Sign out",
+    "loginScreenLink": "Open sign-in screen",
+    "resetOnboarding": "Show onboarding again"
+  },
+  "database": {
+    "title": "Database",
+    "setTest": "Write test key",
+    "flushSync": "Flush sync queue"
+  },
+  "purchase": {
+    "title": "Purchase",
+    "load": "Load offerings",
+    "restore": "Restore",
+    "buy": "Buy",
+    "webNotice": "In-app purchases run on iOS/Android builds only. Use a native binary to test the store flow.",
+    "legacyProductIds": "Legacy reference product ids (App Store / Play Console)"
+  },
+  "referral": { "title": "Referral" },
+  "notifications": {
+    "title": "Notifications",
+    "detailTitle": "Notification",
+    "scheduleLocal": "Schedule local test"
+  },
+  "sqlite": {
+    "webUnavailable": "SQLite not available on web build",
+    "error": "SQLite failed to open"
+  },
+  "debug": {
+    "title": "Debug",
+    "open": "Open debug panel",
+    "build": "Build",
+    "platform": "Platform",
+    "clearQuery": "Clear query cache",
+    "resetOnboarding": "Reset onboarding flag",
+    "clearOutbox": "Clear web outbox",
+    "nuclear": "Reset all local state",
+    "nuclearConfirm": "This clears demo session tokens, TanStack Query cache, web sync outbox, and Jotai localStorage keys (including onboarding). Native secure storage is cleared for session keys. Continue?",
+    "done": "OK"
+  }
+}

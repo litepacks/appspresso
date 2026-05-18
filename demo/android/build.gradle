@@ -1,0 +1,47 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:8.7.2'
+        classpath 'com.google.gms:google-services:4.4.2'
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+// Force Kotlin bytecode to JVM 21 so it matches JavaCompile (21) when the Gradle JDK is >21
+// (Kotlin otherwise may emit JVM 23 on JDK 25). Avoid referencing KotlinCompile in this file —
+// that pulls Kotlin into the root buildscript classpath and can break on JDK 25 ("major version 69").
+//
+// Skip node_modules Capacitor plugins that pin an older Kotlin (e.g. RevenueCat 1.8.x: "Unknown JVM target: 21").
+subprojects { subproject ->
+    subproject.afterEvaluate {
+        if (subproject.name == "revenuecat-purchases-capacitor") {
+            return
+        }
+        subproject.tasks.configureEach { task ->
+            if (task.class.name.contains("KotlinCompile")) {
+                task.kotlinOptions.jvmTarget = "21"
+            }
+        }
+    }
+}
+
+apply from: "variables.gradle"
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}

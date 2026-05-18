@@ -1,0 +1,103 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 0 0% 100%;
+  --foreground: 0 0% 9%;
+  --card: 0 0% 100%;
+  --card-foreground: 0 0% 9%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 9%;
+  --primary: 0 0% 12%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 0 0% 96%;
+  --secondary-foreground: 0 0% 9%;
+  --muted: 0 0% 96%;
+  --muted-foreground: 0 0% 45%;
+  --accent: 0 0% 94%;
+  --accent-foreground: 0 0% 9%;
+  --destructive: 0 72% 48%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 0 0% 91%;
+  --input: 0 0% 91%;
+  --ring: 0 0% 12%;
+  --radius: 1.125rem;
+  --shadow-card: 0 2px 20px -4px rgb(0 0 0 / 0.07), 0 0 0 1px rgb(0 0 0 / 0.04);
+  /* Tipografi token’ları — bkz. `appspresso/theme/fonts` */
+  --font-sans:
+    ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
+  --font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+}
+
+.dark {
+  --background: 0 0% 7%;
+  --foreground: 0 0% 98%;
+  --card: 0 0% 11%;
+  --card-foreground: 0 0% 98%;
+  --popover: 0 0% 11%;
+  --popover-foreground: 0 0% 98%;
+  --primary: 0 0% 98%;
+  --primary-foreground: 0 0% 9%;
+  --secondary: 0 0% 16%;
+  --secondary-foreground: 0 0% 98%;
+  --muted: 0 0% 16%;
+  --muted-foreground: 0 0% 64%;
+  --accent: 0 0% 18%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 62% 42%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 0 0% 18%;
+  --input: 0 0% 18%;
+  --ring: 0 0% 83%;
+  --shadow-card:
+    0 2px 24px -4px rgb(0 0 0 / 0.45), 0 0 0 1px rgb(255 255 255 / 0.06);
+}
+
+html {
+  color-scheme: light dark;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/**
+ * Android’de çubuk gizliyken env(safe-area-inset-top) sıfır kalabiliyor; max(..., 1.5rem) minimum çentik/çubuk payı verir.
+ */
+.safe-top {
+  padding-top: calc(max(env(safe-area-inset-top, 0px), 1.5rem) + 0.5rem);
+}
+
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/** Tam ekran kabuk: güvenli alan üst/alt alta çubuklarda (Layout / Onboarding) */
+.app-shell {
+  min-height: 100svh;
+}
+
+@layer utilities {
+  /** Alt sekme yatay kaydırma; ince scrollbar gizli */
+  .appspresso-tab-scroll {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .appspresso-tab-scroll::-webkit-scrollbar {
+    display: none;
+  }
+}

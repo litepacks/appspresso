@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <meta name="description" content="Appspresso — Capacitor + Vite + React production starter and publishable library. One package for mobile and web app backbone." />
+  <title>Appspresso — Capacitor + Vite + React</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode: 'class' }
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/typescript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/json.min.js"></script>
+  <style>
+    html { scroll-behavior: smooth; }
+    pre { tab-size: 2; margin: 0; }
+    pre code { padding: 0; background: transparent; }
+    code { font-family: ui-monospace, SFMono-Regular, monospace; font-size: 0.9em; }
+    .doc-section { scroll-margin-top: 2rem; }
+    table { border-collapse: collapse; }
+    th, td { border: 1px solid #e4e4e7; padding: 0.5rem 0.75rem; text-align: left; vertical-align: top; }
+    th { background: #f4f4f5; font-weight: 600; }
+    .dark th, .dark td { border-color: #3f3f46; }
+    .dark th { background: #27272a; }
+    .ascii { font-family: ui-monospace, monospace; font-size: 0.7rem; line-height: 1.35; overflow-x: auto; }
+    @media (min-width: 640px) { .ascii { font-size: 0.75rem; } }
+    .accent { color: #4338ca; }
+    .dark .accent { color: #818cf8; }
+    a.accent-link { color: #4338ca; }
+    .dark a.accent-link { color: #818cf8; }
+    a.accent-link:hover { text-decoration: underline; }
+    .callout { border-left: 3px solid #6366f1; padding-left: 1rem; }
+    .dark .callout { border-color: #818cf8; }
+  </style>
+</head>
+<body class="bg-zinc-50 text-zinc-900 antialiased dark:bg-zinc-950 dark:text-zinc-100 transition-colors">
+  <div class="max-w-4xl mx-auto px-6 py-12">
+    <div class="flex items-center justify-between mb-10 gap-4">
+      <nav class="flex flex-wrap gap-x-3 gap-y-2 text-sm">
+        <a href="#overview" class="text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200">Overview</a>
+        <a href="#why-one-package" class="text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200">Why one package</a>
+        <a href="#philosophy" class="text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200">Philosophy</a>
+        <a href="#architecture" class="text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200">Architecture</a>
+        <a href="#bootstrap" class="text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200">Bootstrap</a>
+        <a href="#cli" class="text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200">CLI</a>
+        <a href="#config" class="text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200">Config</a>
+        <a href="#features" class="text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200">Features</a>
+        <a href="#package" class="text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200">Package</a>
+        <a href="#create" class="text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200">Create</a>
+        <a href="#checklist" class="text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200">Checklist</a>
+        <a href="#playbooks" class="text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-zinc-200">Playbooks</a>
+      </nav>
+      <button id="theme-toggle" type="button" class="flex-shrink-0 p-2 rounded-lg text-zinc-500 hover:bg-zinc-200 dark:hover:bg-zinc-800 dark:text-zinc-400" aria-label="Toggle dark mode">
+        <svg class="w-5 h-5 hidden dark:block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+        <svg class="w-5 h-5 block dark:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+      </button>
+    </div>
+
+    <header class="mb-14 flex items-start gap-4">
+      <div class="flex-shrink-0 w-14 h-14 rounded-xl bg-indigo-600/15 dark:bg-indigo-500/20 border border-indigo-600/30 flex items-center justify-center" aria-hidden="true">
+        <svg class="w-8 h-8 text-indigo-600 dark:text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+          <line x1="12" y1="18" x2="12" y2="18" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div>
+        <h1 class="text-4xl font-bold tracking-tight text-zinc-900 dark:text-white">Appspresso</h1>
+        <p class="mt-2 text-xl text-zinc-600 dark:text-zinc-400">
+          A production-minded <strong class="text-zinc-800 dark:text-zinc-200">Capacitor + Vite + React</strong> starter <em>and</em> a publishable library — one package for the backbone of mobile and web apps.
+        </p>
+        <p class="mt-3 text-zinc-500 dark:text-zinc-500 text-sm max-w-2xl">
+          No Ionic. UI follows <a href="https://ui.shadcn.com/" class="accent-link">shadcn/ui</a> patterns (Tailwind + <code class="bg-zinc-200/80 dark:bg-zinc-800 px-1 rounded">cva</code>). Client state <code class="bg-zinc-200/80 dark:bg-zinc-800 px-1 rounded">Jotai</code>, server state <code class="bg-zinc-200/80 dark:bg-zinc-800 px-1 rounded">TanStack Query</code> (persist), API <code class="bg-zinc-200/80 dark:bg-zinc-800 px-1 rounded">Axios</code>, routing <code class="bg-zinc-200/80 dark:bg-zinc-800 px-1 rounded">React Router</code>, native <code class="bg-zinc-200/80 dark:bg-zinc-800 px-1 rounded">Capacitor 7</code>.
+        </p>
+      </div>
+    </header>
+
+    <section id="overview" class="doc-section mb-14">
+      <h2 class="text-2xl font-bold text-zinc-900 dark:text-white mb-4">Overview</h2>
+      <p class="text-zinc-600 dark:text-zinc-400 mb-4">
+        Appspresso is both a <strong class="text-zinc-800 dark:text-zinc-200">runnable template</strong> (<code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">src/</code>, <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">demo/</code>) and an <strong class="text-zinc-800 dark:text-zinc-200">npm package</strong> (<code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">appspresso</code> with subpath exports from <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">dist-lib/</code>). You get a coherent mobile + web spine: bootstrap, providers, UI primitives, offline sync scaffold, auth adapters, deeplinks, IAP hooks, i18n, feature flags, and a small CLI — without assembling dozens of unrelated libraries yourself.
+      </p>
+      <h3 class="text-lg font-semibold text-zinc-800 dark:text-zinc-200 mb-2">Requirements</h3>
+      <ul class="list-disc pl-5 text-zinc-600 dark:text-zinc-400 space-y-1 text-sm">
+        <li>Node.js 20+ (Capacitor 7 CLI)</li>
+        <li><strong>Android</strong>: Android Studio + JDK</li>
+        <li><strong>iOS</strong>: Xcode + CocoaPods</li>
+      </ul>
+      <pre class="bg-zinc-900 p-5 rounded-xl text-sm overflow-x-auto mt-4"><code class="language-bash">npm install
+cp .env.example .env
+npm run dev</code></pre>
+    </section>
+
+    <section id="why-one-package" class="doc-section mb-14">
+      <h2 class="text-2xl font-bold text-zinc-900 dark:text-white mb-4">Why one package</h2>
+      <p class="text-zinc-600 dark:text-zinc-400 mb-4">
+        Mobile and web apps need routing shells, client and server state, HTTP, i18n, native bootstrap, optional offline storage, auth surfaces, forms, error handling, theming, and tooling. Appspresso puts the pieces that belong together under <strong class="text-zinc-800 dark:text-zinc-200">one dependency</strong> with versions that are already integrated and tested as a set.
+      </p>
+
+      <ul class="list-disc pl-5 text-zinc-600 dark:text-zinc-400 space-y-3 mb-6">
+        <li><strong class="text-zinc-800 dark:text-zinc-200">Batteries included, one decision</strong> — Instead of a long “which library for X?” list, you add <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">appspresso</code> and optional peers (Firebase, Supabase, extra Capacitor plugins) only when you need them.</li>
+        <li><strong class="text-zinc-800 dark:text-zinc-200">Simplest path to a working app</strong> — <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">npm create appspresso</code>, then <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">runBootstrap()</code>, <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">AppspressoRootProviders</code>, and <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">import … from "appspresso/…"</code>. The scaffold and library share the same modules.</li>
+        <li><strong class="text-zinc-800 dark:text-zinc-200">One version line, easier upgrades</strong> — Your product app mostly tracks <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">"appspresso": "^x.y.z"</code>. Patch and minor bumps bring bootstrap order, provider stack, Vite preset, and Capacitor-oriented defaults that were validated together — not ten unrelated changelogs.</li>
+        <li><strong class="text-zinc-800 dark:text-zinc-200">Granularity without fragmentation</strong> — Subpath exports (<code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">appspresso/sync/*</code>, <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">appspresso/components/ui/*</code>) let you import only what you use, while still publishing and upgrading a single package.</li>
+        <li><strong class="text-zinc-800 dark:text-zinc-200">Starter and library, same source</strong> — <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">demo/</code> and <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">create-appspresso</code> stay in sync via <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">npm run create:sync-template</code>.</li>
+      </ul>
+
+      <blockquote class="callout text-zinc-600 dark:text-zinc-400 italic mb-6">
+        Upgrade Appspresso once — bootstrap order, provider stack, and Capacitor-oriented defaults move together instead of chasing ten unrelated changelogs.
+      </blockquote>
+
+      <div class="overflow-x-auto mb-4">
+        <table class="w-full text-sm">
+          <thead><tr><th>Approach</th><th>Trade-off</th></tr></thead>
+          <tbody class="text-zinc-600 dark:text-zinc-400">
+            <tr><td>Many small packages</td><td>Fine-grained dependencies; higher integration cost and version skew across the stack.</td></tr>
+            <tr><td><strong>Appspresso (one package)</strong></td><td>One upgrade path, integrated defaults; subpath imports when you need granularity.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="philosophy" class="doc-section mb-14">
+      <h2 class="text-2xl font-bold text-zinc-900 dark:text-white mb-4">Philosophy &amp; principles</h2>
+      <ul class="list-disc pl-5 text-zinc-600 dark:text-zinc-400 space-y-2 mb-6">
+        <li><strong class="text-zinc-800 dark:text-zinc-200">Production-minded hybrid</strong> — Ship from the template or consume <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">dist-lib/</code> in an existing Vite app.</li>
+        <li><strong class="text-zinc-800 dark:text-zinc-200">No Ionic</strong> — Native shell via Capacitor; UI is Tailwind + small primitives (Radix only where it helps, e.g. form <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">Slot</code>).</li>
+        <li><strong class="text-zinc-800 dark:text-zinc-200">Clear state split</strong> — One Jotai <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">appStore</code> for client UI state; TanStack Query (+ persist) for server/cache.</li>
+        <li><strong class="text-zinc-800 dark:text-zinc-200">Mobile-first defaults</strong> — <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">base: './'</code>, splash/status bar, keyboard-aware tab shell, native SQLite + sync outbox path.</li>
+        <li><strong class="text-zinc-800 dark:text-zinc-200">Opinionated defaults, optional depth</strong> — Core in the package; Firebase, Supabase, and some Capacitor plugins are optional peers.</li>
+      </ul>
+
+      <h3 class="text-lg font-semibold text-zinc-800 dark:text-zinc-200 mb-2">What you get out of the box</h3>
+      <ul class="list-disc pl-5 text-zinc-600 dark:text-zinc-400 space-y-1 text-sm columns-1 sm:columns-2 gap-x-8">
+        <li>Auth adapter surface (Firebase, Supabase, custom)</li>
+        <li>Offline sync outbox + SQLite (native)</li>
+        <li>Deeplink scaffold</li>
+        <li>RevenueCat IAP hooks</li>
+        <li>i18next + react-i18next</li>
+        <li>Feature flags (env + optional URL)</li>
+        <li>Lightweight app event bus</li>
+        <li>Error boundaries (root + outlet)</li>
+        <li>Route motion (<code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">AnimatedOutlet</code>)</li>
+        <li>Forms (RHF + Zod + shadcn-style <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">Form*</code>)</li>
+        <li>Secure storage (native)</li>
+        <li>Push / local notification scaffolding</li>
+        <li>Debug panel (dev only)</li>
+      </ul>
+    </section>
+
+    <section id="architecture" class="doc-section mb-14">
+      <h2 class="text-2xl font-bold text-zinc-900 dark:text-white mb-4">Architecture</h2>
+      <pre class="bg-zinc-900 text-zinc-100 p-4 rounded-xl ascii border border-zinc-700 mb-4"><code>appspresso.config.ts  →  appspresso CLI (Vite)  →  dist/
+        ↓
+main.tsx → App → AppspressoRootProviders → Router → Layouts → Pages
+        ↓
+runBootstrap() → telemetry, env, feature flags, appearance, SQLite, sync, splash hide (last)</code></pre>
+
+      <h3 class="text-lg font-semibold text-zinc-800 dark:text-zinc-200 mb-2">Source layout</h3>
+      <pre class="bg-zinc-100 dark:bg-zinc-900/80 border border-zinc-200 dark:border-zinc-700 rounded-xl p-4 text-sm text-zinc-700 dark:text-zinc-300 overflow-x-auto font-mono mb-4">src/
+  app/           bootstrap, RootProviders, events, bootstrap screen
+  components/    ui/, shell/, form/, ErrorBoundary, OutletErrorBoundary
+  sync/, db/     offline-first outbox + SQLite migrations
+  auth/          adapters + session store
+  deeplink/      scheme + route map
+  services/      appearance, telemetry, permissions, secure storage, …
+  hooks/         keyboard, feature flags, RevenueCat, …
+  config/        env, constants, appspresso.config
+  build/         vite-config, project-config, tailwind-preset
+cli/ + bin/      appspresso dev | native | doctor
+packages/create-appspresso/   npm create appspresso scaffold</pre>
+
+      <p class="text-zinc-600 dark:text-zinc-400 text-sm">
+        <strong class="text-zinc-800 dark:text-zinc-200">Host-owned:</strong> lazy route tree and page composition stay in your app — not shipped inside the package so products keep full control of navigation.
+      </p>
+    </section>
+
+    <section id="bootstrap" class="doc-section mb-14">
+      <h2 class="text-2xl font-bold text-zinc-900 dark:text-white mb-4">Bootstrap &amp; providers</h2>
+      <p class="text-zinc-600 dark:text-zinc-400 mb-3">
+        <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">runBootstrap()</code> in <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">src/app/bootstrap.ts</code> runs before the UI is fully interactive:
+      </p>
+      <ol class="list-decimal pl-5 text-zinc-600 dark:text-zinc-400 space-y-1 mb-6 text-sm">
+        <li><code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">initTelemetry</code></li>
+        <li><code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">getEnvConfig</code> → <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">loadRuntimeConfig</code> (merge <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">VITE_FEATURE_FLAGS</code> + optional remote URL)</li>
+        <li><code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">initAppearance</code> (theme + status bar)</li>
+        <li><code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">initDatabase</code> → updates <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">sqliteStatusAtom</code></li>
+        <li><code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">initSyncLayer</code></li>
+        <li>Splash hide <strong>last</strong> — <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">launchAutoHide: false</code> in project config avoids early auto-hide glitches</li>
+      </ol>
+
+      <h3 class="text-lg font-semibold text-zinc-800 dark:text-zinc-200 mb-2">Provider stack (<code class="text-base font-mono">AppspressoRootProviders</code>)</h3>
+      <p class="text-zinc-600 dark:text-zinc-400 text-sm mb-3">Outermost → innermost. Use <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">omit</code> to drop layers you do not need.</p>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead><tr><th>Order</th><th>Layer</th><th>Role</th></tr></thead>
+          <tbody class="text-zinc-600 dark:text-zinc-400">
+            <tr><td>1</td><td><code>QueryProvider</code></td><td>TanStack Query + persistence</td></tr>
+            <tr><td>2</td><td><code>StoreProvider</code></td><td>Jotai <code>appStore</code></td></tr>
+            <tr><td>3</td><td><code>NotificationProvider</code></td><td>Local / push scaffolding</td></tr>
+            <tr><td>4</td><td><code>ThemeProvider</code></td><td>Light / dark / system</td></tr>
+            <tr><td>5</td><td><code>ToastProvider</code></td><td>Sonner toasts</td></tr>
+            <tr><td>6</td><td><code>TooltipProvider</code></td><td>Radix tooltips</td></tr>
+            <tr><td>7</td><td><code>FilesystemProvider</code></td><td>Capacitor Filesystem defaults</td></tr>
+            <tr><td>8</td><td><code>AuthProvider</code></td><td>Pluggable <code>authAdapter</code></td></tr>
+            <tr><td>9</td><td><code>RevenueCatProvider</code></td><td>IAP / entitlements</td></tr>
+            <tr><td>10</td><td><code>I18nProvider</code></td><td>i18next instance</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="cli" class="doc-section mb-14">
+      <h2 class="text-2xl font-bold text-zinc-900 dark:text-white mb-4">CLI &amp; dev workflow</h2>
+      <p class="text-zinc-600 dark:text-zinc-400 mb-3">The <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">appspresso</code> binary wraps Vite and Capacitor shortcuts (monorepo-friendly <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">node_modules</code> resolution).</p>
+      <pre class="bg-zinc-900 p-5 rounded-xl text-sm overflow-x-auto mb-4"><code class="language-bash">npx appspresso help
+npx appspresso dev
+npx appspresso native sync
+npx appspresso native open ios
+npx appspresso doctor</code></pre>
+      <div class="overflow-x-auto mb-4">
+        <table class="w-full text-sm">
+          <thead><tr><th>Command</th><th>Purpose</th></tr></thead>
+          <tbody class="text-zinc-600 dark:text-zinc-400">
+            <tr><td><code>appspresso dev</code> | <code>build</code> | <code>preview</code></td><td>Run Vite; uses <code>appspresso.config.ts</code> when no local <code>vite.config.*</code> exists.</td></tr>
+            <tr><td><code>appspresso native sync</code></td><td><code>npm run build</code> then <code>cap sync</code> (<code>--skip-build</code> if bundle is ready).</td></tr>
+            <tr><td><code>appspresso native open|run android|ios</code></td><td>Open IDE or run on device/emulator.</td></tr>
+            <tr><td><code>appspresso doctor</code></td><td>Advisory check: Node, Vite, Capacitor CLI, optional <code>android/</code> / <code>ios/</code>.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="text-zinc-500 dark:text-zinc-500 text-sm">Monorepo scripts: <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">npm run demo:dev</code>, <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">npm run cap:sync</code>, <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">npm run create:sync-template</code>.</p>
+    </section>
+
+    <section id="config" class="doc-section mb-14">
+      <h2 class="text-2xl font-bold text-zinc-900 dark:text-white mb-4">Project config</h2>
+      <p class="text-zinc-600 dark:text-zinc-400 mb-3">
+        Central config via <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">defineAppspressoProject</code> in <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">appspresso.config.ts</code> — app id, display name, theme palette (HSL triples), splash, status bar. Capacitor JSON is emitted (e.g. <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">npm run demo:cap-config</code> → <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">capacitor.config.json</code>).
+      </p>
+      <pre class="bg-zinc-900 p-5 rounded-xl text-sm overflow-x-auto mb-4"><code class="language-typescript">import { defineAppspressoProject } from "appspresso/build/project-config";
+
+export default defineAppspressoProject({
+  app: {
+    id: "com.example.myapp",
+    displayName: "My App",
+    theme: { palette: { light: { primary: "221 83% 53%" } } },
+    splash: { launchAutoHide: false, backgroundColor: "#0f172a" },
+  },
+});</code></pre>
+
+      <h3 class="text-lg font-semibold text-zinc-800 dark:text-zinc-200 mb-2">Environment (<code class="text-base font-mono">VITE_*</code> only)</h3>
+      <p class="text-zinc-500 dark:text-zinc-500 text-sm mb-3">Never put secrets in <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">VITE_*</code> — they are exposed to the client bundle.</p>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead><tr><th>Variable</th><th>Description</th></tr></thead>
+          <tbody class="text-zinc-600 dark:text-zinc-400">
+            <tr><td><code>VITE_API_BASE_URL</code></td><td>Axios base URL</td></tr>
+            <tr><td><code>VITE_SENTRY_DSN</code></td><td>Optional telemetry</td></tr>
+            <tr><td><code>VITE_FEATURE_FLAGS</code></td><td>JSON <code>{ "key": boolean }</code></td></tr>
+            <tr><td><code>VITE_FEATURE_FLAGS_URL</code></td><td>Optional HTTPS JSON; merges over env flags</td></tr>
+            <tr><td><code>VITE_ENABLE_DEBUG_PANEL</code></td><td>Set <code>"false"</code> to hide dev debug panel</td></tr>
+            <tr><td><code>VITE_REVENUECAT_API_KEY_IOS</code> / <code>_ANDROID</code></td><td>RevenueCat public SDK keys</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="features" class="doc-section mb-14">
+      <h2 class="text-2xl font-bold text-zinc-900 dark:text-white mb-4">Feature map</h2>
+      <p class="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">Each area is part of the same package; playbooks go deeper on specific topics.</p>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead><tr><th>Area</th><th>Summary</th><th>Key paths</th><th>Playbook</th></tr></thead>
+          <tbody class="text-zinc-600 dark:text-zinc-400">
+            <tr>
+              <td><strong class="text-zinc-800 dark:text-zinc-200">Routing &amp; motion</strong></td>
+              <td>Lazy routes + nested layouts; content-only transitions via <code>AnimatedOutlet</code>.</td>
+              <td><code>appspresso/motion</code></td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td><strong class="text-zinc-800 dark:text-zinc-200">Forms</strong></td>
+              <td>RHF + Zod + shadcn-style form primitives.</td>
+              <td><code>appspresso/components/form</code></td>
+              <td><a href="playbooks/forms.md" class="accent-link">forms.md</a></td>
+            </tr>
+            <tr>
+              <td><strong class="text-zinc-800 dark:text-zinc-200">Offline sync</strong></td>
+              <td>Outbox queue; native SQLite table, web fallback outbox.</td>
+              <td><code>src/sync/sync.service.ts</code></td>
+              <td><a href="playbooks/offline-sync.md" class="accent-link">offline-sync.md</a></td>
+            </tr>
+            <tr>
+              <td><strong class="text-zinc-800 dark:text-zinc-200">Deeplink</strong></td>
+              <td>Custom URL scheme + route map; App Links / Universal Links are host setup.</td>
+              <td><code>DEEPLINK_SCHEME</code>, <code>deeplink.routes.ts</code></td>
+              <td><a href="playbooks/deeplink.md" class="accent-link">deeplink.md</a></td>
+            </tr>
+            <tr>
+              <td><strong class="text-zinc-800 dark:text-zinc-200">IAP</strong></td>
+              <td>RevenueCat provider + entitlement hooks.</td>
+              <td><code>RevenueCatProvider</code>, <code>useRevenueCat</code></td>
+              <td><a href="playbooks/revenuecat.md" class="accent-link">revenuecat.md</a>, <a href="playbooks/iap.md" class="accent-link">iap.md</a></td>
+            </tr>
+            <tr>
+              <td><strong class="text-zinc-800 dark:text-zinc-200">Push / local</strong></td>
+              <td>Permission manager + push notification scaffold.</td>
+              <td><code>permission-manager.service.ts</code></td>
+              <td><a href="playbooks/push.md" class="accent-link">push.md</a></td>
+            </tr>
+            <tr>
+              <td><strong class="text-zinc-800 dark:text-zinc-200">Auth</strong></td>
+              <td>Adapter pattern; pass Firebase/Supabase/custom into <code>AuthProvider</code>.</td>
+              <td><code>src/auth/adapters/</code></td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td><strong class="text-zinc-800 dark:text-zinc-200">Secure storage</strong></td>
+              <td>Native keychain via Capacitor plugin; web dev fallback (not for production secrets).</td>
+              <td><code>secure-storage.service.ts</code></td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td><strong class="text-zinc-800 dark:text-zinc-200">Feature flags</strong></td>
+              <td>Build-time + optional remote JSON; <code>useFeatureFlag</code> hook.</td>
+              <td><code>loadRuntimeConfig</code>, <code>featureFlagsAtom</code></td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td><strong class="text-zinc-800 dark:text-zinc-200">App events</strong></td>
+              <td>Typed pub/sub instead of deep prop drilling.</td>
+              <td><code>createAppEventBus</code>, <code>useAppEventSubscription</code></td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td><strong class="text-zinc-800 dark:text-zinc-200">Error boundaries</strong></td>
+              <td>Root full-screen recovery; outlet resets on route change.</td>
+              <td><code>ErrorBoundary</code>, <code>OutletErrorBoundary</code></td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td><strong class="text-zinc-800 dark:text-zinc-200">Keyboard / tab bar</strong></td>
+              <td>Hide bottom tabs when keyboard opens on native.</td>
+              <td><code>useKeyboardState</code>, <code>AppBottomTabShell</code></td>
+              <td>—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="package" class="doc-section mb-14">
+      <h2 class="text-2xl font-bold text-zinc-900 dark:text-white mb-4">Package consumption</h2>
+      <pre class="bg-zinc-900 p-5 rounded-xl text-sm overflow-x-auto mb-4"><code class="language-bash">npm run build:lib   # in the appspresso repo → dist-lib/</code></pre>
+      <pre class="bg-zinc-900 p-5 rounded-xl text-sm overflow-x-auto mb-4"><code class="language-typescript">import { Button } from "appspresso/components/ui/button";
+import { runBootstrap } from "appspresso/app/bootstrap";
+import { http } from "appspresso/api/http";
+import { flushOutbox } from "appspresso/sync/sync.service";</code></pre>
+      <ul class="list-disc pl-5 text-zinc-600 dark:text-zinc-400 space-y-2 text-sm mb-4">
+        <li>Subpath <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">exports</code> mirror <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">src/</code> — import only what you need.</li>
+        <li>Add <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">./node_modules/appspresso/dist-lib/**/*.js</code> to Tailwind <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">content</code>.</li>
+        <li><code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">peerDependencies</code> declare React, Router, Jotai, Query, Capacitor plugins, etc. — install compatible versions in the host app.</li>
+        <li><strong class="text-zinc-800 dark:text-zinc-200">Router / route-tree</strong> stays in the host app (product-specific lazy routes).</li>
+      </ul>
+
+      <h3 class="text-lg font-semibold text-zinc-800 dark:text-zinc-200 mb-2">Upgrading</h3>
+      <p class="text-zinc-600 dark:text-zinc-400 text-sm">
+        Bump <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">appspresso</code> in <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">package.json</code> (<code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">npm update appspresso</code>). Read the package release notes for breaking changes. Re-run <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">appspresso doctor</code> and your test suite; check optional peer majors (Capacitor, Firebase) if you use them.
+      </p>
+    </section>
+
+    <section id="create" class="doc-section mb-14">
+      <h2 class="text-2xl font-bold text-zinc-900 dark:text-white mb-4">Scaffolding</h2>
+      <pre class="bg-zinc-900 p-5 rounded-xl text-sm overflow-x-auto mb-4"><code class="language-bash">npm create appspresso@latest my-app
+cd my-app
+npm run dev</code></pre>
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead><tr><th>Flag</th><th>Description</th></tr></thead>
+          <tbody class="text-zinc-600 dark:text-zinc-400">
+            <tr><td><code>--appspresso ^x.y.z</code></td><td>Pin library version</td></tr>
+            <tr><td><code>--with-capacitor</code></td><td>Add <code>capacitor.config.ts</code>, native deps, <code>cap:*</code> scripts</td></tr>
+            <tr><td><code>--web-only</code></td><td>README note for web-first projects (mutually exclusive with <code>--with-capacitor</code>)</td></tr>
+            <tr><td><code>--skip-install</code></td><td>Skip <code>npm install</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="text-zinc-500 dark:text-zinc-500 text-sm mt-3">Maintainers: after changing <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">demo/</code>, run <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">npm run create:sync-template</code> before publishing <code class="bg-zinc-200 dark:bg-zinc-700 px-1 rounded">create-appspresso</code>.</p>
+    </section>
+
+    <section id="checklist" class="doc-section mb-14">
+      <h2 class="text-2xl font-bold text-zinc-900 dark:text-white mb-4">New product checklist</h2>
+      <ul class="list-none space-y-2 text-zinc-600 dark:text-zinc-400 text-sm">
+        <li><input type="checkbox" disabled class="mr-2" /> <code>package.json</code> name and description</li>
+        <li><input type="checkbox" disabled class="mr-2" /> <code>capacitor.config.ts</code> <code>appId</code>, <code>appName</code>; match Android / Xcode bundle IDs</li>
+        <li><input type="checkbox" disabled class="mr-2" /> <code>DEEPLINK_SCHEME</code> + <code>deeplink.routes.ts</code> + native URL types</li>
+        <li><input type="checkbox" disabled class="mr-2" /> <code>resources/icon.png</code>, <code>resources/splash.png</code>, splash colors</li>
+        <li><input type="checkbox" disabled class="mr-2" /> <code>index.html</code> title; <code>STORAGE_KEY_PREFIX</code> / <code>JOTAI_STORAGE</code> in <code>constants.ts</code></li>
+        <li><input type="checkbox" disabled class="mr-2" /> <code>VITE_*</code> env and telemetry project</li>
+        <li><input type="checkbox" disabled class="mr-2" /> <code>npm run lint</code>, <code>test:run</code>, <code>build</code>, <code>cap sync</code>, device smoke (deeplink + splash)</li>
+      </ul>
+    </section>
+
+    <section id="playbooks" class="doc-section mb-14">
+      <h2 class="text-2xl font-bold text-zinc-900 dark:text-white mb-4">Playbooks</h2>
+      <p class="text-zinc-600 dark:text-zinc-400 mb-4 text-sm">Focused recipes live next to the code. This page is the map; playbooks are the deep dives.</p>
+      <ul class="space-y-3 text-sm">
+        <li class="p-4 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900/50">
+          <a href="playbooks/offline-sync.md" class="font-semibold text-zinc-900 dark:text-white accent-link">Offline-first (outbox + SQLite)</a>
+          <p class="mt-1 text-zinc-500 dark:text-zinc-500">Local persistence, flush order, retry and UI feedback.</p>
+        </li>
+        <li class="p-4 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900/50">
+          <a href="playbooks/forms.md" class="font-semibold text-zinc-900 dark:text-white accent-link">Forms (RHF + Zod)</a>
+          <p class="mt-1 text-zinc-500 dark:text-zinc-500"><code>Form</code>, <code>FormField</code>, <code>zodResolver</code> with UI inputs.</p>
+        </li>
+        <li class="p-4 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900/50">
+          <a href="playbooks/deeplink.md" class="font-semibold text-zinc-900 dark:text-white accent-link">Deeplink</a>
+          <p class="mt-1 text-zinc-500 dark:text-zinc-500">Custom scheme, route map, native alignment.</p>
+        </li>
+        <li class="p-4 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900/50">
+          <a href="playbooks/revenuecat.md" class="font-semibold text-zinc-900 dark:text-white accent-link">RevenueCat</a>
+          <p class="mt-1 text-zinc-500 dark:text-zinc-500">SDK keys, provider, entitlements.</p>
+        </li>
+        <li class="p-4 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900/50">
+          <a href="playbooks/iap.md" class="font-semibold text-zinc-900 dark:text-white accent-link">IAP notes</a>
+          <p class="mt-1 text-zinc-500 dark:text-zinc-500">Product IDs and store dashboard mapping.</p>
+        </li>
+        <li class="p-4 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900/50">
+          <a href="playbooks/push.md" class="font-semibold text-zinc-900 dark:text-white accent-link">Push notifications</a>
+          <p class="mt-1 text-zinc-500 dark:text-zinc-500">APNs/FCM scaffolding and permissions.</p>
+        </li>
+      </ul>
+    </section>
+
+    <footer class="pt-10 border-t border-zinc-200 dark:border-zinc-800 text-sm text-zinc-500 dark:text-zinc-500">
+      <p>See also <a href="../README.md" class="accent-link">README.md</a> in the repository root.</p>
+    </footer>
+  </div>
+
+  <script>
+    hljs.highlightAll();
+    (function(){
+      var themeKey = 'appspresso-docs-theme';
+      var stored = localStorage.getItem(themeKey);
+      var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      if (stored === 'dark' || (!stored && prefersDark)) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+      document.getElementById('theme-toggle').addEventListener('click', function(){
+        var isDark = document.documentElement.classList.toggle('dark');
+        localStorage.setItem(themeKey, isDark ? 'dark' : 'light');
+      });
+    })();
+  </script>
+</body>
+</html>

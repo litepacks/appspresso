@@ -1,0 +1,24 @@
+{
+  "name": "create-appspresso",
+  "version": "0.0.0",
+  "description": "Scaffold a Vite + React app that consumes the appspresso library (`npm create appspresso`).",
+  "type": "module",
+  "bin": {
+    "create-appspresso": "./index.js"
+  },
+  "files": [
+    "index.js",
+    "template",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "sync-template": "node ../../scripts/sync-create-template.mjs",
+    "prepublishOnly": "node ../../scripts/sync-create-template.mjs"
+  }
+}

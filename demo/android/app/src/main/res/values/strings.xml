@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">CapacitorVitePOC</string>
+    <string name="title_activity_main">CapacitorVitePOC</string>
+    <string name="package_name">com.example.capacitorvitepoc</string>
+    <string name="custom_url_scheme">com.example.capacitorvitepoc</string>
+</resources>
