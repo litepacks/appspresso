@@ -365,5 +365,9 @@
       "import": "./dist-lib/build/injected-app-meta.js",
       "default": "./dist-lib/build/injected-app-meta.js"
     }
+  },
+  "optionalDependencies": {
+    "@emnapi/core": "1.10.0",
+    "@emnapi/runtime": "1.10.0"
   }
 }
