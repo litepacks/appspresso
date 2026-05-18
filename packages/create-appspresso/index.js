@@ -110,12 +110,7 @@ function applyPlaceholders(content, map) {
   return s;
 }
 
-function safeAppIdSuffix(projectName) {
-  const s = projectName.replace(/[^a-z0-9]/gi, "").toLowerCase();
-  return s || "app";
-}
-
-function applyCapacitorLayer(projectDir, projectName, displayName) {
+function applyCapacitorLayer(projectDir) {
   const pkgPath = join(projectDir, "package.json");
   const pkg = JSON.parse(readFileSync(pkgPath, "utf8"));
   pkg.dependencies = {
@@ -135,7 +130,6 @@ function applyCapacitorLayer(projectDir, projectName, displayName) {
     "cap:open:ios": "appspresso native open ios",
   };
   writeFileSync(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`);
-  const appId = `com.example.${safeAppIdSuffix(projectName)}`;
   const cap = `import type { CapacitorConfig } from "@capacitor/cli";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
@@ -147,7 +141,6 @@ const config = JSON.parse(
 
 export default config;
 `;
-  const appspressoConfigPath = join(projectDir, "appspresso.config.ts");
   if (!existsSync(join(projectDir, "capacitor.config.ts"))) {
     writeFileSync(join(projectDir, "capacitor.config.ts"), cap);
   }
@@ -240,7 +233,7 @@ function main() {
   }
 
   if (withCapacitor) {
-    applyCapacitorLayer(projectDir, projectName, displayName);
+    applyCapacitorLayer(projectDir);
   } else if (webOnly) {
     appendWebOnlyNote(projectDir);
   }

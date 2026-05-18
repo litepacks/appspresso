@@ -1,9 +1,9 @@
 import { AppLifecycleSync } from "appspresso/app/AppLifecycleSync";
 import { AppspressoBootstrapGate } from "appspresso/app/AppspressoBootstrapGate";
 import { GlobalErrorListeners } from "appspresso/app/GlobalErrorListeners";
-import { getInjectedAppMeta } from "appspresso/build/injected-app-meta";
 import type { AppspressoRootProvidersProps } from "appspresso/app/RootProviders";
 import { AppspressoRootProviders } from "appspresso/app/RootProviders";
+import { getInjectedAppMeta } from "appspresso/build/injected-app-meta";
 import { ErrorBoundary } from "appspresso/components/ErrorBoundary";
 import { LoadingFallback } from "appspresso/components/LoadingFallback";
 import { DevToolsMount } from "appspresso/dev/DevToolsMount";
@@ -14,7 +14,10 @@ import { demoRouter } from "./demo-router";
 import { VocabStudyPersistence } from "./vocab/VocabStudyPersistence";
 
 export type DemoShowcaseAppProps = Partial<
-  Pick<AppspressoRootProvidersProps, "omit" | "authAdapter" | "filesystemConfig">
+  Pick<
+    AppspressoRootProvidersProps,
+    "omit" | "authAdapter" | "filesystemConfig"
+  >
 >;
 
 export function DemoShowcaseApp({

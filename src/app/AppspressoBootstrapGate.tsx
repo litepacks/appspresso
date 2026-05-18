@@ -15,7 +15,9 @@ export type AppspressoBootstrapGateProps = {
  * Bootstrap splash → main app: cross-fade on exit (splash on top, content fades in below).
  * Usable inside or outside `AppspressoRootProviders`; keeps demo providers above.
  */
-export function AppspressoBootstrapGate({ children }: AppspressoBootstrapGateProps) {
+export function AppspressoBootstrapGate({
+  children,
+}: AppspressoBootstrapGateProps) {
   const phase = useAppspressoBootstrapPhase();
   const timing = useMemo(() => getSplashBootstrapTiming(), []);
   const reduceMotion = useReducedMotion();

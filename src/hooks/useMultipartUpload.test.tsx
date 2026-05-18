@@ -62,7 +62,10 @@ describe("useMultipartUpload", () => {
       });
     });
     expect(returned).toEqual({ id: 42 });
-    expect(result.current.state).toEqual({ status: "success", data: { id: 42 } });
+    expect(result.current.state).toEqual({
+      status: "success",
+      data: { id: 42 },
+    });
     expect(mockUploadMultipart).toHaveBeenCalledWith(
       expect.objectContaining({
         path: "/up",
@@ -104,7 +107,9 @@ describe("useMultipartUpload", () => {
       return { done: true };
     });
 
-    const { result } = renderHook(() => useMultipartUpload<{ done: boolean }>());
+    const { result } = renderHook(() =>
+      useMultipartUpload<{ done: boolean }>(),
+    );
 
     let uploadPromise: Promise<{ done: boolean }>;
     act(() => {
@@ -123,10 +128,13 @@ describe("useMultipartUpload", () => {
 
     await act(async () => {
       release();
-      await uploadPromise!;
+      if (uploadPromise) await uploadPromise;
     });
 
-    expect(result.current.state).toEqual({ status: "success", data: { done: true } });
+    expect(result.current.state).toEqual({
+      status: "success",
+      data: { done: true },
+    });
   });
 
   it("no interim percent when total missing or 0; success on complete", async () => {
@@ -135,9 +143,14 @@ describe("useMultipartUpload", () => {
       opts.onUploadProgress?.(progressEvent({ loaded: 20, total: 0 }));
       return {};
     });
-    const { result } = renderHook(() => useMultipartUpload<Record<string, never>>());
+    const { result } = renderHook(() =>
+      useMultipartUpload<Record<string, never>>(),
+    );
     await act(async () => {
-      await result.current.upload({ path: "/p", parts: [{ fieldName: "f", file: new Blob([]) }] });
+      await result.current.upload({
+        path: "/p",
+        parts: [{ fieldName: "f", file: new Blob([]) }],
+      });
     });
     expect(result.current.state).toEqual({ status: "success", data: {} });
   });

@@ -1,9 +1,9 @@
 import { Capacitor } from "@capacitor/core";
 import { useCallback, useEffect, useState } from "react";
 import {
+  type BackgroundRunnerDispatchOptions,
   dispatchBackgroundRunnerEvent,
   isBackgroundRunnerAvailable,
-  type BackgroundRunnerDispatchOptions,
 } from "@/services/background-runner.service";
 
 export type UseBackgroundRunnerResult = {

@@ -3,9 +3,9 @@ import { useCallback, useEffect, useState } from "react";
 import {
   closeInAppBrowser,
   isInAppBrowserAvailable,
+  type OpenInAppBrowserInternalOptions,
   openInAppBrowserExternal,
   openInAppBrowserInternal,
-  type OpenInAppBrowserInternalOptions,
 } from "@/services/in-app-browser.service";
 
 export type UseInAppBrowserResult = {

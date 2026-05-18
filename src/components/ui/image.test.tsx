@@ -114,9 +114,9 @@ describe("Image", () => {
     const dialog = screen.getByRole("dialog");
     const modalImg = within(dialog).getByRole("img", { name: "Photo" });
     fireEvent.load(modalImg);
-    const grid = dialog.querySelector('[role="presentation"]');
-    expect(grid).toBeTruthy();
-    fireEvent.click(grid!);
+    fireEvent.click(
+      within(dialog).getByRole("button", { name: "Close preview" }),
+    );
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
 
     await user.click(screen.getByRole("button", { name: "Enlarge" }));

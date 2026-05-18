@@ -135,9 +135,7 @@ export function AppModal({
       role="dialog"
       aria-modal="true"
       aria-labelledby={showToolbar ? titleId : undefined}
-      aria-label={
-        !showToolbar ? (contentAriaLabel ?? "Modal") : undefined
-      }
+      aria-label={!showToolbar ? (contentAriaLabel ?? "Modal") : undefined}
     >
       {closeOnBackdrop ? (
         <button

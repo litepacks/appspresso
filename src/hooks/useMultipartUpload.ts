@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { uploadMultipart, type UploadMultipartOptions } from "@/api/upload";
+import { type UploadMultipartOptions, uploadMultipart } from "@/api/upload";
 
 export type MultipartUploadIdle = { status: "idle" };
 export type MultipartUploadUploading = {
@@ -28,35 +28,32 @@ export function useMultipartUpload<T = unknown>() {
     setState({ status: "idle" });
   }, []);
 
-  const upload = useCallback(
-    async (options: UploadMultipartOptions) => {
-      const { onUploadProgress: userProgress, ...rest } = options;
-      setState({ status: "uploading", progressPercent: undefined });
-      try {
-        const data = await uploadMultipart<T>({
-          ...rest,
-          onUploadProgress: (e) => {
-            userProgress?.(e);
-            if (e.total != null && e.total > 0) {
-              setState({
-                status: "uploading",
-                progressPercent: Math.min(
-                  100,
-                  Math.round((e.loaded / e.total) * 100),
-                ),
-              });
-            }
-          },
-        });
-        setState({ status: "success", data });
-        return data;
-      } catch (error) {
-        setState({ status: "error", error });
-        throw error;
-      }
-    },
-    [],
-  );
+  const upload = useCallback(async (options: UploadMultipartOptions) => {
+    const { onUploadProgress: userProgress, ...rest } = options;
+    setState({ status: "uploading", progressPercent: undefined });
+    try {
+      const data = await uploadMultipart<T>({
+        ...rest,
+        onUploadProgress: (e) => {
+          userProgress?.(e);
+          if (e.total != null && e.total > 0) {
+            setState({
+              status: "uploading",
+              progressPercent: Math.min(
+                100,
+                Math.round((e.loaded / e.total) * 100),
+              ),
+            });
+          }
+        },
+      });
+      setState({ status: "success", data });
+      return data;
+    } catch (error) {
+      setState({ status: "error", error });
+      throw error;
+    }
+  }, []);
 
   return { state, upload, reset };
 }

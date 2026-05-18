@@ -17,6 +17,8 @@ applySplashDocumentBackground();
 if (Capacitor.isNativePlatform()) {
   const { nativeFadeOutMs } = getSplashBootstrapTiming();
   setTimeout(() => {
-    void SplashScreen.hide({ fadeOutDuration: nativeFadeOutMs }).catch(() => {});
+    void SplashScreen.hide({ fadeOutDuration: nativeFadeOutMs }).catch(
+      () => {},
+    );
   }, SPLASH_NATIVE_FALLBACK_HIDE_MS);
 }

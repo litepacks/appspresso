@@ -90,7 +90,10 @@ async function shareViaCapacitor(data: ShareData): Promise<void> {
 export async function nativeShare(data: ShareData): Promise<void> {
   const hasFiles = Boolean(data.files?.length);
 
-  if (Capacitor.isNativePlatform() && (await isCapacitorSharePluginAvailable())) {
+  if (
+    Capacitor.isNativePlatform() &&
+    (await isCapacitorSharePluginAvailable())
+  ) {
     if (hasFiles && isNavigatorShareSupported()) {
       try {
         await shareViaNavigator(data);

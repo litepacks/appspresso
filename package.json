@@ -1,8 +1,7 @@
 {
   "name": "appspresso",
-  "private": true,
   "version": "0.0.1",
-  "description": "Appspresso — Capacitor + Vite + React template with a publishable library layer and subpath exports.",
+  "description": "One package for the backbone of mobile and web apps.",
   "type": "module",
   "sideEffects": false,
   "bin": {

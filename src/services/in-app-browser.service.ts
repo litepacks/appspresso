@@ -83,11 +83,8 @@ export async function openInAppBrowserInternal(
     );
   }
 
-  const {
-    InAppBrowser,
-    DefaultWebViewOptions,
-    DefaultSystemBrowserOptions,
-  } = await import("@capacitor/inappbrowser");
+  const { InAppBrowser, DefaultWebViewOptions, DefaultSystemBrowserOptions } =
+    await import("@capacitor/inappbrowser");
 
   try {
     if (mode === "system") {

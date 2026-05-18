@@ -1,6 +1,6 @@
-import type { CapacitorConfig } from "@capacitor/cli";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import type { CapacitorConfig } from "@capacitor/cli";
 
 /**
  * Capacitor CLI entry. Run `npm run cap:config` (`appspresso cap:config`) first;

@@ -193,8 +193,7 @@ async function cmdNativeAssembleIos(cwd, argv) {
 
   const isWorkspace = ios.workspace.endsWith(".xcworkspace");
   const projectFlag = isWorkspace ? "-workspace" : "-project";
-  const destination =
-    "generic/platform=iOS Simulator,name=iPhone 16,OS=latest";
+  const destination = "generic/platform=iOS Simulator,name=iPhone 16,OS=latest";
 
   await runInherit(
     "xcodebuild",

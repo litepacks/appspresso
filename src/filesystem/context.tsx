@@ -1,15 +1,10 @@
-import {
-  createContext,
-  type ReactNode,
-  useCallback,
-  useMemo,
-} from "react";
+import { createContext, type ReactNode, useCallback, useMemo } from "react";
 import {
   filesystemCheckPermissions,
   filesystemDelete,
   filesystemMkdir,
-  filesystemReadText,
   filesystemReaddir,
+  filesystemReadText,
   filesystemRequestPermissions,
   filesystemStat,
   filesystemWriteText,
@@ -127,15 +122,7 @@ export function FilesystemProvider({
       requestPermissions: filesystemRequestPermissions,
       getPlugin: loadFilesystemPlugin,
     }),
-    [
-      config,
-      readText,
-      writeText,
-      deleteFile,
-      mkdir,
-      readdir,
-      stat,
-    ],
+    [config, readText, writeText, deleteFile, mkdir, readdir, stat],
   );
 
   return (

@@ -2,9 +2,10 @@
  * Ensures demo/ios exists (Capacitor add ios). Safe to run repeatedly.
  * Requires macOS + CocoaPods for first-time `cap add ios`.
  */
+
+import { spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
-import { spawnSync } from "node:child_process";
 
 const root = join(import.meta.dirname, "..");
 const iosApp = join(root, "demo", "ios", "App");

@@ -4,17 +4,17 @@ export type {
 } from "./context";
 export { FilesystemContext, FilesystemProvider } from "./context";
 export {
+  type FilesystemPluginBundle,
   filesystemCheckPermissions,
   filesystemDelete,
   filesystemMkdir,
-  filesystemReadText,
   filesystemReaddir,
+  filesystemReadText,
   filesystemRequestPermissions,
   filesystemStat,
   filesystemWriteText,
   isFilesystemAvailable,
   loadFilesystemPlugin,
-  type FilesystemPluginBundle,
 } from "./filesystem.service";
 export { joinFilesystemPath, resolveFilesystemLocation } from "./path";
 export type {
@@ -25,4 +25,4 @@ export type {
   FilesystemScopedReadOptions,
   FilesystemScopedWriteOptions,
 } from "./types";
-export { useFilesystem, type UseFilesystemResult } from "./useFilesystem";
+export { type UseFilesystemResult, useFilesystem } from "./useFilesystem";

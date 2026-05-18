@@ -59,7 +59,9 @@ describe("defineAppspressoProject", () => {
     expect(capacitor.plugins?.SplashScreen).not.toHaveProperty(
       "webBootstrapMinDurationMs",
     );
-    expect(capacitor.plugins?.SplashScreen).not.toHaveProperty("webExitDurationMs");
+    expect(capacitor.plugins?.SplashScreen).not.toHaveProperty(
+      "webExitDurationMs",
+    );
     expect(app?.splash?.webPublicPath).toBe("/splash.svg");
     expect(app?.splash?.webAnimation).toBe("pulse");
   });

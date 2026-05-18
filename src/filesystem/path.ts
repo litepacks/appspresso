@@ -1,6 +1,9 @@
 import type { FilesystemDirectory, FilesystemProviderConfig } from "./types";
 
-export function joinFilesystemPath(basePath: string | undefined, path: string): string {
+export function joinFilesystemPath(
+  basePath: string | undefined,
+  path: string,
+): string {
   const base = basePath?.replace(/^\/+|\/+$/g, "") ?? "";
   const rel = path.replace(/^\/+/, "");
   if (!base) return rel;

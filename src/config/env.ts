@@ -32,9 +32,7 @@ export function getEnvConfig(): EnvConfig {
     if (parsed) {
       featureFlags = parsed;
     } else {
-      logger.warn(
-        "Appspresso: VITE_FEATURE_FLAGS is not a valid JSON object",
-      );
+      logger.warn("Appspresso: VITE_FEATURE_FLAGS is not a valid JSON object");
     }
   }
 

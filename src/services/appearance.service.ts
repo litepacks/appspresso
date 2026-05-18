@@ -95,9 +95,7 @@ export async function initAppearance(
   await setStatusBarTheme(resolvedTheme);
 }
 
-export async function hideSplashScreen(
-  fadeOutDuration = 450,
-): Promise<void> {
+export async function hideSplashScreen(fadeOutDuration = 450): Promise<void> {
   if (!isNative) return;
   try {
     await SplashScreen.hide({ fadeOutDuration });

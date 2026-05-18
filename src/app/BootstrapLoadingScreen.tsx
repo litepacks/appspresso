@@ -2,12 +2,12 @@ import { Capacitor } from "@capacitor/core";
 import { motion, useReducedMotion } from "motion/react";
 import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { splashWebAnimationLoops } from "@/motion/splash-web-animations";
 import {
   applySplashDocumentBackground,
   getSplashBootstrapTiming,
   isSplashBackgroundDark,
 } from "@/lib/splash-bootstrap";
+import { splashWebAnimationLoops } from "@/motion/splash-web-animations";
 import { hideSplashScreen } from "@/services/appearance.service";
 
 const splashImgClass =
@@ -31,8 +31,11 @@ export function BootstrapLoadingScreen({
   const reduceMotion = useReducedMotion();
   const isNative = Capacitor.isNativePlatform();
   const timing = useMemo(() => getSplashBootstrapTiming(), []);
-  const { webPublicPath: splashUrl, webAnimation: animation, backgroundColor } =
-    timing;
+  const {
+    webPublicPath: splashUrl,
+    webAnimation: animation,
+    backgroundColor,
+  } = timing;
   const darkBg = isSplashBackgroundDark(backgroundColor);
 
   const [nativeRevealed, setNativeRevealed] = useState(!isNative);

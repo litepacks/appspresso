@@ -90,7 +90,9 @@ export function useNativeLocation(
 
   const refresh = useCallback((): Promise<NativeLocationSnapshot> => {
     if (!isGeolocationSupported()) {
-      return Promise.reject(new Error("Location is not supported in this environment."));
+      return Promise.reject(
+        new Error("Location is not supported in this environment."),
+      );
     }
     setLoading(true);
     setError(null);

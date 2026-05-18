@@ -39,21 +39,24 @@ export function useNativeShare(): UseNativeShareReturn {
     [supported],
   );
 
-  const share = useCallback(async (data: ShareData) => {
-    if (!canNativeShareSync(data, supported)) {
-      throw new Error(
-        supported
-          ? "This content cannot be shared."
-          : "Sharing is not supported in this environment.",
-      );
-    }
-    setIsSharing(true);
-    try {
-      await nativeShare(data);
-    } finally {
-      setIsSharing(false);
-    }
-  }, [supported]);
+  const share = useCallback(
+    async (data: ShareData) => {
+      if (!canNativeShareSync(data, supported)) {
+        throw new Error(
+          supported
+            ? "This content cannot be shared."
+            : "Sharing is not supported in this environment.",
+        );
+      }
+      setIsSharing(true);
+      try {
+        await nativeShare(data);
+      } finally {
+        setIsSharing(false);
+      }
+    },
+    [supported],
+  );
 
   return {
     supported,

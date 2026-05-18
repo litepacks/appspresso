@@ -8,8 +8,8 @@ import { RevenueCatProvider } from "@/app/providers/RevenueCatProvider";
 import { StoreProvider } from "@/app/providers/StoreProvider";
 import { ThemeProvider } from "@/app/providers/ThemeProvider";
 import { ToastProvider } from "@/app/providers/ToastProvider";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import type { AuthAdapter } from "@/auth/adapter";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import type { FilesystemProviderConfig } from "@/filesystem/types";
 
 /** Provider nesting: Query (outer) → … → Filesystem → Auth → RevenueCat → I18n (inner). */

@@ -1,5 +1,17 @@
 import { Capacitor } from "@capacitor/core";
-import { Button, buttonVariants } from "appspresso/components/ui/button";
+import {
+  AtSymbolIcon,
+  BellSlashIcon,
+  BookOpenIcon,
+  Cog6ToothIcon,
+  FaceSmileIcon,
+  InformationCircleIcon,
+  RectangleStackIcon,
+  StarIcon,
+  UserIcon,
+  UserPlusIcon,
+} from "@heroicons/react/24/outline";
+import { Button } from "appspresso/components/ui/button";
 import {
   Card,
   CardContent,
@@ -27,33 +39,20 @@ import {
   TooltipTrigger,
 } from "appspresso/components/ui/tooltip";
 import { useAppActiveTransition } from "appspresso/hooks/useAppActiveTransition";
-import { useBackgroundRunner } from "appspresso/hooks/useBackgroundRunner";
-import { useFilesystem } from "appspresso/hooks/useFilesystem";
-import { useInAppBrowser } from "appspresso/hooks/useInAppBrowser";
 import { useAppInfo } from "appspresso/hooks/useAppInfo";
 import { useAppPermission } from "appspresso/hooks/useAppPermission";
+import { useBackgroundRunner } from "appspresso/hooks/useBackgroundRunner";
 import { useClipboard } from "appspresso/hooks/useClipboard";
 import { useDeviceMotion } from "appspresso/hooks/useDeviceMotion";
 import { useDeviceOrientation } from "appspresso/hooks/useDeviceOrientation";
+import { useFilesystem } from "appspresso/hooks/useFilesystem";
+import { useInAppBrowser } from "appspresso/hooks/useInAppBrowser";
 import { useNativeLocation } from "appspresso/hooks/useNativeLocation";
 import { useNativeShare } from "appspresso/hooks/useNativeShare";
 import { getTelHref, usePhoneDial } from "appspresso/hooks/usePhoneDial";
 import { publicAssetUrl } from "appspresso/lib/public-asset";
 import { toast } from "appspresso/lib/toast";
-import { cn } from "appspresso/lib/utils";
 import { splashWebAnimationLoops } from "appspresso/motion";
-import {
-  AtSymbolIcon,
-  BellSlashIcon,
-  BookOpenIcon,
-  Cog6ToothIcon,
-  FaceSmileIcon,
-  RectangleStackIcon,
-  StarIcon,
-  UserIcon,
-  UserPlusIcon,
-  InformationCircleIcon,
-} from "@heroicons/react/24/outline";
 import { scheduleTestNotification } from "appspresso/services/local-notification.service";
 import { motion, useReducedMotion } from "motion/react";
 import { useCallback, useState } from "react";
@@ -187,11 +186,18 @@ export function KitPlaygroundCard() {
           <div className="flex flex-wrap items-center gap-3">
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button type="button" variant="outline" size="icon" aria-label={t(`${pk}.tooltipTriggerLabel`)}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  aria-label={t(`${pk}.tooltipTriggerLabel`)}
+                >
                   <InformationCircleIcon className="size-5" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent side="top">{t(`${pk}.tooltipBody`)}</TooltipContent>
+              <TooltipContent side="top">
+                {t(`${pk}.tooltipBody`)}
+              </TooltipContent>
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -235,16 +241,12 @@ export function KitPlaygroundCard() {
               <DrawerNavBody>
                 <DrawerMenuGroup>
                   <DrawerMenuItem
-                    icon={
-                      <FaceSmileIcon className="text-muted-foreground" />
-                    }
+                    icon={<FaceSmileIcon className="text-muted-foreground" />}
                   >
                     {t(`${pk}.drawerItemStatus`)}
                   </DrawerMenuItem>
                   <DrawerMenuItem
-                    icon={
-                      <BellSlashIcon className="text-muted-foreground" />
-                    }
+                    icon={<BellSlashIcon className="text-muted-foreground" />}
                   >
                     {t(`${pk}.drawerItemSnooze`)}
                   </DrawerMenuItem>
@@ -262,9 +264,7 @@ export function KitPlaygroundCard() {
                     {t(`${pk}.drawerItemStarred`)}
                   </DrawerMenuItem>
                   <DrawerMenuItem
-                    icon={
-                      <RectangleStackIcon className="text-sky-500" />
-                    }
+                    icon={<RectangleStackIcon className="text-sky-500" />}
                   >
                     {t(`${pk}.drawerItemFiles`)}
                   </DrawerMenuItem>
@@ -277,9 +277,7 @@ export function KitPlaygroundCard() {
                 <DrawerMenuSeparator />
                 <DrawerMenuGroup>
                   <DrawerMenuItem
-                    icon={
-                      <UserPlusIcon className="text-muted-foreground" />
-                    }
+                    icon={<UserPlusIcon className="text-muted-foreground" />}
                   >
                     {t(`${pk}.drawerItemInvite`)}
                   </DrawerMenuItem>
@@ -289,9 +287,7 @@ export function KitPlaygroundCard() {
                     {t(`${pk}.drawerItemProfile`)}
                   </DrawerMenuItem>
                   <DrawerMenuItem
-                    icon={
-                      <Cog6ToothIcon className="text-muted-foreground" />
-                    }
+                    icon={<Cog6ToothIcon className="text-muted-foreground" />}
                   >
                     {t(`${pk}.drawerItemSettings`)}
                   </DrawerMenuItem>
@@ -435,7 +431,9 @@ export function KitPlaygroundCard() {
                 size="sm"
                 onClick={() =>
                   void browser
-                    .openInternal("https://capacitorjs.com/docs/apis/inappbrowser")
+                    .openInternal(
+                      "https://capacitorjs.com/docs/apis/inappbrowser",
+                    )
                     .catch((e: unknown) =>
                       toast.error(
                         t(`${pk}.inAppBrowserErr`, {
@@ -723,9 +721,13 @@ export function KitPlaygroundCard() {
                 size="sm"
                 onClick={() =>
                   void fs
-                    .writeText("playground/hello.txt", `Hello at ${Date.now()}\n`, {
-                      encoding: "utf8",
-                    })
+                    .writeText(
+                      "playground/hello.txt",
+                      `Hello at ${Date.now()}\n`,
+                      {
+                        encoding: "utf8",
+                      },
+                    )
                     .then((uri) => {
                       setFsPreview(uri);
                       toast.success(t(`${pk}.filesystemWriteOk`));

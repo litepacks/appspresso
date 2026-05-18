@@ -82,7 +82,8 @@ const DrawerContent = React.forwardRef<HTMLDivElement, DrawerContentProps>(
     ref,
   ) => {
     const isNav = layout === "nav";
-    const hideClose = showCloseButton === false || (isNav && showCloseButton !== true);
+    const hideClose =
+      showCloseButton === false || (isNav && showCloseButton !== true);
 
     return (
       <SheetContent
@@ -98,8 +99,8 @@ const DrawerContent = React.forwardRef<HTMLDivElement, DrawerContentProps>(
                   : "left-0 border-l right-auto",
                 contentWidth === "full"
                   ? "max-w-full"
-                  : DRAWER_NAV_WIDTH_CLASS[contentWidth] ??
-                      DRAWER_NAV_WIDTH_CLASS.nav,
+                  : (DRAWER_NAV_WIDTH_CLASS[contentWidth] ??
+                    DRAWER_NAV_WIDTH_CLASS.nav),
                 hideClose && "[&>button.absolute]:hidden",
               ]
             : [
@@ -159,7 +160,9 @@ const DrawerProfileHeader = React.forwardRef<
       </div>
     ) : null}
     <div className="min-w-0 flex-1">
-      <div className="truncate font-semibold text-base leading-tight">{title}</div>
+      <div className="truncate font-semibold text-base leading-tight">
+        {title}
+      </div>
       {subtitle ? (
         <div className="truncate text-muted-foreground text-sm leading-snug">
           {subtitle}
@@ -171,13 +174,12 @@ const DrawerProfileHeader = React.forwardRef<
 DrawerProfileHeader.displayName = "DrawerProfileHeader";
 
 const DrawerMenuSeparator = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
+  HTMLHRElement,
+  React.HTMLAttributes<HTMLHRElement>
 >(({ className, ...props }, ref) => (
-  <div
+  <hr
     ref={ref}
-    role="separator"
-    className={cn("my-2 h-px bg-border/80", className)}
+    className={cn("my-2 h-px border-0 bg-border/80", className)}
     {...props}
   />
 ));
@@ -197,7 +199,10 @@ type DrawerMenuItemProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 };
 
 const DrawerMenuItem = React.forwardRef<HTMLButtonElement, DrawerMenuItemProps>(
-  ({ className, icon, children, asChild = false, type = "button", ...props }, ref) => {
+  (
+    { className, icon, children, asChild = false, type = "button", ...props },
+    ref,
+  ) => {
     const Comp = asChild ? Slot : "button";
     return (
       <Comp

@@ -293,11 +293,12 @@ const Image = React.forwardRef<HTMLImageElement, ImageProps>(
           )}
         >
           <div className="relative flex h-full min-h-0 w-full min-w-0 flex-1 flex-col">
-            <div
-              role="presentation"
+            <button
+              type="button"
+              aria-label="Close preview"
               className={cn(
                 "grid min-h-0 w-full flex-1 cursor-default place-items-center overflow-auto overscroll-contain [-webkit-overflow-scrolling:touch]",
-                "relative touch-pan-x touch-pan-y",
+                "relative touch-pan-x touch-pan-y border-0 bg-transparent p-0 text-left",
                 previewModalImmersive
                   ? "min-h-[100dvh] p-[max(0.5rem,env(safe-area-inset-top,0px))_max(0.5rem,env(safe-area-inset-right,0px))_max(0.5rem,env(safe-area-inset-bottom,0px))_max(0.5rem,env(safe-area-inset-left,0px))]"
                   : "min-h-[min(20rem,40dvh)] p-2 sm:p-3",
@@ -320,7 +321,7 @@ const Image = React.forwardRef<HTMLImageElement, ImageProps>(
                   fetchPriority="high"
                   onLoad={() => setModalImgStatus("loaded")}
                   onError={() => setModalImgStatus("error")}
-                  onClick={(e) => e.stopPropagation()}
+                  onPointerDown={(e) => e.stopPropagation()}
                   className={cn(
                     "max-w-full select-none object-contain motion-reduce:transition-none",
                     previewModalImmersive
@@ -346,7 +347,7 @@ const Image = React.forwardRef<HTMLImageElement, ImageProps>(
                   />
                 </div>
               ) : null}
-            </div>
+            </button>
           </div>
         </AppModal>
       </>

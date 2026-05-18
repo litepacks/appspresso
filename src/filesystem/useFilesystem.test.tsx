@@ -6,13 +6,17 @@ import { useFilesystem } from "./useFilesystem";
 
 function wrapper({ children }: { children: ReactNode }) {
   return (
-    <FilesystemProvider config={{ basePath: "test" }}>{children}</FilesystemProvider>
+    <FilesystemProvider config={{ basePath: "test" }}>
+      {children}
+    </FilesystemProvider>
   );
 }
 
 describe("useFilesystem", () => {
   it("throws outside provider", () => {
-    expect(() => renderHook(() => useFilesystem())).toThrow(/FilesystemProvider/);
+    expect(() => renderHook(() => useFilesystem())).toThrow(
+      /FilesystemProvider/,
+    );
   });
 
   it("exposes config from provider", () => {

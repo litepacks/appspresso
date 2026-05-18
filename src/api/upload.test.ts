@@ -145,8 +145,13 @@ describe("uploadMultipart", () => {
   });
 
   it("sends only parts without fields", async () => {
-    const spy = vi.spyOn(http, "post").mockResolvedValue({ data: null } as never);
-    await uploadMultipart({ path: "/only-file", parts: [{ fieldName: "f", file: new File([], "x") }] });
+    const spy = vi
+      .spyOn(http, "post")
+      .mockResolvedValue({ data: null } as never);
+    await uploadMultipart({
+      path: "/only-file",
+      parts: [{ fieldName: "f", file: new File([], "x") }],
+    });
     const body = spy.mock.calls[0]?.[1] as FormData;
     expect(body.get("f")).toBeInstanceOf(File);
     expect([...body.keys()].sort()).toEqual(["f"]);
@@ -173,7 +178,10 @@ describe("uploadMultipart", () => {
     const err = new Error("network");
     vi.spyOn(http, "post").mockRejectedValue(err);
     await expect(
-      uploadMultipart({ path: "/x", parts: [{ fieldName: "f", file: new Blob([]) }] }),
+      uploadMultipart({
+        path: "/x",
+        parts: [{ fieldName: "f", file: new Blob([]) }],
+      }),
     ).rejects.toBe(err);
   });
 
