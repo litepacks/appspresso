@@ -1,7 +1,7 @@
 import type { AppspressoAppMeta } from "@/build/app-meta";
 import {
-  getInjectedHostConfig,
   type AppspressoViteHostConfig,
+  getInjectedHostConfig,
 } from "@/build/inject-env";
 import { getInjectedAppMeta } from "@/build/injected-app-meta";
 
@@ -20,5 +20,5 @@ export function getAppspressoInjectedConfig(): AppspressoInjectedConfig {
   };
 }
 
-export { getInjectedHostConfig, getInjectedAppMeta };
 export type { AppspressoViteHostConfig } from "@/build/inject-env";
+export { getInjectedAppMeta, getInjectedHostConfig };

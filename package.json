@@ -33,6 +33,8 @@
     "cap:sync": "npm run demo:cap-config && appspresso native sync",
     "ci:native:android": "node scripts/assert-native-web-assets.mjs && npm run demo:cap-config && npx cap sync android && appspresso native assemble android",
     "ci:native:ios": "node scripts/assert-native-web-assets.mjs && npm run demo:cap-config && node scripts/ensure-ios-platform.mjs && npx cap sync ios && appspresso native assemble ios",
+    "e2e:native:android": "maestro test e2e/maestro",
+    "e2e:native:ios": "maestro test e2e/maestro",
     "cap:open:android": "appspresso native open android",
     "cap:open:ios": "appspresso native open ios",
     "android:sync": "npm run cap:sync",

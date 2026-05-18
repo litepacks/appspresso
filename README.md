@@ -70,7 +70,22 @@ Only `VITE_*` keys are exposed to the client (never put secrets there).
 | `npm run doctor` | Same as `appspresso doctor` from the repo root. |
 | `npm run ci:native:android` | `cap sync android` + `assembleDebug` (CI downloads `demo/dist` + `dist-lib` from the `build` job). |
 | `npm run ci:native:ios` | `cap sync ios` + Xcode simulator build (CI downloads web assets from `build`; run `npm run demo:build` locally first). |
+| `npm run e2e:native:android` | Maestro smoke: launch app + screenshot (requires emulator + [Maestro CLI](https://maestro.mobile.dev/) + debug APK installed). |
+| `npm run e2e:native:ios` | Same Maestro flow on a booted iOS Simulator with the app installed. |
 | `npm run create:sync-template` | Refresh `packages/create-appspresso/template` from `demo/` (run before publishing the CLI) |
+
+### CI (GitHub Actions)
+
+After `native-android` / `native-ios` build jobs, Maestro smoke E2E runs:
+
+| Job | What it does |
+|-----|----------------|
+| `native-e2e-android` | Emulator + install debug APK artifact → `maestro test e2e/maestro` |
+| `native-e2e-ios` | Simulator + install `.app` artifact → `maestro test e2e/maestro` |
+
+Flows live in [`e2e/maestro/`](e2e/maestro/) (`launchApp`, wait for **Word practice**, `takeScreenshot`).
+
+**Local E2E:** `brew install maestro` (macOS), build/install the app (`npm run ci:native:android` or `ci:native:ios`), start emulator/simulator, then `npm run e2e:native:android` or `e2e:native:ios`.
 
 ## Playbooks (`docs/playbooks`)
 

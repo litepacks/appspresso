@@ -14,6 +14,10 @@ dist-lib
 # Graphify (local analysis output)
 graphify-out/
 
+# Maestro E2E output
+e2e/maestro/.maestro/
+e2e/maestro/**/*.png
+
 coverage
 coverage-integration
 dist-ssr

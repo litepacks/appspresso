@@ -192,3 +192,115 @@ jobs:
 
       - name: Cap sync and build for iOS Simulator
         run: npm run ci:native:ios
+
+      - name: Resolve iOS simulator .app path
+        id: ios_app
+        run: echo "path=$(node scripts/find-ios-simulator-app.mjs)" >> "$GITHUB_OUTPUT"
+
+      - name: Upload iOS simulator app
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-simulator-app
+          path: ${{ steps.ios_app.outputs.path }}
+          if-no-files-found: error
+
+  native-e2e-android:
+    name: Native E2E Android (Maestro)
+    needs: [native-android]
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Maestro
+        run: |
+          curl -Ls "https://get.maestro.mobile.dev" | bash
+          echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+
+      - name: Download debug APK
+        uses: actions/download-artifact@v4
+        with:
+          name: android-debug-apk
+          path: artifacts/android-apk
+
+      - name: Maestro smoke on emulator
+        uses: reactivecircus/android-emulator-runner@v2
+        with:
+          api-level: 34
+          arch: x86_64
+          profile: pixel_6
+          script: |
+            adb wait-for-device
+            adb install -r artifacts/android-apk/*.apk
+            maestro test e2e/maestro
+
+      - name: Upload Maestro screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: maestro-screenshots-android
+          path: |
+            ~/.maestro/tests
+            e2e/maestro
+          if-no-files-found: ignore
+
+  native-e2e-ios:
+    name: Native E2E iOS (Maestro)
+    needs: [native-ios]
+    runs-on: macos-14
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install Maestro
+        run: |
+          curl -Ls "https://get.maestro.mobile.dev" | bash
+          echo "$HOME/.maestro/bin" >> "$GITHUB_PATH"
+
+      - name: Download iOS simulator app
+        uses: actions/download-artifact@v4
+        with:
+          name: ios-simulator-app
+          path: artifacts/ios-app
+
+      - name: Boot simulator and install app
+        run: |
+          xcrun simctl boot "iPhone 16" 2>/dev/null || true
+          xcrun simctl bootstatus booted -b
+          APP_PATH=$(find artifacts/ios-app -name '*.app' -type d | head -1)
+          if [ -z "$APP_PATH" ]; then
+            echo "App.app not found in artifact"
+            exit 1
+          fi
+          xcrun simctl install booted "$APP_PATH"
+
+      - name: Maestro smoke
+        run: maestro test e2e/maestro
+
+      - name: Upload Maestro screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: maestro-screenshots-ios
+          path: |
+            ~/.maestro/tests
+            e2e/maestro
+          if-no-files-found: ignore
