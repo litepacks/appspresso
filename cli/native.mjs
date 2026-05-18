@@ -189,6 +189,7 @@ async function cmdNativeAssembleIos(cwd, argv) {
   }
 
   const appDir = join(ios.workspace, "..");
+  const derivedDataPath = join(appDir, "build");
   await runInherit("pod", ["install"], { cwd: appDir, shell: false });
 
   const isWorkspace = ios.workspace.endsWith(".xcworkspace");
@@ -206,6 +207,8 @@ async function cmdNativeAssembleIos(cwd, argv) {
       configuration,
       "-destination",
       destination,
+      "-derivedDataPath",
+      derivedDataPath,
       "CODE_SIGNING_ALLOWED=NO",
       "build",
       ...xcodeExtra,

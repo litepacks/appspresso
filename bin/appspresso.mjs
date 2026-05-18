@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-import { runCli } from "../cli/index.mjs";
+import { runProgram } from "../cli/program.mjs";
 
-runCli(process.argv.slice(2)).catch((err) => {
-  console.error(err);
+runProgram(process.argv).catch((err) => {
+  console.error(err instanceof Error ? err.message : err);
   process.exit(1);
 });

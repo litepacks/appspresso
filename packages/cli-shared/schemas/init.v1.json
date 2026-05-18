@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://appspresso.dev/schemas/init.v1.json",
+  "title": "Appspresso init manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["packageName", "displayName", "appId"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "packageName": {
+      "type": "string",
+      "description": "npm package.json name (scoped allowed)"
+    },
+    "displayName": { "type": "string", "minLength": 1, "maxLength": 120 },
+    "appId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(\\.[a-z][a-z0-9]*)+$"
+    },
+    "version": { "type": "string", "default": "0.0.0" },
+    "paths": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "src": { "type": "string", "default": "src" },
+        "public": { "type": "string", "default": "public" },
+        "config": { "type": "string", "default": "appspresso.config.ts" }
+      }
+    },
+    "scaffold": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "template": { "type": "string", "enum": ["default"], "default": "default" }
+      }
+    },
+    "capacitor": { "type": "boolean" },
+    "appspressoVersion": { "type": "string" }
+  }
+}

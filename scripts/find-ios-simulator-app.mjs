@@ -10,8 +10,13 @@ import { fileURLToPath } from "node:url";
 const root =
   process.argv[2] ?? join(fileURLToPath(new URL(".", import.meta.url)), "..");
 
+/**
+ * @param {string} dir
+ * @param {number} depth
+ * @returns {string | null}
+ */
 function findAppBundle(dir, depth = 0) {
-  if (depth > 10 || !existsSync(dir)) return null;
+  if (depth > 12 || !existsSync(dir)) return null;
   for (const name of readdirSync(dir)) {
     const full = join(dir, name);
     let st;
@@ -20,11 +25,17 @@ function findAppBundle(dir, depth = 0) {
     } catch {
       continue;
     }
-    if (name === "App.app" && st.isDirectory()) return full;
+    if (name.endsWith(".app") && st.isDirectory() && name !== "App.app.dSYM") {
+      const parent = dir.replace(/\\/g, "/");
+      if (parent.includes("iphonesimulator") || parent.includes("Simulator")) {
+        return full;
+      }
+    }
     if (
       st.isDirectory() &&
       !name.endsWith(".framework") &&
-      !name.endsWith(".xcframework")
+      !name.endsWith(".xcframework") &&
+      name !== "node_modules"
     ) {
       const nested = findAppBundle(full, depth + 1);
       if (nested) return nested;
@@ -33,25 +44,46 @@ function findAppBundle(dir, depth = 0) {
   return null;
 }
 
-const candidates = [
-  join(root, "demo/ios/App/build/Build/Products/Debug-iphonesimulator/App.app"),
+/** Prefer Capacitor default product name `App.app`. */
+function findNamedAppBundle(dir) {
+  const direct = findAppBundle(dir);
+  if (direct?.endsWith("/App.app") || direct?.endsWith("\\App.app")) {
+    return direct;
+  }
+  const named = join(
+    dir,
+    "Build",
+    "Products",
+    "Debug-iphonesimulator",
+    "App.app",
+  );
+  if (existsSync(named)) return named;
+  const release = join(
+    dir,
+    "Build",
+    "Products",
+    "Release-iphonesimulator",
+    "App.app",
+  );
+  if (existsSync(release)) return release;
+  return direct;
+}
+
+const searchRoots = [
+  join(root, "demo/ios/App/build"),
+  join(root, "demo/ios/App"),
+  join(root, "demo/ios"),
 ];
 
-for (const p of candidates) {
-  if (existsSync(p)) {
-    console.log(p);
+for (const buildRoot of searchRoots) {
+  const found = findNamedAppBundle(buildRoot);
+  if (found) {
+    console.log(found);
     process.exit(0);
   }
 }
 
-const buildRoot = join(root, "demo/ios/App/build");
-const found = findAppBundle(buildRoot);
-if (found) {
-  console.log(found);
-  process.exit(0);
-}
-
 console.error(
-  `appspresso: App.app not found under ${buildRoot}. Run appspresso native assemble ios first.`,
+  `appspresso: Simulator .app not found under demo/ios (expected demo/ios/App/build/Build/Products/*iphonesimulator/App.app after assemble).`,
 );
 process.exit(1);

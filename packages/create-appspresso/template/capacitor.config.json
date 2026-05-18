@@ -1,7 +1,7 @@
 {
   "webDir": "dist",
-  "appId": "com.example.capacitorvitepoc",
-  "appName": "Word practice (demo)",
+  "appId": "%%APP_ID%%",
+  "appName": "%%DISPLAY_NAME%%",
   "android": {
     "path": "android",
     "adjustMarginsForEdgeToEdge": "disable"
@@ -28,7 +28,7 @@
       "_appspressoAndroidImmersive": true
     },
     "BackgroundRunner": {
-      "label": "com.example.capacitorvitepoc.background",
+      "label": "%%APP_ID%%.background",
       "src": "runners/background.js",
       "event": "appspressoDemoPing",
       "repeat": false,

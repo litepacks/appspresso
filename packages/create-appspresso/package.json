@@ -6,6 +6,9 @@
   "bin": {
     "create-appspresso": "./index.js"
   },
+  "dependencies": {
+    "@appspresso/cli-shared": "0.0.0"
+  },
   "files": [
     "index.js",
     "template",

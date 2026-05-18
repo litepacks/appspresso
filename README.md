@@ -10,19 +10,43 @@ A production-minded starter for **mobile (Android/iOS) and web**: no Ionic, UI f
 
 ## CLI (`appspresso`)
 
-The package exposes the **`appspresso`** binary (Vite wrapper + native shortcuts).
+The package exposes the **`appspresso`** binary (Vite wrapper, project init, native shortcuts). Built with [cac](https://github.com/cacjs/cac) and [@clack/prompts](https://github.com/bombshell-dev/clack) for interactive flows.
 
 ```bash
+npx appspresso --version
 npx appspresso help
 ```
 
 | Command | Purpose |
 |---------|---------|
+| `appspresso init [dir]` | **New:** scaffold an empty folder or integrate into an existing Vite/React app (interactive or flags / `appspresso.init.json`). |
 | `appspresso dev` \| `build` \| `preview` | Run Vite in the current project; uses `appspresso.config.ts` when no `vite.config.*` exists. |
 | `appspresso native sync` | Runs `npm run build`, then `cap sync`. Use `--skip-build` if the web bundle is already built. Extra args are passed to `cap sync`. |
 | `appspresso native open android` \| `ios` | Opens the native IDE (`cap open …`). |
 | `appspresso native run android` \| `ios` | `cap run …` (requires local toolchains). |
-| `appspresso doctor` | Quick check for Node, Vite, Capacitor CLI, and optional `android/` / `ios/` folders (advisory output). |
+| `appspresso doctor` | Environment check (Node, Vite, Capacitor, `android/` / `ios/`) with colored output. |
+
+### `appspresso init` and manifest
+
+Configure package name, display name, app id, and folder layout before files are written:
+
+```bash
+# Interactive (TTY)
+appspresso init my-app
+
+# Non-interactive
+appspresso init my-app -y --package-name @acme/my-app --app-id com.acme.myapp --with-capacitor
+
+# Team template
+appspresso init my-app --config ./appspresso.init.json --write-manifest
+```
+
+Example [`appspresso.init.json`](packages/cli-shared/schemas/init.v1.json) fields: `packageName`, `displayName`, `appId`, `paths.src`, `paths.public`, `capacitor`, `appspressoVersion`.
+
+| Mode | When |
+|------|------|
+| **Scaffold** | Target folder is missing or empty (no `package.json`). |
+| **Integrate** | `package.json` already exists — adds `appspresso`, scripts, and minimal `appspresso.config.ts`. |
 
 Capacitor CLI is resolved from `node_modules` upward (monorepo-friendly). If `@capacitor/cli` is missing, install it in the app workspace.
 
@@ -137,7 +161,7 @@ Use **`appspresso/components/form`** with existing inputs:
 
 ## Starter app (`npm create appspresso`)
 
-The published CLI package is **`create-appspresso`** (npm resolves `npm create appspresso` to that package).
+The published CLI package is **`create-appspresso`** (npm resolves `npm create appspresso` to that package). It shares **`@appspresso/cli-shared`** with `appspresso init`.
 
 ```bash
 npm create appspresso@latest my-app
@@ -145,13 +169,15 @@ cd my-app
 npm run dev
 ```
 
-Options:
+Options (also available on `appspresso init`):
 
 ```bash
 npm create appspresso@latest my-app -- --appspresso ^0.0.0
 npm create appspresso@latest my-app -- --with-capacitor
 npm create appspresso@latest my-app -- --web-only
 npm create appspresso@latest my-app -- --skip-install
+npm create appspresso@latest my-app -- --config ./appspresso.init.json
+npm create appspresso@latest my-app -- --package-name @acme/my-app --app-id com.acme.myapp -y
 ```
 
 `--with-capacitor` adds `capacitor.config.ts`, native dependencies, and `cap:*` npm scripts. `--web-only` appends a short README note for web-first projects. These flags cannot be combined.

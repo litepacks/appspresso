@@ -9,6 +9,7 @@
   },
   "workspaces": [
     "demo",
+    "packages/cli-shared",
     "packages/create-appspresso"
   ],
   "scripts": {
@@ -25,6 +26,7 @@
     "test:integration": "npm run build:lib && vitest run --config vitest.integration.config.ts",
     "test:integration:coverage": "npm run build:lib && vitest run --config vitest.integration.config.ts --coverage",
     "test:integration:watch": "npm run build:lib && vitest --config vitest.integration.config.ts",
+    "test:cli": "node --test packages/cli-shared/*.test.mjs",
     "demo:dev": "npm run build:lib && npm run dev -w demo",
     "demo:build": "npm run build:lib && npm run build -w demo",
     "demo:cap-config": "npm run cap:config -w demo",
@@ -107,6 +109,7 @@
     }
   },
   "dependencies": {
+    "@appspresso/cli-shared": "0.0.0",
     "@aparajita/capacitor-secure-storage": "^6.0.0",
     "@capacitor-community/sqlite": "^7.0.0",
     "@capacitor/action-sheet": "^7.0.0",

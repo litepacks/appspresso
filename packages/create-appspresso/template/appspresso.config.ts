@@ -2,9 +2,9 @@ import { defineAppspressoProject } from "appspresso/build/project-config";
 
 const { vite, capacitor, app } = defineAppspressoProject({
   app: {
-    id: "com.example.capacitorvitepoc",
-    displayName: "Word practice (demo)",
-    version: "0.0.0",
+    id: "%%APP_ID%%",
+    displayName: "%%DISPLAY_NAME%%",
+    version: "%%VERSION%%",
     description:
       "Sample vocabulary app: Jotai, React Router, i18n. Full template lives at the monorepo root (npm run dev).",
     /**
@@ -86,7 +86,7 @@ const { vite, capacitor, app } = defineAppspressoProject({
      */
     backgroundRunner: {
       enabled: true,
-      label: "com.example.capacitorvitepoc.background",
+      label: "%%APP_ID%%.background",
       src: "runners/background.js",
       event: "appspressoDemoPing",
       repeat: false,
