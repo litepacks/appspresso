@@ -25,6 +25,12 @@ function resolveRunnerLabel(explicit?: string): string {
 let pluginChecked = false;
 let pluginAvailable = false;
 
+/** Clears cached availability probe (for unit tests). */
+export function resetBackgroundRunnerAvailabilityProbe(): void {
+  pluginChecked = false;
+  pluginAvailable = false;
+}
+
 /**
  * Whether `@capacitor/background-runner` is loaded on native platform.
  * `false` on web or when peer is missing.

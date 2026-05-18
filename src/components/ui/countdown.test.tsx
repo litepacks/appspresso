@@ -28,7 +28,7 @@ describe("msToCountdownParts / formatCountdown", () => {
 
   it("format: days, hours, minutes", () => {
     expect(formatCountdown(msToCountdownParts(90_061_000))).toMatch(
-      /1g.+01:01:01/,
+      /1d.+01:01:01/,
     );
     expect(formatCountdown(msToCountdownParts(3_661_000))).toMatch(/01:01:01/);
     expect(formatCountdown(msToCountdownParts(125_000))).toBe("2:05");
@@ -90,7 +90,7 @@ describe("Countdown", () => {
     const el = screen.getByTestId("cd");
     expect(el.className).toMatch(/tabular-nums/);
     expect(el).toHaveAttribute("aria-live", "polite");
-    expect(el.getAttribute("aria-label")).toContain("saniye");
+    expect(el.getAttribute("aria-label")).toContain("seconds");
     vi.useRealTimers();
   });
 });

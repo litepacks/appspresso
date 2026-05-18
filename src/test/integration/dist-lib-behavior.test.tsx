@@ -120,6 +120,8 @@ describe("dist-lib behavior (coverage)", () => {
     );
     expect(resolveDayjsLocale("tr")).toBe("tr");
     setDayjsLocale("tr");
+    expect(dayjs().subtract(2, "hour").fromNow()).toMatch(/2 saat önce/);
+    setDayjsLocale("en");
     expect(dayjs().subtract(2, "hour").fromNow()).toMatch(/2 hours ago/);
   });
 

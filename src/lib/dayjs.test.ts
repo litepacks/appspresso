@@ -11,12 +11,10 @@ describe("dayjs helpers", () => {
   });
 
   it("setDayjsLocale localizes relativeTime output", () => {
-    setDayjsLocale("en");
-    const a = dayjs().subtract(2, "hour");
-    expect(a.fromNow()).toMatch(/2 hours ago|two hours ago/i);
+    setDayjsLocale("tr");
+    expect(dayjs().subtract(2, "hour").fromNow()).toMatch(/2 saat önce/);
 
     setDayjsLocale("en");
-    const b = dayjs().subtract(2, "hour");
-    expect(b.fromNow()).toMatch(/2 hours ago/);
+    expect(dayjs().subtract(2, "hour").fromNow()).toMatch(/2 hours ago/);
   });
 });

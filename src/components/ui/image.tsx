@@ -296,14 +296,17 @@ const Image = React.forwardRef<HTMLImageElement, ImageProps>(
             <button
               type="button"
               aria-label="Close preview"
+              className="absolute inset-0 z-0 cursor-default border-0 bg-transparent p-0"
+              onClick={closeLightbox}
+            />
+            <div
               className={cn(
-                "grid min-h-0 w-full flex-1 cursor-default place-items-center overflow-auto overscroll-contain [-webkit-overflow-scrolling:touch]",
-                "relative touch-pan-x touch-pan-y border-0 bg-transparent p-0 text-left",
+                "pointer-events-none relative z-[1] grid min-h-0 w-full flex-1 cursor-default place-items-center overflow-auto overscroll-contain [-webkit-overflow-scrolling:touch]",
+                "touch-pan-x touch-pan-y",
                 previewModalImmersive
                   ? "min-h-[100dvh] p-[max(0.5rem,env(safe-area-inset-top,0px))_max(0.5rem,env(safe-area-inset-right,0px))_max(0.5rem,env(safe-area-inset-bottom,0px))_max(0.5rem,env(safe-area-inset-left,0px))]"
                   : "min-h-[min(20rem,40dvh)] p-2 sm:p-3",
               )}
-              onClick={closeLightbox}
             >
               {modalImgStatus === "error" ? (
                 <div className="flex max-w-md flex-col items-center justify-center gap-2 px-4 text-center text-primary-foreground text-sm">
@@ -321,8 +324,8 @@ const Image = React.forwardRef<HTMLImageElement, ImageProps>(
                   fetchPriority="high"
                   onLoad={() => setModalImgStatus("loaded")}
                   onError={() => setModalImgStatus("error")}
-                  onPointerDown={(e) => e.stopPropagation()}
                   className={cn(
+                    "pointer-events-auto",
                     "max-w-full select-none object-contain motion-reduce:transition-none",
                     previewModalImmersive
                       ? "shadow-none ring-0"
@@ -347,7 +350,7 @@ const Image = React.forwardRef<HTMLImageElement, ImageProps>(
                   />
                 </div>
               ) : null}
-            </button>
+            </div>
           </div>
         </AppModal>
       </>

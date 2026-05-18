@@ -44,11 +44,15 @@ describe("background-runner.service", () => {
     ).rejects.toThrow(/native builds/i);
   });
 
-  it("unavailable on native web stub", async () => {
+  it("unavailable on native when dispatchEvent is missing", async () => {
     vi.mocked(Capacitor.isNativePlatform).mockReturnValue(true);
-    checkPermissions.mockRejectedValue(new Error("not implemented"));
+    const { BackgroundRunner } = await import("@capacitor/background-runner");
+    const saved = BackgroundRunner.dispatchEvent;
+    BackgroundRunner.dispatchEvent = undefined as never;
 
     await expect(isBackgroundRunnerAvailable()).resolves.toBe(false);
+
+    BackgroundRunner.dispatchEvent = saved;
   });
 
   it("dispatchEvent is called on native", async () => {
