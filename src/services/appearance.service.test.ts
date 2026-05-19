@@ -1,10 +1,4 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import {
-  applySafeAreaClass,
-  hideSplashScreen,
-  initAppearance,
-  setStatusBarTheme,
-} from "@/services/appearance.service";
 
 const isNative = vi.hoisted(() => vi.fn(() => false));
 const getPlatform = vi.hoisted(() => vi.fn(() => "web"));
@@ -41,27 +35,42 @@ vi.mock("@/build/injected-app-meta", () => ({
   getInjectedAppMeta: vi.fn(() => null),
 }));
 
+type AppearanceService = typeof import("@/services/appearance.service");
+
+async function loadAppearanceService(): Promise<AppearanceService> {
+  vi.resetModules();
+  return import("@/services/appearance.service");
+}
+
 describe("appearance.service (web)", () => {
-  beforeEach(() => {
+  let appearance: AppearanceService;
+
+  beforeEach(async () => {
+    isNative.mockReturnValue(false);
+    getPlatform.mockReturnValue("web");
     document.documentElement.classList.remove("cap-safe");
+    appearance = await loadAppearanceService();
   });
 
   it("applySafeAreaClass adds cap-safe to html element", () => {
-    applySafeAreaClass();
+    appearance.applySafeAreaClass();
     expect(document.documentElement.classList.contains("cap-safe")).toBe(true);
   });
 
   it("initAppearance applies safe area class", async () => {
-    await initAppearance("dark");
+    await appearance.initAppearance("dark");
     expect(document.documentElement.classList.contains("cap-safe")).toBe(true);
   });
 
   it("hideSplashScreen resolves on web", async () => {
-    await expect(hideSplashScreen()).resolves.toBeUndefined();
+    await expect(appearance.hideSplashScreen()).resolves.toBeUndefined();
+    expect(mockSplashHide).not.toHaveBeenCalled();
   });
 });
 
 describe("appearance.service (native)", () => {
+  let appearance: AppearanceService;
+
   beforeEach(async () => {
     isNative.mockReturnValue(true);
     getPlatform.mockReturnValue("android");
@@ -74,15 +83,16 @@ describe("appearance.service (native)", () => {
     mockSetOverlaysWebView.mockReset().mockResolvedValue(undefined);
     mockShow.mockReset().mockResolvedValue(undefined);
     document.documentElement.classList.remove("cap-safe");
+    appearance = await loadAppearanceService();
   });
 
   it("hideSplashScreen calls SplashScreen.hide on native", async () => {
-    await hideSplashScreen(300);
+    await appearance.hideSplashScreen(300);
     expect(mockSplashHide).toHaveBeenCalledWith({ fadeOutDuration: 300 });
   });
 
   it("setStatusBarTheme applies dark style on Android", async () => {
-    await setStatusBarTheme("dark");
+    await appearance.setStatusBarTheme("dark");
     expect(mockSetStyle).toHaveBeenCalledWith({ style: "DARK" });
     expect(mockSetBackgroundColor).toHaveBeenCalledWith({ color: "#020617" });
   });
@@ -92,7 +102,8 @@ describe("appearance.service (native)", () => {
     vi.mocked(getInjectedAppMeta).mockReturnValue({
       statusBar: { hidden: true },
     });
-    await setStatusBarTheme("light");
+    appearance = await loadAppearanceService();
+    await appearance.setStatusBarTheme("light");
     expect(mockSetStyle).not.toHaveBeenCalled();
   });
 });

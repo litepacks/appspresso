@@ -4,8 +4,6 @@ import { StatusBar, Style } from "@capacitor/status-bar";
 import { getInjectedAppMeta } from "@/build/injected-app-meta";
 import { logger } from "@/lib/logger";
 
-const isNative = Capacitor.isNativePlatform();
-
 /** Once: re-hide system bar when it reappears with `hidden: true` */
 let statusBarHiddenMaintenanceAttached = false;
 
@@ -14,7 +12,7 @@ function statusBarHiddenFromMeta(): boolean {
 }
 
 async function rehideStatusBar(): Promise<void> {
-  if (!isNative || !statusBarHiddenFromMeta()) return;
+  if (!Capacitor.isNativePlatform() || !statusBarHiddenFromMeta()) return;
   try {
     await StatusBar.hide();
   } catch (e) {
@@ -28,7 +26,7 @@ async function rehideStatusBar(): Promise<void> {
  */
 async function attachStatusBarHiddenMaintenance(): Promise<void> {
   if (
-    !isNative ||
+    !Capacitor.isNativePlatform() ||
     !statusBarHiddenFromMeta() ||
     statusBarHiddenMaintenanceAttached
   ) {
@@ -61,7 +59,7 @@ async function attachStatusBarHiddenMaintenance(): Promise<void> {
 }
 
 async function applyStatusBarFromAppMeta(): Promise<void> {
-  if (!isNative) return;
+  if (!Capacitor.isNativePlatform()) return;
   const sb = getInjectedAppMeta()?.statusBar;
   if (sb == null) return;
   try {
@@ -92,13 +90,13 @@ export async function initAppearance(
   resolvedTheme: "light" | "dark",
 ): Promise<void> {
   applySafeAreaClass();
-  if (!isNative) return;
+  if (!Capacitor.isNativePlatform()) return;
   await applyStatusBarFromAppMeta();
   await setStatusBarTheme(resolvedTheme);
 }
 
 export async function hideSplashScreen(fadeOutDuration = 450): Promise<void> {
-  if (!isNative) return;
+  if (!Capacitor.isNativePlatform()) return;
   try {
     await SplashScreen.hide({ fadeOutDuration });
   } catch (e) {
@@ -109,7 +107,7 @@ export async function hideSplashScreen(fadeOutDuration = 450): Promise<void> {
 export async function setStatusBarTheme(
   theme: "light" | "dark",
 ): Promise<void> {
-  if (!isNative) return;
+  if (!Capacitor.isNativePlatform()) return;
   if (statusBarHiddenFromMeta()) return;
   try {
     const lightContent = theme === "dark";
