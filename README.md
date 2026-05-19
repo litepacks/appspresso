@@ -107,7 +107,7 @@ After `native-android` / `native-ios` build jobs, Maestro smoke E2E runs:
 | `native-e2e-android` | Emulator + install debug APK artifact → `maestro test e2e/maestro` |
 | `native-e2e-ios` | Simulator + install `.app` artifact → `maestro test e2e/maestro` |
 
-Flows live in [`e2e/maestro/`](e2e/maestro/) (`launchApp`, wait for **Word practice**, `takeScreenshot`).
+Flows live in [`e2e/maestro/`](e2e/maestro/) (e.g. `smoke.yaml`: `launchApp`, wait for **Word practice**, `takeScreenshot`). Maestro only discovers YAML files at that folder’s top level.
 
 **Local E2E:** `brew install maestro` (macOS), build/install the app (`npm run ci:native:android` or `ci:native:ios`), start emulator/simulator, then `npm run e2e:native:android` or `e2e:native:ios`.
 
