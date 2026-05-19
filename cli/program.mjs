@@ -69,43 +69,17 @@ export async function runProgram(argv = process.argv) {
     });
 
   cli
-    .command("native sync", "Build web bundle and cap sync")
-    .allowUnknownOptions()
-    .action(async (_options, command) => {
-      await routeNative(process.cwd(), "sync", command.args ?? []);
-    });
-
-  cli
-    .command("native open <platform>", "Open Android Studio or Xcode")
-    .allowUnknownOptions()
-    .action(async (platform, _options, command) => {
-      await routeNative(process.cwd(), "open", [
-        platform,
-        ...(command.args ?? []),
-      ]);
-    });
-
-  cli
-    .command("native run <platform>", "Run on device or emulator")
-    .allowUnknownOptions()
-    .action(async (platform, _options, command) => {
-      await routeNative(process.cwd(), "run", [
-        platform,
-        ...(command.args ?? []),
-      ]);
-    });
-
-  cli
     .command(
-      "native assemble <platform> [variant]",
-      "Assemble debug/release native binary",
+      "native <sub> [platform] [variant]",
+      "Native workflows: sync | open | run | assemble",
     )
     .allowUnknownOptions()
-    .action(async (platform, variant, _options, command) => {
-      const args = variant
-        ? [platform, variant, ...(command.args ?? [])]
-        : [platform, ...(command.args ?? [])];
-      await routeNative(process.cwd(), "assemble", args);
+    .action(async (sub, platform, variant, options) => {
+      await routeNative(
+        process.cwd(),
+        sub,
+        buildNativePassthrough(platform, variant, options),
+      );
     });
 
   for (const name of ["dev", "build", "preview"]) {
@@ -146,6 +120,21 @@ function normalizeArgv(argv) {
     args[2] = "--help";
   }
   return args;
+}
+
+/**
+ * @param {string | undefined} platform
+ * @param {string | undefined} variant
+ * @param {Record<string, unknown> & { "--"?: string[] }} options
+ */
+function buildNativePassthrough(platform, variant, options) {
+  const passthrough = [];
+  if (platform) passthrough.push(platform);
+  if (variant) passthrough.push(variant);
+  if (options.skipBuild) passthrough.push("--skip-build");
+  if (options.release) passthrough.push("--release");
+  const unknown = options["--"] ?? [];
+  return [...passthrough, ...unknown];
 }
 
 /**
