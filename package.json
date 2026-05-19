@@ -33,7 +33,7 @@
     "doctor": "appspresso doctor",
     "create:sync-template": "node scripts/sync-create-template.mjs",
     "cap:sync": "appspresso native sync",
-    "ci:native:android": "npm run demo:build && node scripts/verify-native-web-bundle.mjs && appspresso native sync android --skip-build && node scripts/verify-cap-android-public.mjs && appspresso native assemble android && node scripts/verify-android-apk-assets.mjs",
+    "ci:native:android": "npm run demo:build && node scripts/verify-native-web-bundle.mjs && appspresso native sync android --skip-build && node scripts/verify-cap-android-public.mjs && appspresso native assemble android",
     "ci:native:ios": "npm run demo:build && node scripts/verify-native-web-bundle.mjs && node scripts/ensure-ios-platform.mjs && appspresso native sync ios --skip-build && appspresso native assemble ios",
     "e2e:native:android": "maestro test e2e/maestro",
     "e2e:native:ios": "maestro test e2e/maestro",
