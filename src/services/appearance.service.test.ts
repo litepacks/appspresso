@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { AppspressoAppMeta } from "@/build/app-meta";
 
 const isNative = vi.hoisted(() => vi.fn(() => false));
 const getPlatform = vi.hoisted(() => vi.fn(() => "web"));
@@ -100,8 +101,10 @@ describe("appearance.service (native)", () => {
   it("setStatusBarTheme skips when status bar hidden in meta", async () => {
     const { getInjectedAppMeta } = await import("@/build/injected-app-meta");
     vi.mocked(getInjectedAppMeta).mockReturnValue({
+      id: "com.test.app",
+      displayName: "Test",
       statusBar: { hidden: true },
-    });
+    } satisfies AppspressoAppMeta);
     appearance = await loadAppearanceService();
     await appearance.setStatusBarTheme("light");
     expect(mockSetStyle).not.toHaveBeenCalled();
