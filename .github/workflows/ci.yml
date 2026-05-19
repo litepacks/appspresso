@@ -156,6 +156,10 @@ jobs:
           name: native-web-assets
           path: .
 
+      - name: Verify downloaded demo bundle (informational)
+        continue-on-error: true
+        run: node scripts/verify-native-web-bundle.mjs
+
       - name: Cap sync and assemble debug APK
         run: npm run ci:native:android
 
@@ -189,6 +193,10 @@ jobs:
         with:
           name: native-web-assets
           path: .
+
+      - name: Verify downloaded demo bundle (informational)
+        continue-on-error: true
+        run: node scripts/verify-native-web-bundle.mjs
 
       - name: Install CocoaPods
         run: brew install cocoapods
