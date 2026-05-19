@@ -9,14 +9,17 @@ import { join } from "node:path";
 
 const root = process.cwd();
 const pattern =
-  process.argv[2] ?? join(root, "demo/android/app/build/outputs/apk/debug/*.apk");
+  process.argv[2] ??
+  join(root, "demo/android/app/build/outputs/apk/debug/*.apk");
 
 /** Debug APK with React bundle is typically tens of MB; ~4MB means assets/public missing. */
 const MIN_APK_BYTES = 8_000_000;
 
 let apkPath;
 try {
-  apkPath = execSync(`ls ${pattern}`, { encoding: "utf8" }).trim().split("\n")[0];
+  apkPath = execSync(`ls ${pattern}`, { encoding: "utf8" })
+    .trim()
+    .split("\n")[0];
 } catch {
   console.error(`appspresso: APK not found: ${pattern}`);
   process.exit(1);
@@ -33,7 +36,9 @@ if (size < MIN_APK_BYTES) {
     `appspresso: APK too small (${size} bytes) — cap sync likely missed demo/dist.`,
   );
   try {
-    console.error(execSync(`unzip -l "${apkPath}" | head -40`, { encoding: "utf8" }));
+    console.error(
+      execSync(`unzip -l "${apkPath}" | head -40`, { encoding: "utf8" }),
+    );
   } catch {
     /* ignore */
   }
