@@ -1,13 +1,19 @@
 import assert from "node:assert/strict";
+import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { describe, it } from "node:test";
 import {
   assertAppId,
   assertNpmPackageName,
+  assertSafePathSegment,
+  loadManifestFile,
   normalizeManifest,
   placeholderMap,
   suggestAppId,
   toDisplayName,
   validateManifest,
+  writeInitManifest,
 } from "./manifest.mjs";
 
 describe("manifest", () => {
@@ -39,5 +45,32 @@ describe("manifest", () => {
 
   it("toDisplayName title-cases kebab", () => {
     assert.equal(toDisplayName("word-practice"), "Word Practice");
+  });
+
+  it("rejects unsafe path segments", () => {
+    assert.throws(() => assertSafePathSegment("../src", "paths.src"));
+  });
+
+  it("round-trips writeInitManifest and loadManifestFile", () => {
+    const dir = mkdtempSync(join(tmpdir(), "appspresso-manifest-"));
+    try {
+      const manifest = normalizeManifest({
+        packageName: "@acme/app",
+        displayName: "Acme",
+        appId: "com.acme.app",
+        version: "2.0.0",
+        appspressoVersion: "^1.0.0",
+        capacitor: true,
+        paths: { src: "app", public: "static", config: "appspresso.config.ts" },
+      });
+      validateManifest(manifest);
+      writeInitManifest(dir, manifest);
+      const loaded = loadManifestFile(join(dir, "appspresso.init.json"));
+      assert.equal(loaded.packageName, "@acme/app");
+      assert.equal(loaded.paths.src, "app");
+      assert.equal(loaded.capacitor, true);
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
   });
 });

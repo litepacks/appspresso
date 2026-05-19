@@ -49,6 +49,9 @@ function shouldCopy(srcPath) {
   if (rel === "ios" || rel.startsWith("ios/")) return false;
   if (rel === "android" || rel.startsWith("android/")) return false;
   if (rel === "package-lock.json") return false;
+  if (rel === "capacitor.config.ts" || rel === "capacitor.config.json") {
+    return false;
+  }
   return true;
 }
 
@@ -99,7 +102,7 @@ const hostTsconfig = {
     erasableSyntaxOnly: true,
     noFallthroughCasesInSwitch: true,
   },
-  include: ["src", "appspresso.config.ts", "capacitor.config.json"],
+  include: ["src", "appspresso.config.ts"],
 };
 
 writeFileSync(

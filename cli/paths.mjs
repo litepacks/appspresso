@@ -26,6 +26,29 @@ export function findIosXcodeProject(startDir) {
   return null;
 }
 
+/**
+ * Directory with `appspresso.config.ts` used for Capacitor (and optional `android/` / `ios/`).
+ * Monorepo: prefers `demo/` when the repo root has no local config.
+ * @param {string} startDir
+ * @returns {string | null}
+ */
+export function findAppspressoProjectRoot(startDir) {
+  const seen = new Set();
+  let dir = startDir;
+  for (;;) {
+    for (const candidate of [dir, join(dir, "demo")]) {
+      if (seen.has(candidate)) continue;
+      seen.add(candidate);
+      if (existsSync(join(candidate, "appspresso.config.ts"))) {
+        return candidate;
+      }
+    }
+    const parent = dirname(dir);
+    if (parent === dir) return null;
+    dir = parent;
+  }
+}
+
 /** @param {string} startDir */
 export function findAndroidProjectDir(startDir) {
   const candidates = [

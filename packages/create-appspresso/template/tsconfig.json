@@ -18,5 +18,5 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "appspresso.config.ts", "capacitor.config.json"]
+  "include": ["src", "appspresso.config.ts"]
 }

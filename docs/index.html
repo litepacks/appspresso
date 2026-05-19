@@ -382,7 +382,7 @@ npm run dev</code></pre>
           <thead><tr><th>Flag</th><th>Description</th></tr></thead>
           <tbody class="text-zinc-600 dark:text-zinc-400">
             <tr><td><code>--appspresso ^x.y.z</code></td><td>Pin library version</td></tr>
-            <tr><td><code>--with-capacitor</code></td><td>Add <code>capacitor.config.ts</code>, native deps, <code>cap:*</code> scripts</td></tr>
+            <tr><td><code>--with-capacitor</code></td><td>Capacitor deps + <code>cap:*</code> scripts; native settings in <code>appspresso.config.ts</code></td></tr>
             <tr><td><code>--web-only</code></td><td>README note for web-first projects (mutually exclusive with <code>--with-capacitor</code>)</td></tr>
             <tr><td><code>--skip-install</code></td><td>Skip <code>npm install</code></td></tr>
           </tbody>
@@ -395,7 +395,7 @@ npm run dev</code></pre>
       <h2 class="text-2xl font-bold text-zinc-900 dark:text-white mb-4">New product checklist</h2>
       <ul class="list-none space-y-2 text-zinc-600 dark:text-zinc-400 text-sm">
         <li><input type="checkbox" disabled class="mr-2" /> <code>package.json</code> name and description</li>
-        <li><input type="checkbox" disabled class="mr-2" /> <code>capacitor.config.ts</code> <code>appId</code>, <code>appName</code>; match Android / Xcode bundle IDs</li>
+        <li><input type="checkbox" disabled class="mr-2" /> <code>appspresso.config.ts</code> <code>app.id</code>, <code>app.displayName</code>; match Android / Xcode bundle IDs</li>
         <li><input type="checkbox" disabled class="mr-2" /> <code>DEEPLINK_SCHEME</code> + <code>deeplink.routes.ts</code> + native URL types</li>
         <li><input type="checkbox" disabled class="mr-2" /> <code>resources/icon.png</code>, <code>resources/splash.png</code>, splash colors</li>
         <li><input type="checkbox" disabled class="mr-2" /> <code>index.html</code> title; <code>STORAGE_KEY_PREFIX</code> / <code>JOTAI_STORAGE</code> in <code>constants.ts</code></li>

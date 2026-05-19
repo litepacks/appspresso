@@ -19,9 +19,9 @@
     "test:integration:watch": "appspresso test:integration:watch",
     "cap:config": "appspresso cap:config",
     "cap:assets": "node scripts/sync-capacitor-assets.mjs",
-    "android:sync": "npm run cap:config && appspresso native sync android",
-    "android:apk": "npm run build:lib && npm run cap:config && appspresso native sync android && appspresso native assemble android",
-    "ios:build": "npm run cap:config && appspresso native sync ios && appspresso native assemble ios"
+    "android:sync": "appspresso native sync android",
+    "android:apk": "npm run build:lib && appspresso native sync android && appspresso native assemble android",
+    "ios:build": "appspresso native sync ios && appspresso native assemble ios"
   },
   "dependencies": {
     "appspresso": "file:.."

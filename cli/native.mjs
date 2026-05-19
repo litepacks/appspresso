@@ -3,11 +3,24 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import {
   findAndroidProjectDir,
+  findAppspressoProjectRoot,
   findCapacitorCli,
   findIosXcodeProject,
   hasNpmScript,
 } from "./paths.mjs";
+import { runCapConfig } from "./cap-config.mjs";
 import { runInherit } from "./run-cmd.mjs";
+
+/** Capacitor CLI cwd: folder with `appspresso.config.ts` (+ `android/` / `ios/`). */
+function resolveCapacitorRoot(cwd) {
+  return findAppspressoProjectRoot(cwd) ?? cwd;
+}
+
+async function ensureCapacitorConfigJson(capRoot) {
+  if (existsSync(join(capRoot, "appspresso.config.ts"))) {
+    await runCapConfig(capRoot);
+  }
+}
 
 function printNativeHelp() {
   console.error(`native commands: sync | open | run | assemble
@@ -39,15 +52,10 @@ function javaHomeForGradle() {
 
 /** When Capacitor `webDir` is `demo/dist`, `npm run build` at repo root is the wrong artefact — use `demo:build`. */
 function capacitorWebDirIsDemoDist(cwd) {
-  const names = [
-    "capacitor.config.ts",
-    "capacitor.config.mts",
-    "capacitor.config.js",
-    "capacitor.config.mjs",
-    "capacitor.config.json",
-  ];
+  const capRoot = resolveCapacitorRoot(cwd);
+  const names = ["capacitor.config.json"];
   for (const name of names) {
-    const p = join(cwd, name);
+    const p = join(capRoot, name);
     if (!existsSync(p)) continue;
     try {
       const text = readFileSync(p, "utf8");
@@ -86,6 +94,7 @@ export async function cmdNativeSync(cwd, argv) {
     process.exit(1);
   }
 
+  const capRoot = resolveCapacitorRoot(cwd);
   const { skipBuild, capArgs } = parseSyncArgs(argv);
 
   if (!skipBuild) {
@@ -101,8 +110,9 @@ export async function cmdNativeSync(cwd, argv) {
     }
   }
 
+  await ensureCapacitorConfigJson(capRoot);
   await runInherit(process.execPath, [capCli, "sync", ...capArgs], {
-    cwd,
+    cwd: capRoot,
     shell: false,
   });
 }
@@ -126,9 +136,11 @@ export async function cmdNativeOpen(cwd, argv) {
     process.exit(1);
   }
 
+  const capRoot = resolveCapacitorRoot(cwd);
   const rest = argv.slice(1);
+  await ensureCapacitorConfigJson(capRoot);
   await runInherit(process.execPath, [capCli, "open", platform, ...rest], {
-    cwd,
+    cwd: capRoot,
     shell: false,
   });
 }
@@ -152,9 +164,11 @@ export async function cmdNativeRun(cwd, argv) {
     process.exit(1);
   }
 
+  const capRoot = resolveCapacitorRoot(cwd);
   const rest = argv.slice(1);
+  await ensureCapacitorConfigJson(capRoot);
   await runInherit(process.execPath, [capCli, "run", platform, ...rest], {
-    cwd,
+    cwd: capRoot,
     shell: false,
   });
 }

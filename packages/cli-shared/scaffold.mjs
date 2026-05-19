@@ -82,30 +82,20 @@ export function applyCapacitorLayer(projectDir, manifest) {
   pkg.scripts = {
     ...pkg.scripts,
     "cap:config": "appspresso cap:config",
-    "cap:sync": "npm run cap:config && appspresso native sync",
+    "cap:sync": "appspresso native sync",
     "cap:open:android": "appspresso native open android",
     "cap:open:ios": "appspresso native open ios",
   };
   writeFileSync(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`);
-
-  const configImport = manifest.paths.config.replace(/\.ts$/, "");
-  const cap = `import type { CapacitorConfig } from "@capacitor/cli";
-import { capacitor } from "./${configImport}";
-
-/** Edit ${manifest.paths.config}; run \`npm run cap:config\` to refresh capacitor.config.json. */
-export default capacitor satisfies CapacitorConfig;
-`;
-  const capPath = join(projectDir, "capacitor.config.ts");
-  if (!existsSync(capPath)) {
-    writeFileSync(capPath, cap);
-  }
 
   const readMe = join(projectDir, "README.md");
   const hybrid = `
 
 ## Hybrid (Capacitor)
 
-This project was scaffolded with Capacitor support. After install:
+Native settings live in \`${manifest.paths.config}\` only. \`npm run cap:sync\` emits \`capacitor.config.json\` and runs \`cap sync\`.
+
+After install:
 
 \`\`\`bash
 npx cap add android

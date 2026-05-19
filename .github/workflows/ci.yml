@@ -196,22 +196,17 @@ jobs:
       - name: Cap sync and build for iOS Simulator
         run: npm run ci:native:ios
 
-      - name: Resolve iOS simulator .app path
+      - name: Package iOS simulator app (zip)
         id: ios_app
         run: |
-          APP_PATH=$(node scripts/find-ios-simulator-app.mjs)
-          if [ -z "$APP_PATH" ] || [ ! -d "$APP_PATH" ]; then
-            echo "::error::Simulator App.app not found. Listing demo/ios/App/build:"
-            find demo/ios/App/build -name '*.app' -type d 2>/dev/null || true
-            exit 1
-          fi
-          echo "path=$APP_PATH" >> "$GITHUB_OUTPUT"
+          ZIP_PATH=$(node scripts/ios-simulator-artifact.mjs package)
+          echo "zip=$ZIP_PATH" >> "$GITHUB_OUTPUT"
 
       - name: Upload iOS simulator app
         uses: actions/upload-artifact@v4
         with:
           name: ios-simulator-app
-          path: ${{ steps.ios_app.outputs.path }}
+          path: ${{ steps.ios_app.outputs.zip }}
           if-no-files-found: error
 
   native-e2e-android:
@@ -255,11 +250,12 @@ jobs:
           emulator-boot-timeout: 900
           disable-animations: false
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          # android-emulator-runner invokes this with /bin/sh (dash), not bash — no pipefail or [[ ]].
           script: |
-            set -euo pipefail
+            set -eu
             adb wait-for-device
-            adb shell 'while [[ -z "$(getprop sys.boot_completed 2>/dev/null)" ]]; do sleep 2; done'
-            adb shell 'while [[ "$(getprop init.svc.bootanim 2>/dev/null)" != "stopped" ]]; do sleep 2; done'
+            adb shell 'while [ -z "$(getprop sys.boot_completed 2>/dev/null)" ]; do sleep 2; done'
+            adb shell 'while [ "$(getprop init.svc.bootanim 2>/dev/null)" != "stopped" ]; do sleep 2; done'
             adb shell wm dismiss-keyguard || true
             adb install -r artifacts/android-apk/*.apk
             maestro test e2e/maestro
@@ -278,7 +274,7 @@ jobs:
     name: Native E2E iOS (Maestro)
     needs: [native-ios]
     runs-on: macos-14
-    timeout-minutes: 25
+    timeout-minutes: 35
     steps:
       - uses: actions/checkout@v4
 
@@ -300,14 +296,23 @@ jobs:
 
       - name: Boot simulator and install app
         run: |
-          xcrun simctl boot "iPhone 16" 2>/dev/null || true
-          xcrun simctl bootstatus booted -b
-          APP_PATH=$(find artifacts/ios-app -name '*.app' -type d | head -1)
-          if [ -z "$APP_PATH" ]; then
-            echo "App.app not found in artifact"
-            exit 1
-          fi
-          xcrun simctl install booted "$APP_PATH"
+          set -eu
+          SIM_ID=$(xcrun simctl list devices available -j | node -e "
+            const j = JSON.parse(require('fs').readFileSync(0, 'utf8'));
+            const runtimes = Object.keys(j.devices).filter((k) => k.includes('iOS'));
+            const devices = runtimes.flatMap((k) => j.devices[k] || []);
+            const iphones = devices.filter((d) => d.isAvailable && /^iPhone /.test(d.name));
+            const preferred = ['iPhone 16', 'iPhone 15 Pro', 'iPhone 15'];
+            const pick =
+              iphones.find((d) => preferred.includes(d.name)) ||
+              iphones.sort((a, b) => b.name.localeCompare(a.name))[0];
+            if (!pick) process.exit(1);
+            process.stdout.write(pick.udid);
+          ")
+          xcrun simctl boot "$SIM_ID" 2>/dev/null || true
+          xcrun simctl bootstatus "$SIM_ID" -b
+          APP_PATH=$(node scripts/ios-simulator-artifact.mjs resolve artifacts/ios-app)
+          xcrun simctl install "$SIM_ID" "$APP_PATH"
 
       - name: Maestro smoke
         run: maestro test e2e/maestro

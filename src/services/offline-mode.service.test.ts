@@ -49,4 +49,41 @@ describe("offline-mode.service", () => {
     );
     unsub();
   });
+
+  it("does not fire edge listeners when connected state unchanged", () => {
+    const offline = vi.fn();
+    const online = vi.fn();
+    onOfflineEnter(offline);
+    onOnlineEnter(online);
+    notifyConnectivityChange(
+      { connected: true, connectionType: "wifi" },
+      { connected: true, connectionType: "4g" },
+    );
+    expect(offline).not.toHaveBeenCalled();
+    expect(online).not.toHaveBeenCalled();
+  });
+
+  it("unsubscribe stops connectivity listener", () => {
+    const fn = vi.fn();
+    const unsub = onConnectivityChange(fn);
+    unsub();
+    notifyConnectivityChange(
+      { connected: true, connectionType: "wifi" },
+      { connected: false, connectionType: "none" },
+    );
+    expect(fn).not.toHaveBeenCalled();
+  });
+
+  it("swallows errors from connectivity listeners", () => {
+    const bad = vi.fn(() => {
+      throw new Error("boom");
+    });
+    onConnectivityChange(bad);
+    expect(() =>
+      notifyConnectivityChange(
+        { connected: true, connectionType: "wifi" },
+        { connected: true, connectionType: "4g" },
+      ),
+    ).not.toThrow();
+  });
 });

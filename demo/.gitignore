@@ -1,2 +1,5 @@
 # @capacitor/assets — PWA icon output (see npm run cap:assets)
 icons/
+
+# Emitted from appspresso.config.ts (`npm run cap:config` / `appspresso native sync`)
+capacitor.config.json

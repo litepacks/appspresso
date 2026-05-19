@@ -93,7 +93,7 @@ export type AppspressoProjectOptions = {
 
 /**
  * Single source: Vite default export here; Capacitor object also
- * exported to generate `capacitor.config.json` / align root `capacitor.config.ts`.
+ * exported to generate `capacitor.config.json` for Capacitor CLI (`appspresso cap:config`).
  */
 export function defineAppspressoProject(options: AppspressoProjectOptions): {
   vite: UserConfig;

@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { STORAGE_KEY_PREFIX } from "@/config/constants";
 import { preferencesService } from "@/services/preferences.service";
 
@@ -13,5 +13,25 @@ describe("preferencesService", () => {
       "dark",
     );
     expect(preferencesService.get("theme")).toBe("dark");
+  });
+
+  it("get returns null when localStorage throws", () => {
+    const spy = vi
+      .spyOn(Storage.prototype, "getItem")
+      .mockImplementation(() => {
+        throw new Error("blocked");
+      });
+    expect(preferencesService.get("theme")).toBeNull();
+    spy.mockRestore();
+  });
+
+  it("set ignores localStorage write failures", () => {
+    const spy = vi
+      .spyOn(Storage.prototype, "setItem")
+      .mockImplementation(() => {
+        throw new Error("quota");
+      });
+    expect(() => preferencesService.set("theme", "dark")).not.toThrow();
+    spy.mockRestore();
   });
 });

@@ -120,8 +120,7 @@ const { vite, capacitor, app } = defineAppspressoProject({
    * - `app.backgroundRunner` → `plugins.BackgroundRunner`
    * - `app.sqlite` → `plugins.CapacitorSQLite`
    *
-   * Emit JSON: `npm run demo:cap-config` → `capacitor.config.json`.
-   * Capacitor CLI can also load `capacitor.config.ts` (re-exports the same object).
+   * Emitted JSON (gitignored): `npm run cap:config` or `appspresso native sync` → `capacitor.config.json`.
    */
   capacitor: {
     android: {

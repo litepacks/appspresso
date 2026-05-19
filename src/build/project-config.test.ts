@@ -112,4 +112,50 @@ describe("defineAppspressoProject", () => {
     expect(capacitor.appId).toBe("com.b");
     expect(capacitor.appName).toBe("B");
   });
+
+  it("merges app.statusBar into Capacitor StatusBar plugin", () => {
+    const { capacitor } = defineAppspressoProject({
+      app: {
+        id: "com.example.app",
+        displayName: "Example",
+        statusBar: {
+          style: "DARK",
+          backgroundColor: "#000000",
+          overlaysWebView: true,
+          hidden: true,
+        },
+      },
+      capacitor: {
+        plugins: {
+          StatusBar: { overlaysWebView: false },
+        },
+      },
+    });
+    expect(capacitor.plugins?.StatusBar).toEqual({
+      style: "DARK",
+      backgroundColor: "#000000",
+      overlaysWebView: false,
+      _appspressoAndroidImmersive: true,
+    });
+  });
+
+  it("merges app.sqlite into CapacitorSQLite plugin", () => {
+    const { capacitor } = defineAppspressoProject({
+      app: {
+        id: "com.example.app",
+        displayName: "Example",
+        sqlite: {
+          iosDatabaseLocation: "Library",
+          iosIsEncryption: true,
+          androidIsEncryption: false,
+        },
+      },
+      capacitor: {},
+    });
+    expect(capacitor.plugins?.CapacitorSQLite).toEqual({
+      iosDatabaseLocation: "Library",
+      iosIsEncryption: true,
+      androidIsEncryption: false,
+    });
+  });
 });

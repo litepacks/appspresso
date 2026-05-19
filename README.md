@@ -180,7 +180,7 @@ npm create appspresso@latest my-app -- --config ./appspresso.init.json
 npm create appspresso@latest my-app -- --package-name @acme/my-app --app-id com.acme.myapp -y
 ```
 
-`--with-capacitor` adds `capacitor.config.ts`, native dependencies, and `cap:*` npm scripts. `--web-only` appends a short README note for web-first projects. These flags cannot be combined.
+`--with-capacitor` adds Capacitor dependencies and `cap:*` npm scripts; native settings live in `appspresso.config.ts` only (`capacitor.config.json` is emitted on sync). `--web-only` appends a short README note for web-first projects. These flags cannot be combined.
 
 In this monorepo, test the CLI locally without publishing:
 
@@ -259,13 +259,13 @@ import { runBootstrap } from "appspresso/app/bootstrap";
 npm run build
 npx cap add android   # first-time setup
 npx cap add ios
-npx cap sync
-npx cap open android
-npx cap open ios
+npm run cap:sync      # appspresso native sync — emits capacitor.config.json + cap sync
+appspresso native open android
+appspresso native open ios
 ```
 
-- `capacitor.config.ts`: `appId`, `appName`, `webDir` (`dist`), Splash / StatusBar.
-- Dark mode status bar is updated via `setStatusBarTheme`; splash background is mainly controlled in `capacitor.config.ts` and `resources/splash.png` (Capacitor 7 has no runtime `SplashScreen.configure` API).
+- **`appspresso.config.ts`**: `app.id`, `app.displayName`, `capacitor` block (`webDir`, splash, status bar). Run `appspresso cap:config` or `appspresso native sync` to refresh `capacitor.config.json`.
+- Dark mode status bar is updated via `setStatusBarTheme`; splash background is mainly controlled in `appspresso.config.ts` (`app.splash`) and `resources/splash.png` (Capacitor 7 has no runtime `SplashScreen.configure` API).
 
 ### Android / iOS identifiers
 
@@ -304,12 +304,12 @@ Gradle **applicationId** / **namespace** and Xcode **Bundle Identifier** should 
 ## New product checklist
 
 1. `package.json` `name` / description.
-2. `capacitor.config.ts` `appId`, `appName`; Android Studio / Xcode IDs.
+2. `appspresso.config.ts` `app.id`, `app.displayName`; Android Studio / Xcode bundle IDs.
 3. `DEEPLINK_SCHEME`, `deeplink.routes.ts`, native URL schemes.
 4. `resources/icon.png`, `resources/splash.png`, splash colors.
 5. `index.html` title / theme color; product prefix for `STORAGE_KEY_PREFIX` / `JOTAI_STORAGE` (`src/config/constants.ts`) to avoid collisions.
 6. `VITE_*` env; telemetry project.
-7. `npm run lint`, `npm run test:run`, `npm run build`, `npx cap sync`, device smoke test for deeplink + splash.
+7. `npm run lint`, `npm run test:run`, `npm run build`, `npm run cap:sync`, device smoke test for deeplink + splash.
 
 ## Architecture notes
 

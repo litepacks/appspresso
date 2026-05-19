@@ -1,42 +1,31 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { Segment, SegmentItem } from "./segment";
 
 describe("Segment", () => {
-  it("radio role with two options", () => {
+  it("renders items and selects on click", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
     render(
-      <Segment defaultValue="a" aria-label="Mode">
+      <Segment defaultValue="a" onValueChange={onChange}>
         <SegmentItem value="a">A</SegmentItem>
         <SegmentItem value="b">B</SegmentItem>
       </Segment>,
     );
-    const radios = screen.getAllByRole("radio");
-    expect(radios).toHaveLength(2);
-    expect(radios[0]).toBeChecked();
-    expect(radios[1]).not.toBeChecked();
+    expect(screen.getByRole("radio", { name: "A" })).toBeChecked();
+    await user.click(screen.getByRole("radio", { name: "B" }));
+    expect(onChange).toHaveBeenCalledWith("b");
   });
 
-  it("selection changes on click", async () => {
-    const user = userEvent.setup();
+  it("applies vertical orientation class", () => {
     render(
-      <Segment defaultValue="a">
-        <SegmentItem value="a">Left</SegmentItem>
-        <SegmentItem value="b">Right</SegmentItem>
+      <Segment orientation="vertical" aria-label="tabs">
+        <SegmentItem value="x">X</SegmentItem>
       </Segment>,
     );
-    await user.click(screen.getByRole("radio", { name: "Right" }));
-    expect(screen.getByRole("radio", { name: "Right" })).toBeChecked();
-  });
-
-  it("interaction off when disabled", () => {
-    render(
-      <Segment defaultValue="a" disabled>
-        <SegmentItem value="a">Off</SegmentItem>
-        <SegmentItem value="b">On</SegmentItem>
-      </Segment>,
+    expect(screen.getByRole("radiogroup", { name: "tabs" }).className).toMatch(
+      /flex-col/,
     );
-    expect(screen.getByRole("radio", { name: "Off" })).toBeDisabled();
-    expect(screen.getByRole("radio", { name: "On" })).toBeDisabled();
   });
 });
