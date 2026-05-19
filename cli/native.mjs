@@ -1,6 +1,7 @@
 import { execSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import { runCapConfig } from "./cap-config.mjs";
 import {
   findAndroidProjectDir,
   findAppspressoProjectRoot,
@@ -8,7 +9,6 @@ import {
   findIosXcodeProject,
   hasNpmScript,
 } from "./paths.mjs";
-import { runCapConfig } from "./cap-config.mjs";
 import { runInherit } from "./run-cmd.mjs";
 
 /** Capacitor CLI cwd: folder with `appspresso.config.ts` (+ `android/` / `ios/`). */

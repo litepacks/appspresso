@@ -1,5 +1,4 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { logger } from "@/lib/logger";
 import {
   getEffectiveApiBaseUrl,
   getFeatureFlags,
@@ -7,6 +6,7 @@ import {
   isFeatureEnabled,
   loadRuntimeConfig,
 } from "@/config/runtime";
+import { logger } from "@/lib/logger";
 
 describe("runtime config", () => {
   afterEach(() => {
