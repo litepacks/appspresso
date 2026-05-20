@@ -150,16 +150,6 @@ jobs:
       - name: Install
         run: npm ci
 
-      - name: Download web assets from build job
-        uses: actions/download-artifact@v4
-        with:
-          name: native-web-assets
-          path: .
-
-      - name: Verify downloaded demo bundle (informational)
-        continue-on-error: true
-        run: node scripts/verify-native-web-bundle.mjs
-
       - name: Cap sync and assemble debug APK
         run: npm run ci:native:android
 
@@ -187,16 +177,6 @@ jobs:
 
       - name: Install
         run: npm ci
-
-      - name: Download web assets from build job
-        uses: actions/download-artifact@v4
-        with:
-          name: native-web-assets
-          path: .
-
-      - name: Verify downloaded demo bundle (informational)
-        continue-on-error: true
-        run: node scripts/verify-native-web-bundle.mjs
 
       - name: Install CocoaPods
         run: brew install cocoapods
@@ -248,6 +228,8 @@ jobs:
           path: artifacts/android-apk
 
       - name: Maestro smoke on emulator
+        env:
+          MAESTRO_CLI_NO_ANALYTICS: "1"
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: 34
@@ -266,10 +248,19 @@ jobs:
             adb shell 'while [ "$(getprop init.svc.bootanim 2>/dev/null)" != "stopped" ]; do sleep 2; done'
             adb shell wm dismiss-keyguard || true
             adb install -r artifacts/android-apk/*.apk
+            set +e
             maestro test e2e/maestro
+            maestro_status=$?
+            set -e
+            if [ "$maestro_status" -ne 0 ]; then
+              adb logcat -d -t 200 | tail -120 || true
+              exit "$maestro_status"
+            fi
 
       - name: Upload Maestro screenshots
         if: always()
+        env:
+          MAESTRO_CLI_NO_ANALYTICS: "1"
         uses: actions/upload-artifact@v4
         with:
           name: maestro-screenshots-android
@@ -323,6 +314,8 @@ jobs:
           xcrun simctl install "$SIM_ID" "$APP_PATH"
 
       - name: Maestro smoke
+        env:
+          MAESTRO_CLI_NO_ANALYTICS: "1"
         run: maestro test e2e/maestro
 
       - name: Upload Maestro screenshots

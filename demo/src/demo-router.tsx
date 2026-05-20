@@ -45,11 +45,16 @@ function DemoLayout() {
         showBack={!atRoot}
         center={
           atRoot ? (
-            <SearchInput
-              placeholder={t("app.searchPlaceholder")}
-              aria-label={t("app.searchAria")}
-              name="demo-header-search"
-            />
+            <div className="flex w-full min-w-0 flex-col items-stretch gap-2">
+              <p className="text-pretty text-center text-base font-semibold leading-snug tracking-tight sm:text-lg">
+                {t(titleKey)}
+              </p>
+              <SearchInput
+                placeholder={t("app.searchPlaceholder")}
+                aria-label={t("app.searchAria")}
+                name="demo-header-search"
+              />
+            </div>
           ) : undefined
         }
       />

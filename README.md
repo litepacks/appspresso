@@ -92,8 +92,8 @@ Only `VITE_*` keys are exposed to the client (never put secrets there).
 | `npm run demo:dev` | Build library, then run the **demo** Vite app |
 | `npm run demo:build` | Build library, then build the demo app |
 | `npm run doctor` | Same as `appspresso doctor` from the repo root. |
-| `npm run ci:native:android` | `demo:build` + `cap sync` + `assembleDebug` (rebuilds web bundle on the native runner; verifies `demo/dist` and `assets/public`). |
-| `npm run ci:native:ios` | Same web bundle rebuild + `cap sync ios` + simulator build. |
+| `npm run ci:native:android` | `ci-prepare-native.mjs` (`demo:build` → cap config → sync → verify `assets/public`) + `assembleDebug`. |
+| `npm run ci:native:ios` | Same web prep + `cap sync ios` + simulator build. |
 | `npm run e2e:native:android` | Maestro smoke: launch app + screenshot (requires emulator + [Maestro CLI](https://maestro.mobile.dev/) + debug APK installed). |
 | `npm run e2e:native:ios` | Same Maestro flow on a booted iOS Simulator with the app installed. |
 | `npm run create:sync-template` | Refresh `packages/create-appspresso/template` from `demo/` (run before publishing the CLI) |

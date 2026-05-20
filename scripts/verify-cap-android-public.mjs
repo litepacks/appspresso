@@ -2,7 +2,7 @@
 /**
  * After `cap sync`, Android must contain the copied web tree under assets/public.
  */
-import { existsSync, readdirSync, statSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 
 const publicDir = join(
@@ -46,4 +46,23 @@ if (total < MIN_BYTES) {
   );
 }
 
-console.log(`assets/public OK (${Math.round(total / 1024)} KiB)`);
+const indexHtml = join(publicDir, "index.html");
+const html = readFileSync(indexHtml, "utf8");
+const scriptMatch = html.match(/src="(\.\/assets\/[^"]+\.js)"/);
+if (!scriptMatch) {
+  fail("assets/public/index.html has no ./assets/*.js entry script.");
+}
+const entryJs = join(publicDir, scriptMatch[1].replace(/^\.\//, ""));
+if (!existsSync(entryJs)) {
+  fail(`assets/public missing bundled entry ${scriptMatch[1]}`);
+}
+const entrySize = statSync(entryJs).size;
+if (entrySize < 200_000) {
+  fail(
+    `assets/public entry script too small (${entrySize} bytes) — JS bundle not copied.`,
+  );
+}
+
+console.log(
+  `assets/public OK (${Math.round(total / 1024)} KiB, entry ${Math.round(entrySize / 1024)} KiB)`,
+);

@@ -4,5 +4,8 @@ appId: com.example.capacitorvitepoc
     clearState: true
 - extendedWaitUntil:
     visible: "Word practice"
-    timeout: 60000
+    timeout: 120000
+- extendedWaitUntil:
+    visible: "Progress"
+    timeout: 30000
 - takeScreenshot: smoke-home
