@@ -185,7 +185,7 @@ jobs:
         run: node scripts/ci-prepare-native.mjs ios
 
       - name: Build for iOS Simulator
-        run: appspresso native assemble ios
+        run: npx appspresso native assemble ios
 
       - name: Package iOS simulator app (zip)
         id: ios_app

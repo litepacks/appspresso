@@ -1,6 +1,6 @@
 {
   "name": "appspresso",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "One package for the backbone of mobile and web apps.",
   "type": "module",
   "sideEffects": false,
@@ -34,7 +34,7 @@
     "create:sync-template": "node scripts/sync-create-template.mjs",
     "cap:sync": "appspresso native sync",
     "ci:native:android": "node scripts/ensure-demo-capacitor-deps.mjs && node scripts/ci-prepare-native.mjs android && node scripts/assemble-android-debug.mjs",
-    "ci:native:ios": "node scripts/ensure-demo-capacitor-deps.mjs && node scripts/ensure-ios-platform.mjs && node scripts/ci-prepare-native.mjs ios && appspresso native assemble ios",
+    "ci:native:ios": "node scripts/ensure-demo-capacitor-deps.mjs && node scripts/ensure-ios-platform.mjs && node scripts/ci-prepare-native.mjs ios && node bin/appspresso.mjs native assemble ios",
     "e2e:native:android": "maestro test e2e/maestro",
     "e2e:native:ios": "maestro test e2e/maestro",
     "cap:open:android": "appspresso native open android",
