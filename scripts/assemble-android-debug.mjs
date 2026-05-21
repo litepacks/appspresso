@@ -69,7 +69,9 @@ if (entryBytes < 200_000) {
   );
 }
 
-const soFiles = [...listing.matchAll(/^\s*\d+\s+\S+\s+\S+\s+lib\/\S+\.so\s*$/gm)];
+const soFiles = [
+  ...listing.matchAll(/^\s*\d+\s+\S+\s+\S+\s+lib\/\S+\.so\s*$/gm),
+];
 if (soFiles.length < 4) {
   fail(
     `APK has only ${soFiles.length} native .so libraries — run cap sync after adding @capacitor/* to demo/package.json`,
@@ -83,7 +85,9 @@ const pluginsAsset = join(
 if (existsSync(pluginsAsset)) {
   const plugins = JSON.parse(readFileSync(pluginsAsset, "utf8"));
   if (!Array.isArray(plugins) || plugins.length === 0) {
-    fail("capacitor.plugins.json is empty — native plugins were not registered");
+    fail(
+      "capacitor.plugins.json is empty — native plugins were not registered",
+    );
   }
   console.log(`Capacitor plugins in APK: ${plugins.length}`);
 }

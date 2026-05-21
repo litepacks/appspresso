@@ -39,7 +39,14 @@ function runNodeScript(rel) {
 function findCapCli() {
   let dir = root;
   for (;;) {
-    const cap = join(dir, "node_modules", "@capacitor", "cli", "bin", "capacitor");
+    const cap = join(
+      dir,
+      "node_modules",
+      "@capacitor",
+      "cli",
+      "bin",
+      "capacitor",
+    );
     if (existsSync(cap)) return cap;
     const parent = join(dir, "..");
     if (parent === dir) return null;
@@ -60,7 +67,6 @@ run("npm", ["run", "build"], { cwd: demoRoot });
 console.log("==> verify demo/dist");
 runNodeScript("verify-native-web-bundle.mjs");
 
-const distDir = join(demoRoot, "dist");
 const capJsonPath = join(demoRoot, "capacitor.config.json");
 
 console.log(`==> appspresso cap:config (${demoRoot})`);
@@ -105,7 +111,9 @@ if (existsSync(pluginsAsset)) {
       `${pluginsAsset} is empty — add @capacitor/* to demo/package.json and re-run npm ci`,
     );
   }
-  console.log(`==> ${plugins.length} Capacitor plugins registered for ${platform}`);
+  console.log(
+    `==> ${plugins.length} Capacitor plugins registered for ${platform}`,
+  );
 } else if (platform === "android") {
   fail(`missing ${pluginsAsset} after cap sync`);
 }
