@@ -9,7 +9,8 @@ import {
   statSync,
   writeFileSync,
 } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { placeholderMap } from "./manifest.mjs";
 
 const TEXT_EXT = /\.(html?|tsx?|jsx?|css|json|md|mjs|cjs|ya?ml)$/i;
@@ -70,14 +71,15 @@ export function applyPathRemap(projectDir, manifest) {
 export function applyCapacitorLayer(projectDir, manifest) {
   const pkgPath = join(projectDir, "package.json");
   const pkg = JSON.parse(readFileSync(pkgPath, "utf8"));
-  pkg.dependencies = {
-    ...pkg.dependencies,
-    "@capacitor/core": "^7.0.0",
-    "@capacitor/cli": "^7.4.4",
-    "@capacitor/android": "^7.4.4",
-    "@capacitor/ios": "^7.4.4",
-    "@capacitor/action-sheet": "^7.0.4",
-    "@capacitor/dialog": "^7.0.4",
+  const capDepsPath = join(
+    dirname(fileURLToPath(import.meta.url)),
+    "../../scripts/capacitor-native-deps.json",
+  );
+  const capDeps = JSON.parse(readFileSync(capDepsPath, "utf8"));
+  pkg.dependencies = { ...capDeps.dependencies, ...pkg.dependencies };
+  pkg.devDependencies = {
+    ...pkg.devDependencies,
+    ...capDeps.devDependencies,
   };
   pkg.scripts = {
     ...pkg.scripts,

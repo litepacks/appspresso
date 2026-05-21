@@ -7,14 +7,14 @@ const distLib = join(root, "dist-lib");
 
 if (!existsSync(demoIndex)) {
   console.error(
-    "appspresso: demo/dist is missing. Run `npm run demo:build` locally, or ensure the CI build job uploaded native-web-assets.",
+    "appspresso: demo/dist is missing. Run `npm run demo:build` or `npm run ci:native:android`.",
   );
   process.exit(1);
 }
 
 if (!existsSync(distLib)) {
   console.error(
-    "appspresso: dist-lib is missing. Run `npm run build:lib` locally, or download native-web-assets from the CI build job.",
+    "appspresso: dist-lib is missing. Run `npm run build:lib` first.",
   );
   process.exit(1);
 }

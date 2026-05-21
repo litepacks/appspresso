@@ -51,7 +51,9 @@ export function findAppspressoProjectRoot(startDir) {
 
 /** @param {string} startDir */
 export function findAndroidProjectDir(startDir) {
+  const capRoot = findAppspressoProjectRoot(startDir);
   const candidates = [
+    ...(capRoot ? [join(capRoot, "android")] : []),
     join(startDir, "android"),
     join(startDir, "demo", "android"),
     join(startDir, "..", "android"),

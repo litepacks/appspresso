@@ -111,10 +111,24 @@ export async function cmdNativeSync(cwd, argv) {
   }
 
   await ensureCapacitorConfigJson(capRoot);
+  const hasPlatform = capArgs.some(
+    (a) => a === "android" || a === "ios" || a === "web",
+  );
   await runInherit(process.execPath, [capCli, "sync", ...capArgs], {
     cwd: capRoot,
     shell: false,
   });
+  if (hasPlatform) {
+    const platform = capArgs.find(
+      (a) => a === "android" || a === "ios" || a === "web",
+    );
+    if (platform) {
+      await runInherit(process.execPath, [capCli, "copy", platform], {
+        cwd: capRoot,
+        shell: false,
+      });
+    }
+  }
 }
 
 /**

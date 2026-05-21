@@ -113,22 +113,13 @@ jobs:
       - name: Demo build
         run: npm run demo:build
 
-      - name: Upload web assets for native jobs
-        uses: actions/upload-artifact@v4
-        with:
-          name: native-web-assets
-          path: |
-            demo/dist
-            dist-lib
-          retention-days: 3
-
       - name: Capacitor doctor (informational)
         continue-on-error: true
         run: npx appspresso doctor || true
 
   native-android:
     name: Native Android (assembleDebug)
-    needs: [build]
+    needs: [lint, unit]
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -147,11 +138,14 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
-      - name: Install
+      - name: Install dependencies
         run: npm ci
 
-      - name: Cap sync and assemble debug APK
-        run: npm run ci:native:android
+      - name: Prepare native Android (demo build + cap sync in demo/)
+        run: node scripts/ci-prepare-native.mjs android
+
+      - name: Assemble and verify debug APK
+        run: node scripts/assemble-android-debug.mjs
 
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
@@ -162,7 +156,7 @@ jobs:
 
   native-ios:
     name: Native iOS (simulator build)
-    needs: [build]
+    needs: [lint, unit]
     runs-on: macos-14
     timeout-minutes: 60
     env:
@@ -175,14 +169,23 @@ jobs:
           node-version: "20"
           cache: npm
 
-      - name: Install
+      - name: Install dependencies
         run: npm ci
+
+      - name: Ensure demo Capacitor deps
+        run: node scripts/ensure-demo-capacitor-deps.mjs
 
       - name: Install CocoaPods
         run: brew install cocoapods
 
-      - name: Cap sync and build for iOS Simulator
-        run: npm run ci:native:ios
+      - name: Ensure iOS platform (demo/)
+        run: node scripts/ensure-ios-platform.mjs
+
+      - name: Prepare native iOS (demo build + cap sync in demo/)
+        run: node scripts/ci-prepare-native.mjs ios
+
+      - name: Build for iOS Simulator
+        run: appspresso native assemble ios
 
       - name: Package iOS simulator app (zip)
         id: ios_app
