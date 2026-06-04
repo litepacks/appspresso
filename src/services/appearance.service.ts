@@ -95,10 +95,11 @@ export async function initAppearance(
   await setStatusBarTheme(resolvedTheme);
 }
 
-export async function hideSplashScreen(fadeOutDuration = 450): Promise<void> {
+export async function hideSplashScreen(): Promise<void> {
   if (!Capacitor.isNativePlatform()) return;
   try {
-    await SplashScreen.hide({ fadeOutDuration });
+    // Initial native splash fade uses `launchFadeOutDuration` in capacitor.config.json.
+    await SplashScreen.hide();
   } catch (e) {
     logger.warn("hideSplashScreen", { e: String(e) });
   }

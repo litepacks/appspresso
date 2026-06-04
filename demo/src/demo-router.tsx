@@ -46,13 +46,17 @@ function DemoLayout() {
         center={
           atRoot ? (
             <div className="flex w-full min-w-0 flex-col items-stretch gap-2">
-              <p className="text-pretty text-center text-base font-semibold leading-snug tracking-tight sm:text-lg">
+              <p
+                data-testid="demo-home-title"
+                className="text-pretty text-center text-base font-semibold leading-snug tracking-tight sm:text-lg"
+              >
                 {t(titleKey)}
               </p>
               <SearchInput
                 placeholder={t("app.searchPlaceholder")}
                 aria-label={t("app.searchAria")}
                 name="demo-header-search"
+                data-testid="demo-header-search"
               />
             </div>
           ) : undefined

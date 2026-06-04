@@ -1,1 +1,3 @@
 appId: com.example.capacitorvitepoc
+# Capacitor WebView: OS accessibility often misses React text — use Chrome DevTools hierarchy on Android.
+androidWebViewHierarchy: devtools

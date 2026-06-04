@@ -85,7 +85,8 @@ const { vite, capacitor, app } = defineAppspressoProject({
      * Demo uses `autoStart: false`; trigger manually via `appspressoDemoPing` from the playground.
      */
     backgroundRunner: {
-      enabled: true,
+      /** Off by default on demo APK — extra native runner + JS heap; enable in playground when testing. */
+      enabled: false,
       label: "com.example.capacitorvitepoc.background",
       src: "runners/background.js",
       event: "appspressoDemoPing",
@@ -106,6 +107,10 @@ const { vite, capacitor, app } = defineAppspressoProject({
     },
   },
   host: {
+    mount: {
+      /** Native WebView: StrictMode double-mount increases heap pressure on low-RAM phones. */
+      strictMode: false,
+    },
     hostBanner: {
       /** Disabled: title only in `AppTopBar`; removes duplicate top strip. */
       enabled: false,

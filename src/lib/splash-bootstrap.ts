@@ -13,7 +13,7 @@ const DEFAULT_MIN_MS = 900;
 const DEFAULT_EXIT_MS = 450;
 const DEFAULT_NATIVE_FADE_MS = 450;
 /** Hide native splash if JS never runs (stuck bridge). */
-export const SPLASH_NATIVE_FALLBACK_HIDE_MS = 12_000;
+export const SPLASH_NATIVE_FALLBACK_HIDE_MS = 8_000;
 
 export type SplashBootstrapTiming = {
   minDisplayMs: number;

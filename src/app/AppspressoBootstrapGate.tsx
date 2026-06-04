@@ -1,3 +1,4 @@
+import { Capacitor } from "@capacitor/core";
 import { motion, useReducedMotion } from "motion/react";
 import type { ReactNode } from "react";
 import { useMemo } from "react";
@@ -25,31 +26,48 @@ export function AppspressoBootstrapGate({
 
   const showSplash = phase !== "ready";
   const mountApp = phase === "exiting" || phase === "ready";
+  const isNative = Capacitor.isNativePlatform();
 
   if (phase === "loading") {
     return <BootstrapLoadingScreen />;
   }
 
+  const appShell = mountApp ? (
+    isNative ? (
+      <div
+        className="flex min-h-0 min-w-0 flex-1 flex-col transition-opacity"
+        style={{
+          opacity: phase === "ready" ? 1 : 0,
+          transitionDuration: reduceMotion ? "0ms" : `${exitSec * 1000}ms`,
+          pointerEvents: phase === "ready" ? "auto" : "none",
+        }}
+        aria-hidden={phase !== "ready"}
+      >
+        {children}
+      </div>
+    ) : (
+      <motion.div
+        className="flex min-h-0 min-w-0 flex-1 flex-col"
+        initial={reduceMotion ? false : { opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={
+          reduceMotion
+            ? { duration: 0 }
+            : { duration: exitSec, ease: easeOut }
+        }
+        style={{
+          pointerEvents: phase === "ready" ? "auto" : "none",
+        }}
+        aria-hidden={phase !== "ready"}
+      >
+        {children}
+      </motion.div>
+    )
+  ) : null;
+
   return (
     <>
-      {mountApp ? (
-        <motion.div
-          className="flex min-h-0 min-w-0 flex-1 flex-col"
-          initial={reduceMotion ? false : { opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={
-            reduceMotion
-              ? { duration: 0 }
-              : { duration: exitSec, ease: easeOut }
-          }
-          style={{
-            pointerEvents: phase === "ready" ? "auto" : "none",
-          }}
-          aria-hidden={phase !== "ready"}
-        >
-          {children}
-        </motion.div>
-      ) : null}
+      {appShell}
       {showSplash ? (
         <BootstrapLoadingScreen exiting={phase === "exiting"} />
       ) : null}

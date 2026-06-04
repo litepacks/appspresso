@@ -1,5 +1,6 @@
+import { Capacitor } from "@capacitor/core";
 import { useEffect, useState } from "react";
-import { runBootstrap } from "@/app/bootstrap";
+import { runBootstrap, runDeferredNativeBootstrap } from "@/app/bootstrap";
 import { delay, getSplashBootstrapTiming } from "@/lib/splash-bootstrap";
 
 export type AppspressoBootstrapPhase = "loading" | "exiting" | "ready";
@@ -25,6 +26,9 @@ export function useAppspressoBootstrapPhase(): AppspressoBootstrapPhase {
         const wait = Math.max(0, minDisplayMs - elapsed);
         if (wait > 0) await delay(wait);
         if (cancelled) return;
+        if (Capacitor.isNativePlatform()) {
+          runDeferredNativeBootstrap();
+        }
         setPhase("exiting");
         await delay(exitDurationMs);
         if (!cancelled) setPhase("ready");

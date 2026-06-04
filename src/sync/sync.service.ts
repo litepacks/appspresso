@@ -1,6 +1,6 @@
 import { Capacitor } from "@capacitor/core";
-import { CapacitorSQLite } from "@capacitor-community/sqlite";
 import { http } from "@/api/http";
+import { loadCapacitorSQLite } from "@/db/capacitor-sqlite";
 import { isSqliteOpen } from "@/db/sqlite";
 import { logger } from "@/lib/logger";
 import { initNetworkListeners } from "@/services/network.service";
@@ -45,6 +45,7 @@ function scheduleFlush(ms = 400) {
 
 async function nativeEnqueue(input: OutboxEnqueueInput): Promise<void> {
   if (!isSqliteOpen()) return;
+  const CapacitorSQLite = await loadCapacitorSQLite();
   await CapacitorSQLite.run({
     database: DB,
     statement:
@@ -61,6 +62,7 @@ async function nativeEnqueue(input: OutboxEnqueueInput): Promise<void> {
 
 async function nativePendingCount(): Promise<number> {
   if (!isSqliteOpen()) return 0;
+  const CapacitorSQLite = await loadCapacitorSQLite();
   const res = await CapacitorSQLite.query({
     database: DB,
     statement: "SELECT COUNT(*) as c FROM sync_outbox WHERE status = 'pending'",
@@ -73,6 +75,7 @@ async function nativeShiftOne(): Promise<{
   payload: string;
 } | null> {
   if (!isSqliteOpen()) return null;
+  const CapacitorSQLite = await loadCapacitorSQLite();
   const res = await CapacitorSQLite.query({
     database: DB,
     statement:
@@ -84,6 +87,7 @@ async function nativeShiftOne(): Promise<{
 }
 
 async function nativeDelete(id: number): Promise<void> {
+  const CapacitorSQLite = await loadCapacitorSQLite();
   await CapacitorSQLite.run({
     database: DB,
     statement: "DELETE FROM sync_outbox WHERE id = ?",
@@ -92,6 +96,7 @@ async function nativeDelete(id: number): Promise<void> {
 }
 
 async function nativeMarkFailed(id: number, attempts: number): Promise<void> {
+  const CapacitorSQLite = await loadCapacitorSQLite();
   await CapacitorSQLite.run({
     database: DB,
     statement: "UPDATE sync_outbox SET attempts = ?, status = ? WHERE id = ?",

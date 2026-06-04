@@ -2,9 +2,14 @@ appId: com.example.capacitorvitepoc
 ---
 - launchApp:
     clearState: true
+# Bootstrap splash → home (SQLite capped at 25s in runBootstrap)
 - extendedWaitUntil:
-    visible: "Word practice"
-    timeout: 120000
+    visible:
+      id: "demo-home-title"
+    timeout: 180000
+- extendedWaitUntil:
+    visible: "Search"
+    timeout: 30000
 - extendedWaitUntil:
     visible: "Progress"
     timeout: 30000

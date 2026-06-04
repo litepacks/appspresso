@@ -1,5 +1,5 @@
 import { Capacitor } from "@capacitor/core";
-import { CapacitorSQLite } from "@capacitor-community/sqlite";
+import { loadCapacitorSQLite } from "@/db/capacitor-sqlite";
 import { getMigrationStatements } from "@/db/migrations";
 import { logger } from "@/lib/logger";
 import type { SqliteSlice } from "@/state/atoms";
@@ -20,6 +20,7 @@ export async function initDatabase(
     return;
   }
   try {
+    const CapacitorSQLite = await loadCapacitorSQLite();
     await CapacitorSQLite.createConnection({
       database: DB,
       version: 1,
@@ -42,6 +43,7 @@ export async function initDatabase(
 
 export async function getSetting(key: string): Promise<string | null> {
   if (!opened) return null;
+  const CapacitorSQLite = await loadCapacitorSQLite();
   const res = await CapacitorSQLite.query({
     database: DB,
     statement: "SELECT value FROM app_settings WHERE key = ? LIMIT 1",
@@ -54,6 +56,7 @@ export async function getSetting(key: string): Promise<string | null> {
 
 export async function setSetting(key: string, value: string): Promise<void> {
   if (!opened) return;
+  const CapacitorSQLite = await loadCapacitorSQLite();
   await CapacitorSQLite.run({
     database: DB,
     statement:
@@ -65,6 +68,7 @@ export async function setSetting(key: string, value: string): Promise<void> {
 export async function closeDatabase(): Promise<void> {
   if (!opened) return;
   try {
+    const CapacitorSQLite = await loadCapacitorSQLite();
     await CapacitorSQLite.close({ database: DB });
     await CapacitorSQLite.closeConnection({ database: DB });
   } catch (e) {
@@ -79,6 +83,7 @@ export async function resetDatabaseMigrations(
   await closeDatabase();
   if (Capacitor.getPlatform() === "web") return;
   try {
+    const CapacitorSQLite = await loadCapacitorSQLite();
     await CapacitorSQLite.deleteDatabase({ database: DB });
   } catch (e) {
     logger.warn("resetDatabase", { e: String(e) });

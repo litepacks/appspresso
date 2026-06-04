@@ -109,6 +109,22 @@ export function createAppspressoViteConfig(options?: {
       outDir: "dist",
       /** Capacitor Android System WebView versions lag; avoid shipping syntax they cannot parse. */
       target: "es2020",
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (!id.includes("node_modules")) return;
+            if (
+              id.includes("@capacitor-community/sqlite") ||
+              id.includes("jeep-sqlite")
+            ) {
+              return "vendor-sqlite";
+            }
+            if (id.includes("/motion/") || id.includes("motion/react")) {
+              return "vendor-motion";
+            }
+          },
+        },
+      },
     },
     css: {
       postcss: {

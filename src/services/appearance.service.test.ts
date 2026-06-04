@@ -88,8 +88,8 @@ describe("appearance.service (native)", () => {
   });
 
   it("hideSplashScreen calls SplashScreen.hide on native", async () => {
-    await appearance.hideSplashScreen(300);
-    expect(mockSplashHide).toHaveBeenCalledWith({ fadeOutDuration: 300 });
+    await appearance.hideSplashScreen();
+    expect(mockSplashHide).toHaveBeenCalledWith();
   });
 
   it("setStatusBarTheme applies dark style on Android", async () => {
