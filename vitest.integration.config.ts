@@ -16,6 +16,10 @@ export default defineConfig({
   resolve: {
     alias: [
       {
+        find: /^appspresso\/template\/(.+)$/,
+        replacement: `${distLib}/pages/$1`,
+      },
+      {
         find: /^appspresso\/(.+)$/,
         replacement: `${distLib}/$1`,
       },

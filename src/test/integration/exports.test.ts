@@ -76,6 +76,11 @@ describe("appspresso dist-lib module resolution", () => {
     );
   });
 
+  it("template/Home resolves (alias of pages)", async () => {
+    const mod = await import("appspresso/template/Home");
+    expect(mod.default).toBeDefined();
+  });
+
   it("app/mount bootAppspresso", async () => {
     const { bootAppspresso, bootAppspressoHost } = await import(
       "appspresso/app/mount"

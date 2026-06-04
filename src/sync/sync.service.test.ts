@@ -34,6 +34,7 @@ vi.mock("@capacitor-community/sqlite", () => ({
 const {
   clearWebOutbox,
   enqueueMutationLikeOperation,
+  flushNativePendingBuffer,
   flushOutbox,
   initSyncLayer,
   teardownSyncLayer,
@@ -144,14 +145,49 @@ describe("sync.service", () => {
     expect(appStore.get(syncStatusAtom).pendingCount).toBe(0);
   });
 
+  it("native: buffers enqueue when SQLite is not open yet", async () => {
+    mockGetPlatform.mockReturnValue("ios");
+    mockIsSqliteOpen.mockReturnValue(false);
+
+    enqueueMutationLikeOperation({
+      operation: "buf",
+      payload: { path: "/api/buf" },
+    });
+
+    expect(appStore.get(syncStatusAtom).pendingCount).toBe(1);
+    expect(sqliteRun).not.toHaveBeenCalled();
+  });
+
+  it("native: flushNativePendingBuffer drains buffer after DB opens", async () => {
+    mockGetPlatform.mockReturnValue("ios");
+    mockIsSqliteOpen.mockReturnValue(false);
+
+    enqueueMutationLikeOperation({
+      operation: "buf",
+      payload: { path: "/api/buf2" },
+    });
+
+    mockIsSqliteOpen.mockReturnValue(true);
+    sqliteRun.mockResolvedValue({});
+    await flushNativePendingBuffer();
+
+    expect(sqliteRun).toHaveBeenCalledWith(
+      expect.objectContaining({
+        statement: expect.stringContaining("INSERT INTO sync_outbox"),
+      }),
+    );
+  });
+
   it("native: http failure marks row failed and sets lastError", async () => {
     mockGetPlatform.mockReturnValue("android");
     mockIsSqliteOpen.mockReturnValue(true);
     httpPost.mockRejectedValue(new Error("native-offline"));
 
-    sqliteQuery.mockResolvedValueOnce({
-      values: [[7, JSON.stringify({ path: "/api/z" })]],
-    });
+    sqliteQuery
+      .mockResolvedValueOnce({
+        values: [[7, JSON.stringify({ path: "/api/z" })]],
+      })
+      .mockResolvedValueOnce({ values: [[2]] });
 
     await flushOutbox();
 

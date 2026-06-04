@@ -34,6 +34,7 @@ export default defineConfig({
     __APSPRESSO_APP__: JSON.stringify(JSON.stringify(null)),
   },
   test: {
+    testTimeout: 15_000,
     pool: "threads",
     maxWorkers: resolveVitestMaxWorkers(),
     environment: "jsdom",

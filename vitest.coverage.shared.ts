@@ -21,5 +21,16 @@ export const sharedCoverageSettings = {
     "**/tsup*.ts",
     "**/src/test/**",
     "**/*.test.{ts,tsx}",
+    /** Template demo pages — unstable surface; covered by app/e2e, not unit thresholds. */
+    "**/src/pages/**",
+    "**/src/dev/**",
+    "**/src/app/router.tsx",
+    "**/src/app/App.tsx",
   ],
+  thresholds: {
+    lines: 68,
+    functions: 64,
+    branches: 56,
+    statements: 65,
+  },
 };

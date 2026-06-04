@@ -1,5 +1,6 @@
 import type { Session, SupabaseClient } from "@supabase/supabase-js";
 import type { AuthAdapter, AuthListener } from "@/auth/adapter";
+import { syncHttpAccessToken } from "@/auth/token-bridge";
 import type { AuthUser } from "@/auth/types";
 
 function mapSession(session: Session | null): {
@@ -32,8 +33,16 @@ function mapSession(session: Session | null): {
 export function createSupabaseAuthAdapter(client: SupabaseClient): AuthAdapter {
   return {
     subscribe(listener: AuthListener) {
+      void client.auth.getSession().then(({ data: { session } }) => {
+        void syncHttpAccessToken(session?.access_token ?? null).then(() => {
+          listener(mapSession(session));
+        });
+      });
+
       const { data } = client.auth.onAuthStateChange((_event, session) => {
-        listener(mapSession(session));
+        void syncHttpAccessToken(session?.access_token ?? null).then(() => {
+          listener(mapSession(session));
+        });
       });
       return () => {
         data.subscription.unsubscribe();
@@ -46,6 +55,7 @@ export function createSupabaseAuthAdapter(client: SupabaseClient): AuthAdapter {
     },
     async signOut() {
       await client.auth.signOut();
+      await syncHttpAccessToken(null);
     },
   };
 }

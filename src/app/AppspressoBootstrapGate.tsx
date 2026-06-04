@@ -2,8 +2,9 @@ import { Capacitor } from "@capacitor/core";
 import { motion, useReducedMotion } from "motion/react";
 import type { ReactNode } from "react";
 import { useMemo } from "react";
+import { BootstrapFailureScreen } from "@/app/BootstrapFailureScreen";
 import { BootstrapLoadingScreen } from "@/app/BootstrapLoadingScreen";
-import { useAppspressoBootstrapPhase } from "@/hooks/useAppspressoBootstrap";
+import { useAppspressoBootstrapState } from "@/hooks/useAppspressoBootstrap";
 import { getSplashBootstrapTiming } from "@/lib/splash-bootstrap";
 
 const easeOut: [number, number, number, number] = [0.22, 1, 0.36, 1];
@@ -19,7 +20,7 @@ export type AppspressoBootstrapGateProps = {
 export function AppspressoBootstrapGate({
   children,
 }: AppspressoBootstrapGateProps) {
-  const phase = useAppspressoBootstrapPhase();
+  const { phase, error, retry } = useAppspressoBootstrapState();
   const timing = useMemo(() => getSplashBootstrapTiming(), []);
   const reduceMotion = useReducedMotion();
   const exitSec = timing.exitDurationMs / 1000;
@@ -27,6 +28,10 @@ export function AppspressoBootstrapGate({
   const showSplash = phase !== "ready";
   const mountApp = phase === "exiting" || phase === "ready";
   const isNative = Capacitor.isNativePlatform();
+
+  if (phase === "failed" && error) {
+    return <BootstrapFailureScreen error={error} onRetry={retry} />;
+  }
 
   if (phase === "loading") {
     return <BootstrapLoadingScreen />;
@@ -51,9 +56,7 @@ export function AppspressoBootstrapGate({
         initial={reduceMotion ? false : { opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={
-          reduceMotion
-            ? { duration: 0 }
-            : { duration: exitSec, ease: easeOut }
+          reduceMotion ? { duration: 0 } : { duration: exitSec, ease: easeOut }
         }
         style={{
           pointerEvents: phase === "ready" ? "auto" : "none",

@@ -1,6 +1,6 @@
 {
   "name": "appspresso",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "One package for the backbone of mobile and web apps.",
   "type": "module",
   "sideEffects": false,
@@ -27,6 +27,10 @@
     "test:integration:coverage": "npm run build:lib && vitest run --config vitest.integration.config.ts --coverage",
     "test:integration:watch": "npm run build:lib && vitest --config vitest.integration.config.ts",
     "test:cli": "node --test packages/cli-shared/*.test.mjs",
+    "test:all": "npm run test:run && npm run test:cli && npm run test:integration",
+    "verify:maestro-app-id": "node scripts/verify-maestro-app-id.mjs",
+    "verify:bundle-budget": "node scripts/verify-demo-bundle-budget.mjs",
+    "audit:ci": "npm audit --audit-level=high",
     "demo:dev": "npm run build:lib && npm run dev -w demo",
     "demo:build": "npm run build:lib && npm run build -w demo",
     "demo:cap-config": "npm run cap:config -w demo",
@@ -202,6 +206,11 @@
       "default": "./dist-lib/i18n.js"
     },
     "./pages/*": {
+      "types": "./dist-lib/pages/*.d.ts",
+      "import": "./dist-lib/pages/*.js",
+      "default": "./dist-lib/pages/*.js"
+    },
+    "./template/*": {
       "types": "./dist-lib/pages/*.d.ts",
       "import": "./dist-lib/pages/*.js",
       "default": "./dist-lib/pages/*.js"

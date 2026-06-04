@@ -17,10 +17,7 @@ export function BootstrapLoadingScreenNative({
 }: BootstrapLoadingScreenProps) {
   const { t } = useTranslation();
   const timing = useMemo(() => getSplashBootstrapTiming(), []);
-  const {
-    webPublicPath: splashUrl,
-    backgroundColor,
-  } = timing;
+  const { webPublicPath: splashUrl, backgroundColor } = timing;
   const darkBg = isSplashBackgroundDark(backgroundColor);
   const [nativeRevealed, setNativeRevealed] = useState(false);
 

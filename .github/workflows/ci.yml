@@ -7,6 +7,23 @@ on:
     branches: [main, master]
 
 jobs:
+  security-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: npm audit (high+)
+        run: npm run audit:ci
+
   lint:
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -92,8 +109,16 @@ jobs:
             coverage/lcov.info
             coverage/index.html
 
+  verify-maestro-app-id:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Maestro appId matches demo
+        run: npm run verify:maestro-app-id
+
   build:
-    needs: [lint, unit, integration, coverage]
+    needs: [lint, unit, integration, coverage, security-audit, verify-maestro-app-id]
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -112,6 +137,9 @@ jobs:
 
       - name: Demo build
         run: npm run demo:build
+
+      - name: Demo bundle budget
+        run: npm run verify:bundle-budget
 
       - name: Capacitor doctor (informational)
         continue-on-error: true

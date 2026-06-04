@@ -8,6 +8,7 @@ import {
 } from "react";
 import type { AuthAdapter } from "@/auth/adapter";
 import { createDemoAuthAdapter } from "@/auth/adapters/demo";
+import { hydrateTokensFromStorage } from "@/auth/session-store";
 import type { AuthStatus, AuthUser } from "@/auth/types";
 
 export type AuthCtx = {
@@ -38,6 +39,7 @@ export function AuthProvider({
   const [status, setStatus] = useState<AuthStatus>("loading");
 
   useEffect(() => {
+    void hydrateTokensFromStorage();
     return adapter.subscribe(({ user: u, status: s }) => {
       setUser(u);
       setStatus(s);

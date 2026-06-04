@@ -73,6 +73,16 @@ export type SqliteSlice = {
 
 export const sqliteStatusAtom = atom<SqliteSlice>({ available: false });
 
+export type BootstrapStatusSlice =
+  | { phase: "idle" }
+  | { phase: "running" }
+  | { phase: "ready" }
+  | { phase: "failed"; error: string };
+
+export const bootstrapStatusAtom = atom<BootstrapStatusSlice>({
+  phase: "idle",
+});
+
 export type SyncSlice = {
   pendingCount: number;
   isFlushing: boolean;

@@ -82,6 +82,10 @@ Only `VITE_*` keys are exposed to the client (never put secrets there).
 | `npm run preview` | Preview production build |
 | `npm run lint` | Biome |
 | `npm run test:run` | Vitest unit tests (excludes `src/test/integration`) |
+| `npm run test:all` | Unit + CLI + integration |
+| `npm run test:coverage` | Unit tests with coverage thresholds (CI) |
+| `npm run verify:maestro-app-id` | Maestro `appId` matches demo config |
+| `npm run audit:ci` | Fail on high/critical npm audit advisories |
 | `npm run test:integration` | `build:lib` + Vitest against package output (`appspresso/...` alias → `dist-lib`) |
 | `npm run test:integration:coverage` | Same integration suite + `dist-lib` coverage (with source maps) → `coverage-integration/` |
 | `npm run test:integration:watch` | Integration tests in watch mode (build lib first) |
@@ -234,7 +238,7 @@ After publishing: install `appspresso` from your registry (`private: false`; use
 Subpaths mirror the source tree via `exports`:
 
 ```ts
-import Home from "appspresso/pages/Home";
+import Home from "appspresso/template/Home"; // or appspresso/pages/Home (same build; template UI is unstable in 0.x)
 import { http } from "appspresso/api/http";
 import { getEnvConfig } from "appspresso/config";
 import { flushOutbox } from "appspresso/sync/sync.service";
@@ -244,6 +248,10 @@ import { runBootstrap } from "appspresso/app/bootstrap";
 ```
 
 **Router / `route-tree`**: Not shipped in the package (app-specific lazy routes). The host app keeps its own `router.tsx` / `route-tree.ts` and imports pages as above.
+
+**Auth + HTTP:** Firebase/Supabase adapters sync access tokens into `session-store` so `api/http` sends `Authorization: Bearer`. See [docs/architecture/README.md](docs/architecture/README.md) and [docs/security.md](docs/security.md).
+
+**Contributing / testing:** [CONTRIBUTING.md](CONTRIBUTING.md), [docs/testing.md](docs/testing.md), [CHANGELOG.md](CHANGELOG.md).
 
 ### Consuming Vite app
 

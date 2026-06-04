@@ -2,6 +2,7 @@ import { SecureStorage } from "@aparajita/capacitor-secure-storage";
 import { Capacitor } from "@capacitor/core";
 import { STORAGE_KEY_PREFIX } from "@/config/constants";
 import { logger } from "@/lib/logger";
+import { reportError } from "@/lib/reportError";
 
 const isNative = Capacitor.isNativePlatform();
 
@@ -19,6 +20,7 @@ export async function secureStorageGet(key: string): Promise<string | null> {
     return await SecureStorage.getItem(key);
   } catch (e) {
     logger.warn("secureStorageGet", { key, e: String(e) });
+    reportError(e, { kind: "secureStorage.fallback", op: "get", key });
     return mem.get(key) ?? null;
   }
 }
@@ -39,6 +41,7 @@ export async function secureStorageSet(
     await SecureStorage.setItem(key, value);
   } catch (e) {
     logger.warn("secureStorageSet", { key, e: String(e) });
+    reportError(e, { kind: "secureStorage.fallback", op: "set", key });
     mem.set(key, value);
   }
 }

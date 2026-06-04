@@ -8,6 +8,7 @@ import {
   isSplashBackgroundDark,
 } from "@/lib/splash-bootstrap";
 import { splashWebAnimationLoops } from "@/motion/splash-web-animations";
+
 const splashImgClass =
   "max-h-44 max-w-[min(88vw,22rem)] object-contain select-none drop-shadow-sm";
 

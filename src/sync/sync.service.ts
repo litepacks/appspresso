@@ -15,6 +15,11 @@ import {
 } from "./web-outbox";
 
 const DB = "app_kit_db";
+const MAX_NATIVE_ATTEMPTS = 5;
+const NATIVE_FLUSH_BACKOFF_MS = 400;
+
+/** Held until native SQLite opens (cold start defers DB init). */
+const nativePendingBuffer: OutboxEnqueueInput[] = [];
 
 let flushTimer: ReturnType<typeof setTimeout> | null = null;
 let onlineCleanup: (() => void) | null = null;
@@ -43,8 +48,7 @@ function scheduleFlush(ms = 400) {
   }, ms);
 }
 
-async function nativeEnqueue(input: OutboxEnqueueInput): Promise<void> {
-  if (!isSqliteOpen()) return;
+async function nativeInsertRow(input: OutboxEnqueueInput): Promise<void> {
   const CapacitorSQLite = await loadCapacitorSQLite();
   await CapacitorSQLite.run({
     database: DB,
@@ -60,8 +64,31 @@ async function nativeEnqueue(input: OutboxEnqueueInput): Promise<void> {
   });
 }
 
+async function nativeEnqueue(input: OutboxEnqueueInput): Promise<void> {
+  if (!isSqliteOpen()) {
+    nativePendingBuffer.push(input);
+    patchSync((s) => ({
+      ...s,
+      pendingCount: s.pendingCount + 1,
+    }));
+    return;
+  }
+  await nativeInsertRow(input);
+}
+
+/** Drain in-memory buffer after `initDatabase` on native. */
+export async function flushNativePendingBuffer(): Promise<void> {
+  if (Capacitor.getPlatform() === "web" || !isSqliteOpen()) return;
+  while (nativePendingBuffer.length > 0) {
+    const item = nativePendingBuffer.shift();
+    if (!item) break;
+    await nativeInsertRow(item);
+  }
+  updatePendingCount();
+}
+
 async function nativePendingCount(): Promise<number> {
-  if (!isSqliteOpen()) return 0;
+  if (!isSqliteOpen()) return nativePendingBuffer.length;
   const CapacitorSQLite = await loadCapacitorSQLite();
   const res = await CapacitorSQLite.query({
     database: DB,
@@ -95,23 +122,38 @@ async function nativeDelete(id: number): Promise<void> {
   });
 }
 
-async function nativeMarkFailed(id: number, attempts: number): Promise<void> {
+async function nativeGetAttempts(id: number): Promise<number> {
+  const CapacitorSQLite = await loadCapacitorSQLite();
+  const res = await CapacitorSQLite.query({
+    database: DB,
+    statement: "SELECT attempts FROM sync_outbox WHERE id = ?",
+    values: [id],
+  });
+  return Number(res?.values?.[0]?.[0] ?? 0);
+}
+
+async function nativeMarkFailed(id: number): Promise<void> {
+  const prev = await nativeGetAttempts(id);
+  const attempts = prev + 1;
   const CapacitorSQLite = await loadCapacitorSQLite();
   await CapacitorSQLite.run({
     database: DB,
     statement: "UPDATE sync_outbox SET attempts = ?, status = ? WHERE id = ?",
-    values: [attempts, attempts > 4 ? "failed" : "pending", id],
+    values: [
+      attempts,
+      attempts >= MAX_NATIVE_ATTEMPTS ? "failed" : "pending",
+      id,
+    ],
   });
 }
 
 export function enqueueMutationLikeOperation(input: OutboxEnqueueInput): void {
   if (Capacitor.getPlatform() === "web") {
     webOutboxEnqueue(input);
-  } else {
-    void nativeEnqueue(input).then(() => updatePendingCount());
+    updatePendingCount();
     return;
   }
-  updatePendingCount();
+  void nativeEnqueue(input).then(() => updatePendingCount());
 }
 
 function updatePendingCount() {
@@ -182,12 +224,13 @@ export async function flushOutbox(): Promise<void> {
     scheduleFlush(0);
   } catch (e) {
     logger.warn("flushOutbox native", { e: String(e) });
-    await nativeMarkFailed(row.id, 1);
+    await nativeMarkFailed(row.id);
     patchSync((s) => ({
       ...s,
       isFlushing: false,
       lastError: String(e),
     }));
+    scheduleFlush(NATIVE_FLUSH_BACKOFF_MS);
   }
 }
 

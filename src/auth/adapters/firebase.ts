@@ -6,6 +6,7 @@ import {
   type User,
 } from "firebase/auth";
 import type { AuthAdapter, AuthListener } from "@/auth/adapter";
+import { syncHttpAccessToken } from "@/auth/token-bridge";
 import type { AuthUser } from "@/auth/types";
 
 function mapUser(u: User | null): AuthUser | null {
@@ -25,10 +26,18 @@ export function createFirebaseAuthAdapter(auth: Auth): AuthAdapter {
   return {
     subscribe(listener: AuthListener) {
       const unsub = onAuthStateChanged(auth, (u) => {
-        listener({
-          user: mapUser(u),
-          status: u ? "signedIn" : "signedOut",
-        });
+        void (async () => {
+          if (u) {
+            const token = await u.getIdToken();
+            await syncHttpAccessToken(token);
+          } else {
+            await syncHttpAccessToken(null);
+          }
+          listener({
+            user: mapUser(u),
+            status: u ? "signedIn" : "signedOut",
+          });
+        })();
       });
       return unsub;
     },
@@ -37,6 +46,7 @@ export function createFirebaseAuthAdapter(auth: Auth): AuthAdapter {
     },
     async signOut() {
       await firebaseSignOut(auth);
+      await syncHttpAccessToken(null);
     },
   };
 }
