@@ -168,6 +168,8 @@ function collectEntries(): Record<string, string> {
     "build/inject-env": path.join("src", "build", "inject-env.ts"),
     "build/vite-config": path.join("src", "build", "vite-config.ts"),
     "build/project-config": path.join("src", "build", "project-config.ts"),
+    "build/app-meta.schema": path.join("src", "build", "app-meta.schema.ts"),
+    studio: path.join("src", "studio", "index.ts"),
     "build/injected-app-meta": path.join(
       "src",
       "build",

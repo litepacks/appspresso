@@ -16,6 +16,7 @@ import { routeNative } from "./native.mjs";
 import { findCapacitorCli, findViteCli } from "./paths.mjs";
 import { npmScriptCommands, runNpmScriptCommand } from "./scripts.mjs";
 import { runSyncCommand } from "./sync.mjs";
+import { runStudio } from "./studio.mjs";
 import {
   runModuleAdd,
   runModuleRemove,
@@ -113,6 +114,29 @@ export async function runProgram(argv = process.argv) {
   cli.command("analyze", "Report dist/assets sizes after build").action(() => {
     runAnalyze(process.cwd());
   });
+
+  cli
+    .command("studio", "Local Studio UI for typed project configuration")
+    .option("--check", "Validate all Studio domains (CI)")
+    .option("--json", "Machine-readable check report")
+    .option("--port <n>", "Studio server port", { default: 5178 })
+    .action(async (options) => {
+      await runStudio(process.cwd(), {
+        check: Boolean(options.check),
+        json: Boolean(options.json),
+        port: Number(options.port),
+      });
+    });
+
+  cli
+    .command("config validate", "Alias for `appspresso studio --check`")
+    .option("--json", "Machine-readable check report")
+    .action(async (options) => {
+      await runStudio(process.cwd(), {
+        check: true,
+        json: Boolean(options.json),
+      });
+    });
 
   cli
     .command("clean", "Remove dist, coverage, and native build caches")

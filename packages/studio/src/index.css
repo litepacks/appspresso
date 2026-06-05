@@ -1,0 +1,127 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 240 6% 4%;
+  --foreground: 0 0% 96%;
+  --card: 240 4% 10%;
+  --card-foreground: 0 0% 96%;
+  --popover: 240 5% 9%;
+  --popover-foreground: 0 0% 96%;
+  --primary: 217 91% 60%;
+  --primary-foreground: 222 47% 6%;
+  --secondary: 240 4% 14%;
+  --secondary-foreground: 0 0% 90%;
+  --muted: 240 4% 12%;
+  --muted-foreground: 240 4% 58%;
+  --accent: 240 4% 15%;
+  --accent-foreground: 0 0% 96%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 240 4% 17%;
+  --input: 240 4% 14%;
+  --ring: 217 91% 60%;
+  --sidebar: 240 6% 3%;
+  --radius: 0.5rem;
+  --shadow-card: 0 0 0 1px rgb(255 255 255 / 0.04);
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans text-sm antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+}
+
+@layer components {
+  .studio-shell {
+    @apply flex h-screen flex-nowrap overflow-hidden bg-background;
+  }
+
+  .studio-main {
+    @apply flex min-h-0 min-w-0 flex-1 flex-col bg-background;
+  }
+
+  .studio-content {
+    @apply w-full max-w-none px-4 py-3;
+  }
+
+  .studio-panel {
+    @apply overflow-hidden rounded-lg border border-border bg-card;
+  }
+
+  .studio-inset {
+    @apply rounded-md border border-border/60 bg-muted/25;
+  }
+
+  .studio-row {
+    @apply flex items-center justify-between gap-3 border-b border-border/40 px-4 py-2 last:border-0;
+  }
+
+  .studio-nav-item {
+    @apply flex w-full max-w-full items-center gap-2 rounded-md px-2 py-1.5 text-xs font-medium text-muted-foreground transition-colors;
+  }
+
+  .studio-nav-item:hover {
+    @apply bg-accent/70 text-foreground;
+  }
+
+  .studio-nav-active {
+    @apply bg-accent text-foreground;
+  }
+
+  .studio-nav-icon {
+    @apply flex size-6 shrink-0 items-center justify-center rounded-md bg-muted/40 text-muted-foreground;
+  }
+
+  .studio-nav-active .studio-nav-icon {
+    @apply bg-primary/15 text-primary;
+  }
+
+  .studio-item {
+    @apply border-b border-border/40 last:border-0;
+  }
+
+  .studio-item-header {
+    @apply flex items-center justify-between gap-2 px-4 py-2 transition-colors hover:bg-muted/20;
+  }
+
+  .studio-item-body {
+    @apply grid gap-3 border-t border-border/30 bg-muted/10 px-4 py-3 sm:grid-cols-2;
+  }
+
+  .studio-switch-row {
+    @apply flex items-center justify-between gap-3 rounded-md border border-border/50 bg-background/50 px-3 py-2;
+  }
+
+  .studio-code {
+    @apply overflow-hidden rounded-md border border-border/60 bg-[hsl(240_6%_3%)] font-mono;
+  }
+
+  .studio-empty {
+    @apply flex flex-col items-center justify-center px-6 py-10 text-center;
+  }
+
+  .studio-status-bar {
+    @apply flex shrink-0 items-center justify-between gap-3 border-t border-border bg-card px-5 py-2;
+  }
+
+  .studio-toast {
+    @apply pointer-events-auto fixed bottom-4 right-4 z-50 max-w-xs animate-in slide-in-from-bottom-2 fade-in duration-200;
+  }
+
+  .studio-kbd {
+    @apply rounded border border-border/60 bg-muted/30 px-1 py-px font-mono text-[9px] text-muted-foreground;
+  }
+}

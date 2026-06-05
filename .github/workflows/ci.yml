@@ -72,7 +72,9 @@ jobs:
       - name: Create scaffold smoke
         run: npm run test:create-smoke
 
-  integration:
+      - name: Studio config check (demo)
+        working-directory: demo
+        run: node ../bin/appspresso.mjs studio --check
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:

@@ -1,4 +1,5 @@
 import { defineAppspressoProject } from "appspresso/build/project-config";
+import { theme } from "./appspresso.theme";
 
 const { vite, capacitor, app } = defineAppspressoProject({
   app: {
@@ -12,24 +13,8 @@ const { vite, capacitor, app } = defineAppspressoProject({
      * Android / iOS launcher icons need raster assets — at demo root:
      * `npm run cap:assets` (`public/icon.svg` + `public/splash.svg` → `@capacitor/assets`).
      */
-    icon: "public/icon.svg",
-    /**
-     * HSL triples (compatible with `hsl(var(--token))`). If empty, only `appspresso/theme/index.css` defaults apply.
-     */
-    theme: {
-      palette: {
-        light: {
-          primary: "221 83% 53%",
-          primaryForeground: "0 0% 100%",
-          ring: "221 83% 53%",
-        },
-        dark: {
-          primary: "217 91% 60%",
-          primaryForeground: "222 47% 11%",
-          ring: "217 91% 60%",
-        },
-      },
-    },
+    icon: theme.assets.icon,
+    theme: { palette: theme.palette },
     splash: {
       launchShowDuration: 3000,
       /**

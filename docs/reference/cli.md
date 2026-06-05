@@ -9,6 +9,9 @@
 | `appspresso doctor` | Environment + project checks |
 | `appspresso info [--map]` | Project summary |
 | `appspresso analyze` | `dist/assets` sizes (after build) |
+| `appspresso studio` | Local Studio UI (`127.0.0.1`, dev-only) |
+| `appspresso studio --check [--json]` | Validate all config domains (CI) |
+| `appspresso config validate` | Alias for `studio --check` |
 | `appspresso clean [-y]` | Remove build artifacts |
 
 ### Init flags

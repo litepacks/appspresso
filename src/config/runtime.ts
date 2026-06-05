@@ -1,4 +1,6 @@
 import { logger } from "@/lib/logger";
+import { flagsDefaultsToRecord } from "@/studio/flags/define";
+import type { AppspressoFlagsConfig } from "@/studio/flags/schema";
 import { getEnvConfig } from "./env";
 import {
   type FeatureFlagsRecord,
@@ -8,6 +10,7 @@ import {
 import type { RuntimeConfig } from "./types";
 
 let runtimeCache: RuntimeConfig = {};
+let flagRegistryDefaults: FeatureFlagsRecord = {};
 
 const trim = (v: string | undefined): string | undefined => {
   if (v === undefined || v === "") return undefined;
@@ -15,9 +18,23 @@ const trim = (v: string | undefined): string | undefined => {
   return t === "" ? undefined : t;
 };
 
+/** Call before bootstrap if the host exports `appspresso.flags.ts`. */
+export function setFeatureFlagRegistry(
+  registry: AppspressoFlagsConfig | FeatureFlagsRecord,
+): void {
+  const first = Object.values(registry)[0];
+  flagRegistryDefaults =
+    first != null && typeof first === "object" && "default" in first
+      ? flagsDefaultsToRecord(registry as AppspressoFlagsConfig)
+      : { ...(registry as FeatureFlagsRecord) };
+}
+
 export async function loadRuntimeConfig(): Promise<RuntimeConfig> {
   const env = getEnvConfig();
-  let flags: FeatureFlagsRecord = { ...(env.featureFlags ?? {}) };
+  let flags: FeatureFlagsRecord = {
+    ...flagRegistryDefaults,
+    ...(env.featureFlags ?? {}),
+  };
 
   const url = trim(import.meta.env.VITE_FEATURE_FLAGS_URL);
   if (url) {

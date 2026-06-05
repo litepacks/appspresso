@@ -30,6 +30,7 @@ export {
   getRuntimeConfig,
   isFeatureEnabled,
   loadRuntimeConfig,
+  setFeatureFlagRegistry,
 } from "./runtime";
 export type { RuntimeConfig, ThemePreference } from "./types";
 export {

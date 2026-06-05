@@ -21,7 +21,8 @@
     "packages/module-auth",
     "packages/module-settings",
     "packages/module-notifications",
-    "packages/module-subscriptions"
+    "packages/module-subscriptions",
+    "packages/studio"
   ],
   "scripts": {
     "dev": "vite",
@@ -452,6 +453,16 @@
       "types": "./dist-lib/build/injected-runtime.d.ts",
       "import": "./dist-lib/build/injected-runtime.js",
       "default": "./dist-lib/build/injected-runtime.js"
+    },
+    "./build/app-meta.schema": {
+      "types": "./dist-lib/build/app-meta.schema.d.ts",
+      "import": "./dist-lib/build/app-meta.schema.js",
+      "default": "./dist-lib/build/app-meta.schema.js"
+    },
+    "./studio": {
+      "types": "./dist-lib/studio.d.ts",
+      "import": "./dist-lib/studio.js",
+      "default": "./dist-lib/studio.js"
     }
   }
 }
