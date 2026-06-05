@@ -3,6 +3,7 @@ import {
   delay,
   getSplashBootstrapTiming,
   isSplashBackgroundDark,
+  SPLASH_NATIVE_FALLBACK_HIDE_MS,
 } from "./splash-bootstrap";
 
 describe("splash-bootstrap", () => {
@@ -17,6 +18,10 @@ describe("splash-bootstrap", () => {
   it("isSplashBackgroundDark detects dark background", () => {
     expect(isSplashBackgroundDark("#0f172a")).toBe(true);
     expect(isSplashBackgroundDark("#ffffff")).toBe(false);
+  });
+
+  it("uses 4s native splash fallback hide", () => {
+    expect(SPLASH_NATIVE_FALLBACK_HIDE_MS).toBe(4_000);
   });
 
   it("delay bekler", async () => {

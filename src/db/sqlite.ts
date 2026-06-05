@@ -1,12 +1,12 @@
 import { Capacitor } from "@capacitor/core";
 import { loadCapacitorSQLite } from "@/db/capacitor-sqlite";
-import { getMigrationStatements } from "@/db/migrations";
+import { SQLITE_DB_NAME } from "@/db/constants";
+import { runMigrations } from "@/db/migrate";
+import { isSqliteOpen, markSqliteOpen } from "@/db/sqlite-open";
 import { logger } from "@/lib/logger";
 import type { SqliteSlice } from "@/state/atoms";
 
-const DB = "app_kit_db";
-
-let opened = false;
+const DB = SQLITE_DB_NAME;
 
 function slice(unavailable: boolean, messageKey?: string): SqliteSlice {
   return { available: !unavailable, messageKey };
@@ -28,12 +28,8 @@ export async function initDatabase(
       mode: "no-encryption",
     });
     await CapacitorSQLite.open({ database: DB });
-    await CapacitorSQLite.execute({
-      database: DB,
-      statements: getMigrationStatements(),
-      transaction: true,
-    });
-    opened = true;
+    await runMigrations();
+    markSqliteOpen(true);
     setStatus(slice(false));
   } catch (e) {
     logger.error("initDatabase", { e: String(e) });
@@ -42,7 +38,7 @@ export async function initDatabase(
 }
 
 export async function getSetting(key: string): Promise<string | null> {
-  if (!opened) return null;
+  if (!isSqliteOpen()) return null;
   const CapacitorSQLite = await loadCapacitorSQLite();
   const res = await CapacitorSQLite.query({
     database: DB,
@@ -55,7 +51,7 @@ export async function getSetting(key: string): Promise<string | null> {
 }
 
 export async function setSetting(key: string, value: string): Promise<void> {
-  if (!opened) return;
+  if (!isSqliteOpen()) return;
   const CapacitorSQLite = await loadCapacitorSQLite();
   await CapacitorSQLite.run({
     database: DB,
@@ -66,7 +62,7 @@ export async function setSetting(key: string, value: string): Promise<void> {
 }
 
 export async function closeDatabase(): Promise<void> {
-  if (!opened) return;
+  if (!isSqliteOpen()) return;
   try {
     const CapacitorSQLite = await loadCapacitorSQLite();
     await CapacitorSQLite.close({ database: DB });
@@ -74,7 +70,7 @@ export async function closeDatabase(): Promise<void> {
   } catch (e) {
     logger.warn("closeDatabase", { e: String(e) });
   }
-  opened = false;
+  markSqliteOpen(false);
 }
 
 export async function resetDatabaseMigrations(
@@ -91,6 +87,4 @@ export async function resetDatabaseMigrations(
   await initDatabase(setStatus);
 }
 
-export function isSqliteOpen(): boolean {
-  return opened;
-}
+export { isSqliteOpen, markSqliteOpen } from "@/db/sqlite-open";

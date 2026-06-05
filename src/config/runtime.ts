@@ -25,6 +25,7 @@ export async function loadRuntimeConfig(): Promise<RuntimeConfig> {
       const res = await fetch(url, {
         credentials: "omit",
         cache: "no-store",
+        signal: AbortSignal.timeout(5_000),
       });
       if (res.ok) {
         const raw: unknown = await res.json();

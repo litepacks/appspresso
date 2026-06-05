@@ -99,6 +99,23 @@ describe("appspresso dist-lib module resolution", () => {
     expect(typeof HostAppFrame).toBe("function");
   });
 
+  it("app/AppspressoHost", async () => {
+    const { AppspressoHost } = await import("appspresso/app/AppspressoHost");
+    expect(typeof AppspressoHost).toBe("function");
+  });
+
+  it("plugin definePlugin + registry", async () => {
+    const { definePlugin, createPluginRegistry } = await import(
+      "appspresso/plugin"
+    );
+    const p = definePlugin({
+      name: "@test/export",
+      setup() {},
+    })();
+    const reg = createPluginRegistry([p]);
+    expect(reg.summary.names).toContain("@test/export");
+  });
+
   it("theme/apply-theme", async () => {
     const { resolveTheme } = await import("appspresso/theme/apply-theme");
     expect(resolveTheme("light", true)).toBe("light");

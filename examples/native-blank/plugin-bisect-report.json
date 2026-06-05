@@ -1,0 +1,147 @@
+[
+  {
+    "id": "baseline",
+    "label": "baseline (app + splash only)",
+    "deps": [],
+    "alive": true,
+    "pid": "7417",
+    "oom": false,
+    "rendererCrash": false,
+    "tileMem": false,
+    "crashed": false,
+    "at": "2026-06-05T09:39:10.012Z"
+  },
+  {
+    "id": "sqlite",
+    "label": "@capacitor-community/sqlite",
+    "deps": [
+      "@capacitor-community/sqlite"
+    ],
+    "alive": true,
+    "pid": "7795",
+    "oom": false,
+    "rendererCrash": false,
+    "tileMem": false,
+    "crashed": false,
+    "at": "2026-06-05T09:41:02.408Z"
+  },
+  {
+    "id": "action-sheet",
+    "label": "@capacitor/action-sheet",
+    "deps": [
+      "@capacitor/action-sheet"
+    ],
+    "alive": true,
+    "pid": "8145",
+    "oom": false,
+    "rendererCrash": false,
+    "tileMem": false,
+    "crashed": false,
+    "at": "2026-06-05T09:42:20.759Z"
+  },
+  {
+    "id": "device",
+    "label": "@capacitor/device",
+    "deps": [
+      "@capacitor/device"
+    ],
+    "alive": true,
+    "pid": "8549",
+    "oom": false,
+    "rendererCrash": false,
+    "tileMem": false,
+    "crashed": false,
+    "at": "2026-06-05T09:43:23.045Z"
+  },
+  {
+    "id": "dialog",
+    "label": "@capacitor/dialog",
+    "deps": [
+      "@capacitor/dialog"
+    ],
+    "alive": true,
+    "pid": "8883",
+    "oom": false,
+    "rendererCrash": false,
+    "tileMem": false,
+    "crashed": false,
+    "at": "2026-06-05T09:44:22.001Z"
+  },
+  {
+    "id": "filesystem",
+    "label": "@capacitor/filesystem",
+    "deps": [
+      "@capacitor/filesystem"
+    ],
+    "alive": true,
+    "pid": "9785",
+    "oom": false,
+    "rendererCrash": false,
+    "tileMem": false,
+    "crashed": false,
+    "at": "2026-06-05T09:46:26.367Z"
+  },
+  {
+    "id": "inappbrowser",
+    "label": "@capacitor/inappbrowser",
+    "error": "./gradlew assembleDebug failed (1)",
+    "crashed": true,
+    "at": "2026-06-05T09:46:36.437Z"
+  },
+  {
+    "id": "keyboard",
+    "label": "@capacitor/keyboard",
+    "deps": [
+      "@capacitor/keyboard"
+    ],
+    "alive": true,
+    "pid": "10273",
+    "oom": false,
+    "rendererCrash": false,
+    "tileMem": false,
+    "crashed": false,
+    "at": "2026-06-05T09:47:41.916Z"
+  },
+  {
+    "id": "network",
+    "label": "@capacitor/network",
+    "deps": [
+      "@capacitor/network"
+    ],
+    "alive": true,
+    "pid": "10645",
+    "oom": false,
+    "rendererCrash": false,
+    "tileMem": false,
+    "crashed": false,
+    "at": "2026-06-05T09:48:41.166Z"
+  },
+  {
+    "id": "share",
+    "label": "@capacitor/share",
+    "deps": [
+      "@capacitor/share"
+    ],
+    "alive": true,
+    "pid": "11062",
+    "oom": false,
+    "rendererCrash": false,
+    "tileMem": false,
+    "crashed": false,
+    "at": "2026-06-05T09:49:43.366Z"
+  },
+  {
+    "id": "status-bar",
+    "label": "@capacitor/status-bar",
+    "deps": [
+      "@capacitor/status-bar"
+    ],
+    "alive": true,
+    "pid": "11332",
+    "oom": false,
+    "rendererCrash": false,
+    "tileMem": false,
+    "crashed": false,
+    "at": "2026-06-05T09:50:40.902Z"
+  }
+]

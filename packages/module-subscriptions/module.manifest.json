@@ -1,0 +1,9 @@
+{
+  "name": "subscriptions",
+  "npm": "@appspresso/module-subscriptions",
+  "peers": ["appspresso@^0.6.0"],
+  "env": ["VITE_REVENUECAT_API_KEY_IOS", "VITE_REVENUECAT_API_KEY_ANDROID"],
+  "modulesFile": "src/appspresso.modules.ts",
+  "importLine": "import { subscriptionsModule } from \"@appspresso/module-subscriptions\";",
+  "registerLine": "subscriptionsModule(),"
+}

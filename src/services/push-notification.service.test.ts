@@ -3,6 +3,7 @@ import { lastNotificationAtom, pushNotificationTokenAtom } from "@/state/atoms";
 import { appStore } from "@/state/store";
 
 const isNative = vi.hoisted(() => vi.fn(() => false));
+const isPluginAvailable = vi.hoisted(() => vi.fn(() => true));
 const getPermissionStatus = vi.hoisted(() => vi.fn());
 const mockRegister = vi.hoisted(() => vi.fn());
 const mockAddListener = vi.hoisted(() => vi.fn());
@@ -10,6 +11,8 @@ const mockAddListener = vi.hoisted(() => vi.fn());
 vi.mock("@capacitor/core", () => ({
   Capacitor: {
     isNativePlatform: () => isNative(),
+    isPluginAvailable: () => isPluginAvailable(),
+    getPlatform: () => (isNative() ? "android" : "web"),
   },
 }));
 
@@ -33,6 +36,7 @@ import {
 describe("push-notification.service", () => {
   beforeEach(() => {
     isNative.mockReturnValue(false);
+    isPluginAvailable.mockReturnValue(true);
     getPermissionStatus.mockReset();
     mockRegister.mockReset();
     mockAddListener.mockReset();

@@ -110,24 +110,55 @@ writeFileSync(
   `${JSON.stringify(hostTsconfig, null, 2)}\n`,
 );
 
+const showcaseScripts = {
+  dev: "appspresso dev",
+  build: "appspresso build",
+  preview: "appspresso preview",
+  doctor: "appspresso doctor",
+  info: "appspresso info",
+  "cap:config": "appspresso cap:config",
+  "cap:assets": "node scripts/sync-capacitor-assets.mjs",
+  "cap:sync": "appspresso native sync",
+  "cap:open:android": "appspresso native open android",
+  "cap:open:ios": "appspresso native open ios",
+};
+pkg.scripts = showcaseScripts;
+writeFileSync(pkgPath, `${JSON.stringify(pkg, null, 2)}\n`);
+
+const envExample = `# Copy to \`.env\` (never commit secrets)
+
+VITE_API_BASE_URL=
+VITE_ENABLE_DEBUG_PANEL=
+`;
+writeFileSync(join(template, ".env.example"), envExample);
+
 const readme = `# %%DISPLAY_NAME%%
 
-Vite + React + Tailwind starter that consumes [\`appspresso\`](https://www.npmjs.com/package/appspresso) from npm.
+**Showcase** Appspresso app — vocabulary demo with routing, Jotai, i18n, and kit playground cards.
 
-## Commands
+For a smaller starter: \`npm create appspresso@latest my-app\` (minimal template, default).
+
+## Quick start
 
 \`\`\`bash
+cp .env.example .env
 npm install
 npm run dev
-npm run build
 \`\`\`
 
-The \`appspresso\` dependency resolves to published builds (\`dist-lib\` is shipped on the package). Use subpath imports such as \`appspresso/components/ui/button\`.
+## Project map
 
-## Create this project again
+| File | Role |
+|------|------|
+| \`src/main.tsx\` | \`bootAppspressoHost\` entry |
+| \`src/DemoShowcaseApp.tsx\` | App shell |
+| \`src/demo-router.tsx\` | Routes |
+| \`appspresso.config.ts\` | Vite + app meta |
+
+## Create again
 
 \`\`\`bash
-npm create appspresso@latest %%PROJECT_NAME%%
+npm create appspresso@latest %%PROJECT_NAME%% -- --template showcase
 \`\`\`
 `;
 

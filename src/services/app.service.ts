@@ -20,11 +20,17 @@ export async function initAppLifecycle(): Promise<void> {
         isActive: !document.hidden,
         source: "web",
       });
-    document.addEventListener("visibilitychange", sync);
+    const onVisible = () => {
+      sync();
+      if (!document.hidden) {
+        void import("@/sync/sync.service").then((m) => m.flushOutbox());
+      }
+    };
+    document.addEventListener("visibilitychange", onVisible);
     sync();
     handles.push({
       remove: async () => {
-        document.removeEventListener("visibilitychange", sync);
+        document.removeEventListener("visibilitychange", onVisible);
       },
     });
     return;
@@ -37,6 +43,15 @@ export async function initAppLifecycle(): Promise<void> {
         isActive,
         source: "native",
       });
+      if (isActive) {
+        void import("@/sync/sync.service").then((m) => m.flushOutbox());
+      }
+    }),
+  );
+
+  handles.push(
+    await App.addListener("resume", () => {
+      void import("@/sync/sync.service").then((m) => m.flushOutbox());
     }),
   );
 

@@ -1,4 +1,3 @@
-import { motion, useReducedMotion } from "motion/react";
 import { useLayoutEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import type { BootstrapLoadingScreenProps } from "@/app/BootstrapLoadingScreen";
@@ -7,19 +6,40 @@ import {
   getSplashBootstrapTiming,
   isSplashBackgroundDark,
 } from "@/lib/splash-bootstrap";
-import { splashWebAnimationLoops } from "@/motion/splash-web-animations";
 
 const splashImgClass =
   "max-h-44 max-w-[min(88vw,22rem)] object-contain select-none drop-shadow-sm";
 
-const easeOut: [number, number, number, number] = [0.22, 1, 0.36, 1];
+function prefersReducedMotion(): boolean {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
 
-/** Web bootstrap with Motion transitions. */
+function getAnimationClass(
+  animation: string | undefined,
+): string | undefined {
+  if (prefersReducedMotion()) return undefined;
+  switch (animation) {
+    case "pulse":
+      return "animate-splash-pulse";
+    case "breathe":
+      return "animate-splash-breathe";
+    case "float":
+      return "animate-splash-float";
+    case "sway":
+      return "animate-splash-sway";
+    case "glow":
+      return "animate-splash-glow";
+    default:
+      return undefined;
+  }
+}
+
+/** Web bootstrap with CSS-only transitions (no framer-motion). */
 export function BootstrapLoadingScreenWeb({
   exiting = false,
 }: BootstrapLoadingScreenProps) {
   const { t } = useTranslation();
-  const reduceMotion = useReducedMotion();
   const timing = useMemo(() => getSplashBootstrapTiming(), []);
   const {
     webPublicPath: splashUrl,
@@ -32,81 +52,49 @@ export function BootstrapLoadingScreenWeb({
     applySplashDocumentBackground();
   }, []);
 
-  const loop =
-    animation !== "none" ? splashWebAnimationLoops[animation] : undefined;
-
-  const showLoadingLabel = true;
-  const allowLogoMotion =
-    !exiting && reduceMotion !== true && loop !== undefined;
-
-  const graphic =
-    splashUrl !== undefined ? (
-      <img
-        src={splashUrl}
-        alt=""
-        className={splashImgClass}
-        decoding="async"
-        draggable={false}
-      />
-    ) : null;
-
-  const animatedGraphic =
-    splashUrl !== undefined && allowLogoMotion ? (
-      <motion.div className="flex justify-center" initial={false}>
-        <motion.div animate={loop.animate} transition={loop.transition}>
-          <img
-            src={splashUrl}
-            alt=""
-            className={splashImgClass}
-            decoding="async"
-            draggable={false}
-          />
-        </motion.div>
-      </motion.div>
-    ) : (
-      graphic
-    );
-
-  const exitMs = timing.exitDurationMs / 1000;
-  const motionDisabled = reduceMotion === true;
+  const animClass = getAnimationClass(animation);
+  const exitMs = timing.exitDurationMs;
 
   return (
-    <motion.div
+    <div
       className="fixed inset-0 z-[100] flex flex-col items-center justify-center gap-8 px-6"
-      style={{ backgroundColor }}
-      initial={motionDisabled ? false : { opacity: 0 }}
-      animate={{ opacity: exiting ? 0 : 1 }}
-      transition={
-        motionDisabled
-          ? { duration: 0 }
-          : exiting
-            ? { duration: exitMs, ease: easeOut }
-            : { duration: 0.35, ease: easeOut }
-      }
+      style={{
+        backgroundColor,
+        opacity: exiting ? 0 : 1,
+        transition: `opacity ${exitMs}ms cubic-bezier(0.22, 1, 0.36, 1)`,
+      }}
       aria-busy={!exiting}
       aria-live="polite"
     >
       <div className="flex flex-col items-center gap-8">
-        {animatedGraphic}
-        {showLoadingLabel ? (
-          <motion.p
-            className={
-              darkBg
-                ? "max-w-xs text-center text-sm text-white/65 tracking-wide"
-                : "max-w-xs text-center text-slate-500 text-sm tracking-wide"
-            }
-            initial={motionDisabled ? false : { opacity: 0, y: 6 }}
-            animate={{ opacity: exiting ? 0 : 1, y: exiting ? 4 : 0 }}
-            transition={{
-              duration: motionDisabled ? 0 : exiting ? exitMs : 0.35,
-              delay: motionDisabled || exiting ? 0 : 0.1,
-              ease: easeOut,
-            }}
-          >
-            {t("app.loading")}
-          </motion.p>
+        {splashUrl !== undefined ? (
+          <div className="flex justify-center">
+            <div className={animClass}>
+              <img
+                src={splashUrl}
+                alt=""
+                className={splashImgClass}
+                decoding="async"
+                draggable={false}
+              />
+            </div>
+          </div>
         ) : null}
+        <p
+          className={
+            darkBg
+              ? "max-w-xs text-center text-sm text-white/65 tracking-wide"
+              : "max-w-xs text-center text-slate-500 text-sm tracking-wide"
+          }
+          style={{
+            opacity: exiting ? 0 : 1,
+            transform: exiting ? "translateY(4px)" : "translateY(0)",
+            transition: `opacity ${exitMs}ms ease, transform ${exitMs}ms ease`,
+          }}
+        >
+          {t("app.loading")}
+        </p>
       </div>
-    </motion.div>
+    </div>
   );
 }

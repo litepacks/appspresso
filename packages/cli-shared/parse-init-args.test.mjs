@@ -22,4 +22,35 @@ describe("parseInitArgs", () => {
     assert.equal(f.withCapacitor, true);
     assert.equal(f.writeManifest, true);
   });
+
+  it("sets templateFromCli only when --template is passed", () => {
+    const without = parseInitArgs(["my-app"]);
+    assert.equal(without.templateFromCli, false);
+    assert.equal(without.template, undefined);
+
+    const withTpl = parseInitArgs(["my-app", "--template", "showcase"]);
+    assert.equal(withTpl.templateFromCli, true);
+    assert.equal(withTpl.template, "showcase");
+  });
+
+  it("accepts --hybrid as alias for --with-capacitor", () => {
+    const f = parseInitArgs(["app", "--hybrid"]);
+    assert.equal(f.withCapacitor, true);
+  });
+
+  it("defaults appspresso range", () => {
+    const f = parseInitArgs(["my-app"]);
+    assert.equal(f.appspresso, "^0.1.0");
+  });
+
+  it("rejects unknown flags", () => {
+    assert.throws(() => parseInitArgs(["my-app", "--nope"]), /Unknown option/);
+  });
+
+  it("rejects invalid template", () => {
+    assert.throws(
+      () => parseInitArgs(["my-app", "--template", "full"]),
+      /--template must be/,
+    );
+  });
 });

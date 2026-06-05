@@ -42,6 +42,9 @@ function collectEntries(): Record<string, string> {
   addFiles(e, "filesystem", "filesystem", ".tsx");
   addFiles(e, "services", "services", ".ts");
   addFiles(e, "hooks", "hooks", ".ts");
+  addFiles(e, "motion", "motion", ".tsx");
+  addFiles(e, "plugin", "plugin", ".ts");
+  addFiles(e, "module", "module", ".ts");
   addFiles(e, "components/ui", "components/ui", ".tsx");
   addFiles(e, "components/form", "components/form", ".tsx");
   addFiles(e, "components/shell", "components/shell", ".tsx");
@@ -87,6 +90,18 @@ function collectEntries(): Record<string, string> {
       "AuthLayout.tsx",
     );
   }
+  const onboardingLayout = path.join(src, "components", "OnboardingLayout.tsx");
+  if (fs.existsSync(onboardingLayout)) {
+    e["components/OnboardingLayout"] = path.join(
+      "src",
+      "components",
+      "OnboardingLayout.tsx",
+    );
+  }
+  const layout = path.join(src, "components", "Layout.tsx");
+  if (fs.existsSync(layout)) {
+    e["components/Layout"] = path.join("src", "components", "Layout.tsx");
+  }
   const errorBoundary = path.join(src, "components", "ErrorBoundary.tsx");
   if (fs.existsSync(errorBoundary)) {
     e["components/ErrorBoundary"] = path.join(
@@ -130,6 +145,7 @@ function collectEntries(): Record<string, string> {
     "OnboardingEntry.tsx",
     "AuthEntry.tsx",
     "HostAppFrame.tsx",
+    "AppspressoHost.tsx",
     "App.tsx",
     "mount-host.tsx",
     "mount.tsx",
@@ -203,14 +219,18 @@ const external = [
   "firebase/auth",
   "firebase/app",
   "@supabase/supabase-js",
+  /^@appspresso\/plugin-/,
   "@capacitor/background-runner",
   "@capacitor/filesystem",
   "@capacitor/inappbrowser",
   "@capacitor/share",
 ];
 
+/** Native/demo iteration: JS only (~3–4s). Publish/CI types: full build:lib (~60s DTS). */
+const skipDts = process.env.APPSPRESSO_SKIP_DTS === "1";
+
 export default defineConfig({
-  tsconfig: "tsconfig.app.json",
+  tsconfig: skipDts ? "tsconfig.app.json" : "tsconfig.lib-dts.json",
   entry: collectEntries(),
   format: ["esm"],
   outDir: "dist-lib",
@@ -218,7 +238,7 @@ export default defineConfig({
   sourcemap: process.env.CI !== "true",
   clean: true,
   treeshake: true,
-  dts: true,
+  dts: !skipDts,
   define: {
     __APP_VERSION__: JSON.stringify(process.env.npm_package_version ?? "0.0.0"),
   },

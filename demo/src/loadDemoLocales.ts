@@ -11,14 +11,29 @@ const modules = import.meta.glob<I18nJsonRoot>("./locales/*/*.json", {
   import: "default",
 });
 
-mergeI18nJsonBundlesFromViteGlob(modules, {
+const mergeOptions = {
   allowedLanguages: demoI18nConfig.languages,
   deep: demoI18nConfig.mergeDeep,
   logPrefix: "[demo i18n]",
   logDevWarnings: import.meta.env.DEV,
-});
+} as const;
 
-setDayjsLocale(i18n.language);
+/**
+ * Registers `locales/demo/*.json` on the shared i18next instance.
+ * Call again after lazy chunks that re-run `@/i18n` init (wipes extra namespaces).
+ */
+export function applyDemoLocales(): void {
+  mergeI18nJsonBundlesFromViteGlob(modules, mergeOptions);
+  setDayjsLocale(i18n.language);
+}
+
+applyDemoLocales();
+
 i18n.on("languageChanged", (lng) => {
   setDayjsLocale(lng);
+});
+
+// If a lazy import re-inits i18next, merge demo bundles again.
+i18n.on("initialized", () => {
+  applyDemoLocales();
 });

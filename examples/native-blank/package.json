@@ -1,0 +1,32 @@
+{
+  "name": "appspresso-native-blank",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "cap:sync": "cap sync",
+    "cap:sync:android": "cap sync android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^7.4.4",
+    "@capacitor/app": "^7.1.0",
+    "@capacitor/core": "^7.0.0",
+    "@capacitor/splash-screen": "^7.0.3",
+    "@capacitor-community/sqlite": "^7.0.0",
+    "@capacitor/action-sheet": "^7.0.0",
+    "@capacitor/device": "^7.0.2",
+    "@capacitor/dialog": "^7.0.0",
+    "@capacitor/filesystem": "^7.1.8",
+    "@capacitor/inappbrowser": "^2.5.5",
+    "@capacitor/keyboard": "^7.0.0",
+    "@capacitor/network": "^7.0.2",
+    "@capacitor/share": "^7.0.4",
+    "@capacitor/status-bar": "^7.0.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^7.4.4"
+  }
+}

@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { isNativeDebugEnabled } from "@/lib/native-debug";
 
 export type BootstrapFailureScreenProps = {
   error: string;
@@ -26,7 +27,7 @@ export function BootstrapFailureScreen({
           "Something went wrong while loading. You can try again or reload the app.",
         )}
       </p>
-      {import.meta.env.DEV ? (
+      {isNativeDebugEnabled() ? (
         <pre className="max-h-32 max-w-full overflow-auto rounded-md border bg-muted/50 p-2 text-left text-xs text-muted-foreground">
           {error}
         </pre>

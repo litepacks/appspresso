@@ -1,33 +1,52 @@
-import { Capacitor } from "@capacitor/core";
-import { motion, useReducedMotion } from "motion/react";
 import type { ReactNode } from "react";
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { BootstrapFailureScreen } from "@/app/BootstrapFailureScreen";
 import { BootstrapLoadingScreen } from "@/app/BootstrapLoadingScreen";
+import { BootstrapStuckDetector } from "@/app/BootstrapStuckDetector";
+import { NativeBootOverlay } from "@/dev/NativeBootOverlay";
 import { useAppspressoBootstrapState } from "@/hooks/useAppspressoBootstrap";
 import { getSplashBootstrapTiming } from "@/lib/splash-bootstrap";
 
-const easeOut: [number, number, number, number] = [0.22, 1, 0.36, 1];
+const easeOut = "cubic-bezier(0.22, 1, 0.36, 1)";
+
+// Reduced motion preference via media query (no hook = no motion import)
+function prefersReducedMotion(): boolean {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
 
 export type AppspressoBootstrapGateProps = {
   children: ReactNode;
+  /** Fires once when bootstrap reaches `ready` (for plugin `onAppReady`). */
+  onReady?: () => void | Promise<void>;
 };
 
 /**
  * Bootstrap splash → main app: cross-fade on exit (splash on top, content fades in below).
  * Usable inside or outside `AppspressoRootProviders`; keeps demo providers above.
+ * CSS-only transitions (no motion library) to keep bundle minimal.
  */
 export function AppspressoBootstrapGate({
   children,
+  onReady,
 }: AppspressoBootstrapGateProps) {
-  const { phase, error, retry } = useAppspressoBootstrapState();
+  const { phase, error, retry, startedAt } = useAppspressoBootstrapState();
+  const readyNotified = useRef(false);
+
+  useEffect(() => {
+    if (phase !== "ready" || !onReady || readyNotified.current) return;
+    readyNotified.current = true;
+    void Promise.resolve(onReady()).catch((e) => {
+      console.error("AppspressoBootstrapGate onReady failed", e);
+    });
+  }, [phase, onReady]);
+
   const timing = useMemo(() => getSplashBootstrapTiming(), []);
-  const reduceMotion = useReducedMotion();
-  const exitSec = timing.exitDurationMs / 1000;
+  const reduceMotion = useMemo(() => prefersReducedMotion(), [phase]);
+  const exitMs = timing.exitDurationMs;
 
   const showSplash = phase !== "ready";
   const mountApp = phase === "exiting" || phase === "ready";
-  const isNative = Capacitor.isNativePlatform();
 
   if (phase === "failed" && error) {
     return <BootstrapFailureScreen error={error} onRetry={retry} />;
@@ -37,35 +56,23 @@ export function AppspressoBootstrapGate({
     return <BootstrapLoadingScreen />;
   }
 
+  const transitionStyle: React.CSSProperties = {
+    opacity: phase === "ready" ? 1 : 0,
+    transitionProperty: "opacity",
+    transitionDuration: reduceMotion ? "0ms" : `${exitMs}ms`,
+    transitionTimingFunction: easeOut,
+    pointerEvents: phase === "ready" ? "auto" : "none",
+    willChange: phase === "exiting" ? "opacity" : undefined,
+  };
+
   const appShell = mountApp ? (
-    isNative ? (
-      <div
-        className="flex min-h-0 min-w-0 flex-1 flex-col transition-opacity"
-        style={{
-          opacity: phase === "ready" ? 1 : 0,
-          transitionDuration: reduceMotion ? "0ms" : `${exitSec * 1000}ms`,
-          pointerEvents: phase === "ready" ? "auto" : "none",
-        }}
-        aria-hidden={phase !== "ready"}
-      >
-        {children}
-      </div>
-    ) : (
-      <motion.div
-        className="flex min-h-0 min-w-0 flex-1 flex-col"
-        initial={reduceMotion ? false : { opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={
-          reduceMotion ? { duration: 0 } : { duration: exitSec, ease: easeOut }
-        }
-        style={{
-          pointerEvents: phase === "ready" ? "auto" : "none",
-        }}
-        aria-hidden={phase !== "ready"}
-      >
-        {children}
-      </motion.div>
-    )
+    <div
+      className="flex min-h-0 min-w-0 flex-1 flex-col"
+      style={transitionStyle}
+      aria-hidden={phase !== "ready"}
+    >
+      {children}
+    </div>
   ) : null;
 
   return (
@@ -74,6 +81,12 @@ export function AppspressoBootstrapGate({
       {showSplash ? (
         <BootstrapLoadingScreen exiting={phase === "exiting"} />
       ) : null}
+      <BootstrapStuckDetector
+        phase={phase}
+        error={error}
+        startedAt={startedAt}
+      />
+      <NativeBootOverlay phase={phase} error={error} startedAt={startedAt} />
     </>
   );
 }

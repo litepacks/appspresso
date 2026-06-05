@@ -1,0 +1,9 @@
+{
+  "name": "onboarding",
+  "npm": "@appspresso/module-onboarding",
+  "peers": ["appspresso@^0.6.0"],
+  "env": [],
+  "modulesFile": "src/appspresso.modules.ts",
+  "importLine": "import { onboardingModule } from \"@appspresso/module-onboarding\";",
+  "registerLine": "onboardingModule(),"
+}

@@ -1,0 +1,33 @@
+{
+  "name": "@appspresso/plugin-firebase-auth",
+  "version": "0.3.0",
+  "description": "Firebase Auth adapter for Appspresso",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --tsconfig tsconfig.json --clean --external appspresso --external firebase"
+  },
+  "peerDependencies": {
+    "appspresso": "^0.3.0",
+    "firebase": "^11.0.0"
+  },
+  "devDependencies": {
+    "appspresso": "file:../..",
+    "firebase": "^11.6.0",
+    "tsup": "^8.5.0",
+    "typescript": "~5.9.3",
+    "vitest": "^4.1.5"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

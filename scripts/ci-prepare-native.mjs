@@ -58,8 +58,8 @@ if (!existsSync(configTs)) {
   fail(`missing ${configTs}`);
 }
 
-console.log("==> npm run build:lib");
-run("npm", ["run", "build:lib"]);
+console.log("==> npm run build:lib:fast (JS only, skip .d.ts)");
+run("npm", ["run", "build:lib:fast"]);
 
 console.log(`==> npm run build (cwd ${demoRoot})`);
 run("npm", ["run", "build"], { cwd: demoRoot });

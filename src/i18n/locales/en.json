@@ -15,7 +15,9 @@
     "title": "Something went wrong",
     "description": "Please try again.",
     "tryAgain": "Try again",
-    "reloadApp": "Reload app"
+    "reloadApp": "Reload app",
+    "fatalTitle": "Critical Error",
+    "fatalDescription": "The app encountered a critical error. Please reload to try again."
   },
   "onboarding": {
     "step1Title": "Welcome",
@@ -33,7 +35,16 @@
     "loginHint": "This template uses the demo auth adapter (local token). In production, pass createFirebaseAuthAdapter, createSupabaseAuthAdapter, or createCustomAuthAdapter to AuthProvider or AppspressoRootProviders authAdapter.",
     "signInCta": "Continue",
     "alreadySignedIn": "You are already signed in. Go back to the app or sign out to see the sign-in form again.",
-    "goHome": "Back to app"
+    "goHome": "Back to app",
+    "registerTitle": "Create account",
+    "registerHint": "Demo register uses the same adapter as sign-in. Wire your API via module config.",
+    "registerCta": "Register",
+    "forgotTitle": "Reset password",
+    "forgotHint": "Enter your email to receive reset instructions.",
+    "forgotCta": "Send reset link",
+    "forgotSent": "If an account exists, you will receive an email shortly.",
+    "emailPlaceholder": "you@example.com",
+    "backToLogin": "Back to sign in"
   },
   "home": {
     "device": "Device",

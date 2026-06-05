@@ -1,55 +1,53 @@
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useLocation, useOutlet } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import {
-  type PageTransitionPreset,
-  pageTransitionPresets,
-} from "@/motion/presets";
 
 export type AnimatedOutletProps = {
-  /** Default: `slideUp` */
-  preset?: PageTransitionPreset;
+  /** Default: `fade` (CSS-only: slideUp/slideDown require motion lib). */
+  preset?: "fade" | "none";
   className?: string;
   /** When `true`, transition key is `pathname + search` (re-animate on same path, different query). */
   includeSearchInKey?: boolean;
 };
 
+function prefersReducedMotion(): boolean {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
 /**
- * Use instead of `<Outlet />` in the Router for exit animations via `useOutlet` + `AnimatePresence`.
- * Prefer inside the scrolling body, outside the top shell (header / tab bar).
+ * CSS-only lightweight outlet wrapper with simple fade animation.
+ * Replaces heavy framer-motion to reduce bundle size (~130KB).
+ * For complex exit animations, use framer-motion directly in route components.
  */
 export function AnimatedOutlet({
-  preset = "slideUp",
+  preset = "fade",
   className,
   includeSearchInKey = false,
 }: AnimatedOutletProps) {
   const location = useLocation();
   const outlet = useOutlet();
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = prefersReducedMotion();
 
-  const cfg = pageTransitionPresets[preset];
   const routeKey = includeSearchInKey
     ? `${location.pathname}${location.search}`
     : location.pathname;
 
-  if (reduceMotion) {
+  if (reduceMotion || preset === "none") {
     return (
       <div className={cn("min-h-0 min-w-0 flex-1", className)}>{outlet}</div>
     );
   }
 
+  // CSS-only fade animation
   return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={routeKey}
-        className={cn("min-h-0 min-w-0 flex-1", className)}
-        initial={cfg.initial}
-        animate={cfg.animate}
-        exit={cfg.exit}
-        transition={cfg.transition}
-      >
-        {outlet}
-      </motion.div>
-    </AnimatePresence>
+    <div
+      key={routeKey}
+      className={cn(
+        "min-h-0 min-w-0 flex-1 animate-fade-in",
+        className,
+      )}
+    >
+      {outlet}
+    </div>
   );
 }

@@ -1,5 +1,6 @@
 import { getEnvConfig } from "@/config/env";
 import { logger } from "@/lib/logger";
+import { runPluginErrorReporters } from "@/plugin/context";
 
 function serializeUnknown(error: unknown): string {
   if (error instanceof Error) return error.stack ?? error.message;
@@ -26,6 +27,7 @@ export function captureException(
     error: serializeUnknown(error),
     ...context,
   });
+  runPluginErrorReporters(error, context);
 }
 
 export function captureMessage(

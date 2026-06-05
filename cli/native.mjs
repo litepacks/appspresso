@@ -1,6 +1,6 @@
 import { execSync } from "node:child_process";
-import { existsSync, readFileSync } from "node:fs";
-import { join } from "node:path";
+import { existsSync } from "node:fs";
+import { dirname, join } from "node:path";
 import { runCapConfig } from "./cap-config.mjs";
 import {
   findAndroidProjectDir,
@@ -23,13 +23,14 @@ async function ensureCapacitorConfigJson(capRoot) {
 }
 
 function printNativeHelp() {
-  console.error(`native commands: sync | open | run | assemble
+  console.error(`native commands: sync | open | run | assemble | verify
 
   appspresso native sync [--skip-build] [...extra cap sync args]
   appspresso native open <android|ios> [...]
   appspresso native run <android|ios> [...]
   appspresso native assemble android [debug|release] [--release] [...gradle args]
-  appspresso native assemble ios [debug|release] [--release] [...xcodebuild args]`);
+  appspresso native assemble ios [debug|release] [--release] [...xcodebuild args]
+  appspresso native verify android|ios`);
 }
 
 /** Prefer JAVA_HOME; on macOS try Homebrew openjdk@21 if unset. */
@@ -50,21 +51,32 @@ function javaHomeForGradle() {
   return null;
 }
 
-/** When Capacitor `webDir` is `demo/dist`, `npm run build` at repo root is the wrong artefact — use `demo:build`. */
-function capacitorWebDirIsDemoDist(cwd) {
+/**
+ * Pick the web bundle build for `cap sync`.
+ * Monorepo: when Capacitor root is `demo/` but cwd is repo root, run `demo:build`
+ * (or build inside capRoot), not root `npm run build`.
+ * @returns {{ cmd: string; args: string[]; cwd: string } | null}
+ */
+function resolveNativeBuildInvocation(cwd) {
   const capRoot = resolveCapacitorRoot(cwd);
-  const names = ["capacitor.config.json"];
-  for (const name of names) {
-    const p = join(capRoot, name);
-    if (!existsSync(p)) continue;
-    try {
-      const text = readFileSync(p, "utf8");
-      if (/webDir:\s*["']demo\/dist["']/.test(text)) return true;
-    } catch {
-      /* ignore */
-    }
+
+  if (capRoot !== cwd && hasNpmScript(cwd, "demo:build")) {
+    return { cmd: "npm", args: ["run", "demo:build"], cwd };
   }
-  return false;
+
+  if (
+    capRoot !== cwd &&
+    existsSync(join(capRoot, "package.json")) &&
+    hasNpmScript(capRoot, "build")
+  ) {
+    return { cmd: "npm", args: ["run", "build"], cwd: capRoot };
+  }
+
+  if (hasNpmScript(cwd, "build")) {
+    return { cmd: "npm", args: ["run", "build"], cwd };
+  }
+
+  return null;
 }
 
 /**
@@ -98,16 +110,14 @@ export async function cmdNativeSync(cwd, argv) {
   const { skipBuild, capArgs } = parseSyncArgs(argv);
 
   if (!skipBuild) {
-    if (capacitorWebDirIsDemoDist(cwd) && hasNpmScript(cwd, "demo:build")) {
-      await runInherit("npm", ["run", "demo:build"], { cwd });
-    } else if (hasNpmScript(cwd, "build")) {
-      await runInherit("npm", ["run", "build"], { cwd });
-    } else {
+    const build = resolveNativeBuildInvocation(cwd);
+    if (!build) {
       console.error(
         'appspresso: no "build" script in package.json; add one or use --skip-build.',
       );
       process.exit(1);
     }
+    await runInherit(build.cmd, build.args, { cwd: build.cwd });
   }
 
   await ensureCapacitorConfigJson(capRoot);
@@ -300,11 +310,73 @@ export async function cmdNativeAssemble(cwd, argv) {
  * @param {string} sub
  * @param {string[]} argv
  */
+/**
+ * @param {string} cwd
+ * @param {string[]} argv
+ */
+function findMonorepoRoot(startDir) {
+  let dir = startDir;
+  for (;;) {
+    if (existsSync(join(dir, "scripts", "verify-native-web-bundle.mjs"))) {
+      return dir;
+    }
+    const parent = dirname(dir);
+    if (parent === dir) return startDir;
+    dir = parent;
+  }
+}
+
+export async function cmdNativeVerify(cwd, argv) {
+  const platform = argv[0];
+  if (platform !== "android" && platform !== "ios") {
+    printNativeHelp();
+    process.exit(1);
+  }
+
+  const scriptsRoot = findMonorepoRoot(cwd);
+  const capRoot = resolveCapacitorRoot(cwd);
+
+  const runScript = (rel) =>
+    runInherit(process.execPath, [join(scriptsRoot, rel)], {
+      cwd: scriptsRoot,
+      shell: false,
+    });
+
+  if (platform === "android") {
+    await runScript("scripts/verify-native-web-bundle.mjs");
+    await runScript("scripts/verify-cap-android-public.mjs");
+    const apk = join(
+      scriptsRoot,
+      "demo/android/app/build/outputs/apk/debug/app-debug.apk",
+    );
+    if (existsSync(apk)) {
+      await runInherit(
+        process.execPath,
+        [join(scriptsRoot, "scripts/debug/verify-apk-contents.mjs"), apk],
+        { cwd: scriptsRoot, shell: false },
+      );
+    } else {
+      console.log(
+        "appspresso: APK not built yet — run appspresso native assemble android",
+      );
+    }
+    return;
+  }
+
+  const iosPublic = join(capRoot, "ios", "App", "App", "public", "index.html");
+  if (!existsSync(iosPublic)) {
+    console.error(`appspresso: missing ${iosPublic} — run cap sync ios`);
+    process.exit(1);
+  }
+  console.log(`iOS web bundle OK (${iosPublic})`);
+}
+
 export async function routeNative(cwd, sub, argv) {
   if (sub === "sync") return cmdNativeSync(cwd, argv);
   if (sub === "open") return cmdNativeOpen(cwd, argv);
   if (sub === "run") return cmdNativeRun(cwd, argv);
   if (sub === "assemble") return cmdNativeAssemble(cwd, argv);
+  if (sub === "verify") return cmdNativeVerify(cwd, argv);
   printNativeHelp();
   process.exit(1);
 }

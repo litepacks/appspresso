@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Native Blank</string>
+    <string name="title_activity_main">Native Blank</string>
+    <string name="package_name">com.example.appspresso.blank</string>
+    <string name="custom_url_scheme">com.example.appspresso.blank</string>
+</resources>

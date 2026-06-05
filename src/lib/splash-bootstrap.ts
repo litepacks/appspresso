@@ -4,16 +4,29 @@ import {
   SPLASH_BACKGROUND_DARK,
   SPLASH_BACKGROUND_LIGHT,
 } from "@/config/constants";
-import {
-  parseSplashWebAnimation,
-  type SplashWebAnimationKind,
-} from "@/motion/splash-web-animations";
+import type { SplashWebAnimationKind } from "@/motion/splash-web-animations";
+
+function parseSplashWebAnimation(
+  raw: string | undefined,
+): SplashWebAnimationKind {
+  const v = raw?.trim().toLowerCase();
+  if (
+    v === "pulse" ||
+    v === "float" ||
+    v === "breathe" ||
+    v === "sway" ||
+    v === "glow"
+  ) {
+    return v;
+  }
+  return "none";
+}
 
 const DEFAULT_MIN_MS = 900;
 const DEFAULT_EXIT_MS = 450;
 const DEFAULT_NATIVE_FADE_MS = 450;
 /** Hide native splash if JS never runs (stuck bridge). */
-export const SPLASH_NATIVE_FALLBACK_HIDE_MS = 8_000;
+export const SPLASH_NATIVE_FALLBACK_HIDE_MS = 4_000;
 
 export type SplashBootstrapTiming = {
   minDisplayMs: number;

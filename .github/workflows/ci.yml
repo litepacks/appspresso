@@ -57,11 +57,20 @@ jobs:
       - name: Install
         run: npm ci
 
+      - name: Build lib
+        run: npm run build:lib
+
+      - name: Build plugin packages
+        run: npm run build:plugins
+
       - name: Unit tests
         run: npm run test:run
 
       - name: CLI tests (node:test)
         run: npm run test:cli
+
+      - name: Create scaffold smoke
+        run: npm run test:create-smoke
 
   integration:
     runs-on: ubuntu-latest
@@ -83,6 +92,7 @@ jobs:
         run: npm run test:integration
 
   coverage:
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master')
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
@@ -109,6 +119,36 @@ jobs:
             coverage/lcov.info
             coverage/index.html
 
+  coverage-pr:
+    if: github.event_name == 'pull_request'
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      VITEST_MAX_WORKERS: "4"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Unit tests with coverage (informational on PR)
+        run: npm run test:coverage
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-pr
+          path: |
+            coverage/lcov.info
+            coverage/index.html
+
   verify-maestro-app-id:
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -118,7 +158,7 @@ jobs:
         run: npm run verify:maestro-app-id
 
   build:
-    needs: [lint, unit, integration, coverage, security-audit, verify-maestro-app-id]
+    needs: [lint, unit, integration, security-audit, verify-maestro-app-id]
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -147,7 +187,7 @@ jobs:
 
   native-android:
     name: Native Android (assembleDebug)
-    needs: [lint, unit]
+    needs: [build]
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -184,7 +224,7 @@ jobs:
 
   native-ios:
     name: Native iOS (simulator build)
-    needs: [lint, unit]
+    needs: [build]
     runs-on: macos-14
     timeout-minutes: 60
     env:
@@ -271,22 +311,11 @@ jobs:
           emulator-boot-timeout: 900
           disable-animations: false
           emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          # android-emulator-runner invokes this with /bin/sh (dash), not bash — no pipefail or [[ ]].
+          # android-emulator-runner invokes this with /bin/sh (dash), not bash.
           script: |
             set -eu
-            adb wait-for-device
-            adb shell 'while [ -z "$(getprop sys.boot_completed 2>/dev/null)" ]; do sleep 2; done'
-            adb shell 'while [ "$(getprop init.svc.bootanim 2>/dev/null)" != "stopped" ]; do sleep 2; done'
-            adb shell wm dismiss-keyguard || true
-            adb install -r artifacts/android-apk/*.apk
-            set +e
-            maestro test e2e/maestro
-            maestro_status=$?
-            set -e
-            if [ "$maestro_status" -ne 0 ]; then
-              adb logcat -d -t 200 | tail -120 || true
-              exit "$maestro_status"
-            fi
+            node scripts/e2e/android-install.mjs artifacts/android-apk
+            node scripts/e2e/maestro.mjs --platform android
 
       - name: Upload Maestro screenshots
         if: always()
@@ -297,7 +326,7 @@ jobs:
           name: maestro-screenshots-android
           path: |
             ~/.maestro/tests
-            e2e/maestro
+            e2e/maestro/shared
           if-no-files-found: ignore
 
   native-e2e-ios:
@@ -325,29 +354,16 @@ jobs:
           path: artifacts/ios-app
 
       - name: Boot simulator and install app
+        id: ios_install
         run: |
           set -eu
-          SIM_ID=$(xcrun simctl list devices available -j | node -e "
-            const j = JSON.parse(require('fs').readFileSync(0, 'utf8'));
-            const runtimes = Object.keys(j.devices).filter((k) => k.includes('iOS'));
-            const devices = runtimes.flatMap((k) => j.devices[k] || []);
-            const iphones = devices.filter((d) => d.isAvailable && /^iPhone /.test(d.name));
-            const preferred = ['iPhone 16', 'iPhone 15 Pro', 'iPhone 15'];
-            const pick =
-              iphones.find((d) => preferred.includes(d.name)) ||
-              iphones.sort((a, b) => b.name.localeCompare(a.name))[0];
-            if (!pick) process.exit(1);
-            process.stdout.write(pick.udid);
-          ")
-          xcrun simctl boot "$SIM_ID" 2>/dev/null || true
-          xcrun simctl bootstatus "$SIM_ID" -b
-          APP_PATH=$(node scripts/ios-simulator-artifact.mjs resolve artifacts/ios-app)
-          xcrun simctl install "$SIM_ID" "$APP_PATH"
+          DEVICE_ID=$(node scripts/e2e/ios-install.mjs artifacts/ios-app)
+          echo "device_id=$DEVICE_ID" >> "$GITHUB_OUTPUT"
 
       - name: Maestro smoke
         env:
           MAESTRO_CLI_NO_ANALYTICS: "1"
-        run: maestro test e2e/maestro
+        run: node scripts/e2e/maestro.mjs --platform ios --device "${{ steps.ios_install.outputs.device_id }}"
 
       - name: Upload Maestro screenshots
         if: always()
@@ -356,5 +372,5 @@ jobs:
           name: maestro-screenshots-ios
           path: |
             ~/.maestro/tests
-            e2e/maestro
+            e2e/maestro/shared
           if-no-files-found: ignore

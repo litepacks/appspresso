@@ -1,11 +1,11 @@
 import { useEffect, useLayoutEffect, useMemo, useState } from "react";
-import { useTranslation } from "react-i18next";
 import {
   applySplashDocumentBackground,
   getSplashBootstrapTiming,
   isSplashBackgroundDark,
 } from "@/lib/splash-bootstrap";
 import { hideSplashScreen } from "@/services/appearance.service";
+import { bootTrace } from "@/lib/boot-trace";
 import type { BootstrapLoadingScreenProps } from "./BootstrapLoadingScreen";
 
 const splashImgClass =
@@ -15,7 +15,6 @@ const splashImgClass =
 export function BootstrapLoadingScreenNative({
   exiting = false,
 }: BootstrapLoadingScreenProps) {
-  const { t } = useTranslation();
   const timing = useMemo(() => getSplashBootstrapTiming(), []);
   const { webPublicPath: splashUrl, backgroundColor } = timing;
   const darkBg = isSplashBackgroundDark(backgroundColor);
@@ -27,12 +26,17 @@ export function BootstrapLoadingScreenNative({
 
   useEffect(() => {
     if (exiting) return;
+    bootTrace("bootstrap.native-loading.mount");
     let cancelled = false;
+    // Immediate attempt before rAF — helps when the bridge is ready early.
+    void hideSplashScreen();
     const handoff = () => {
       if (cancelled) return;
-      void hideSplashScreen().finally(() => {
-        if (!cancelled) setNativeRevealed(true);
-      });
+      // Fire-and-forget: `SplashScreen.hide()` can hang if the native bridge
+      // stalls; revealing the web UI must not wait on it.
+      void hideSplashScreen();
+      setNativeRevealed(true);
+      bootTrace("bootstrap.native-loading.revealed");
     };
     requestAnimationFrame(() => requestAnimationFrame(handoff));
     return () => {
@@ -72,7 +76,7 @@ export function BootstrapLoadingScreenNative({
                 : "max-w-xs text-center text-slate-500 text-sm tracking-wide"
             }
           >
-            {t("app.loading")}
+            Loading…
           </p>
         ) : null}
       </div>

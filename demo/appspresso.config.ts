@@ -32,8 +32,11 @@ const { vite, capacitor, app } = defineAppspressoProject({
     },
     splash: {
       launchShowDuration: 3000,
-      /** Closed via JS `hideSplashScreen`; early auto-hide causes glitches. */
-      launchAutoHide: false,
+      /**
+       * JS handoff via `hideSplashScreen` is preferred; auto-hide is a safety net
+       * when the Capacitor bridge stalls on cold start.
+       */
+      launchAutoHide: true,
       launchFadeOutDuration: 450,
       webBootstrapMinDurationMs: 1000,
       webExitDurationMs: 500,
@@ -76,23 +79,6 @@ const { vite, capacitor, app } = defineAppspressoProject({
     /** Example: `preferredLock` via `@capacitor/screen-orientation` on native (ignored on web). */
     orientation: {
       preferredLock: "any",
-    },
-    /**
-     * Background Runner (`@capacitor/background-runner` — optional peer).
-     * `npm run demo:cap-config` → `capacitor.plugins.BackgroundRunner`.
-     * Runner file: `demo/public/runners/background.js` → `dist/runners/…` after build.
-     * Native: iOS Background Modes + AppDelegate, Android `build.gradle` flatDir — Capacitor docs.
-     * Demo uses `autoStart: false`; trigger manually via `appspressoDemoPing` from the playground.
-     */
-    backgroundRunner: {
-      /** Off by default on demo APK — extra native runner + JS heap; enable in playground when testing. */
-      enabled: false,
-      label: "com.example.capacitorvitepoc.background",
-      src: "runners/background.js",
-      event: "appspressoDemoPing",
-      repeat: false,
-      interval: 15,
-      autoStart: false,
     },
     /** `FilesystemProvider` / `useFilesystem` — `@capacitor/filesystem` peer. */
     filesystem: {

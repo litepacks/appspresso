@@ -1,6 +1,6 @@
 {
   "name": "appspresso",
-  "version": "0.1.0",
+  "version": "0.6.0",
   "description": "One package for the backbone of mobile and web apps.",
   "type": "module",
   "sideEffects": false,
@@ -8,14 +8,26 @@
     "appspresso": "./bin/appspresso.mjs"
   },
   "workspaces": [
+    "examples/native-blank",
     "demo",
     "packages/cli-shared",
-    "packages/create-appspresso"
+    "packages/create-appspresso",
+    "packages/plugin-sentry",
+    "packages/plugin-firebase-auth",
+    "packages/plugin-supabase-auth",
+    "packages/plugin-posthog",
+    "packages/plugin-testing",
+    "packages/module-onboarding",
+    "packages/module-auth",
+    "packages/module-settings",
+    "packages/module-notifications",
+    "packages/module-subscriptions"
   ],
   "scripts": {
     "dev": "vite",
     "build": "npm run build:lib && tsc -b && vite build",
     "build:lib": "tsup --config tsup.lib.config.ts",
+    "build:lib:fast": "APPSPRESSO_SKIP_DTS=1 tsup --config tsup.lib.config.ts",
     "preview": "vite preview",
     "lint": "biome check .",
     "lint:fix": "biome check --write .",
@@ -27,9 +39,15 @@
     "test:integration:coverage": "npm run build:lib && vitest run --config vitest.integration.config.ts --coverage",
     "test:integration:watch": "npm run build:lib && vitest --config vitest.integration.config.ts",
     "test:cli": "node --test packages/cli-shared/*.test.mjs",
+    "test:create-smoke": "node --test packages/cli-shared/create-smoke.test.mjs",
+    "build:plugins": "npm run build:lib && npm run build --workspace=@appspresso/plugin-sentry --workspace=@appspresso/plugin-firebase-auth --workspace=@appspresso/plugin-supabase-auth --workspace=@appspresso/plugin-posthog --workspace=@appspresso/plugin-testing",
+    "build:modules": "npm run build:lib && npm run build --workspace=@appspresso/module-onboarding --workspace=@appspresso/module-auth --workspace=@appspresso/module-settings --workspace=@appspresso/module-notifications --workspace=@appspresso/module-subscriptions",
+    "test:plugins": "npm run test --workspace=@appspresso/plugin-sentry --workspace=@appspresso/plugin-testing",
     "test:all": "npm run test:run && npm run test:cli && npm run test:integration",
     "verify:maestro-app-id": "node scripts/verify-maestro-app-id.mjs",
     "verify:bundle-budget": "node scripts/verify-demo-bundle-budget.mjs",
+    "analyze": "node cli/analyze.mjs",
+    "clean": "node -e \"import('./cli/clean.mjs').then(m=>m.runClean(process.cwd(),{yes:true}))\"",
     "audit:ci": "npm audit --audit-level=high",
     "demo:dev": "npm run build:lib && npm run dev -w demo",
     "demo:build": "npm run build:lib && npm run build -w demo",
@@ -37,13 +55,27 @@
     "doctor": "appspresso doctor",
     "create:sync-template": "node scripts/sync-create-template.mjs",
     "cap:sync": "appspresso native sync",
+    "native:verify:android": "appspresso native verify android",
+    "debug:android:logcat": "node scripts/debug/android-logcat.mjs",
+    "debug:android:demo": "node scripts/debug/demo-boot-watch.mjs",
+    "debug:android:verify-apk": "node scripts/debug/verify-apk-contents.mjs",
     "ci:native:android": "node scripts/ensure-demo-capacitor-deps.mjs && node scripts/ci-prepare-native.mjs android && node scripts/assemble-android-debug.mjs",
+    "ci:native:android:blank": "node scripts/ci-prepare-native-blank.mjs && node scripts/assemble-android-blank.mjs",
+    "native:blank:install": "node scripts/native-blank-install.mjs",
+    "native:blank:bisect-plugins": "node scripts/bisect-native-plugins.mjs",
+    "native:demo:bisect-plugins": "node scripts/bisect-demo-plugins.mjs",
+    "ci:native:android:debug": "VITE_NATIVE_DEBUG=true VITE_BOOT_TRACE=true npm run ci:native:android",
     "ci:native:ios": "node scripts/ensure-demo-capacitor-deps.mjs && node scripts/ensure-ios-platform.mjs && node scripts/ci-prepare-native.mjs ios && node bin/appspresso.mjs native assemble ios",
-    "e2e:native:android": "maestro test e2e/maestro",
-    "e2e:native:ios": "maestro test e2e/maestro",
+    "e2e": "node scripts/e2e/run.mjs all",
+    "e2e:android": "node scripts/e2e/run.mjs android",
+    "e2e:ios": "node scripts/e2e/run.mjs ios",
+    "e2e:smoke": "node scripts/e2e/run.mjs smoke",
+    "e2e:list": "node scripts/e2e/run.mjs list",
+    "e2e:native:android": "npm run e2e:android",
+    "e2e:native:ios": "npm run e2e:ios",
     "cap:open:android": "appspresso native open android",
     "cap:open:ios": "appspresso native open ios",
-    "android:sync": "npm run cap:sync",
+    "android:sync": "npm run demo:build && appspresso native sync android",
     "ios:sync": "npm run cap:sync",
     "prepublishOnly": "npm run build:lib"
   },
@@ -185,6 +217,11 @@
     "jsdom": "^29.1.1",
     "postcss": "^8.5.14",
     "tailwindcss": "^3.4.17",
+    "@appspresso/module-auth": "file:packages/module-auth",
+    "@appspresso/module-notifications": "file:packages/module-notifications",
+    "@appspresso/module-onboarding": "file:packages/module-onboarding",
+    "@appspresso/module-settings": "file:packages/module-settings",
+    "@appspresso/module-subscriptions": "file:packages/module-subscriptions",
     "tsup": "^8.5.1",
     "tsx": "^4.21.0",
     "typescript": "~6.0.2",
@@ -287,9 +324,14 @@
       "default": "./dist-lib/hooks/*.js"
     },
     "./motion": {
-      "types": "./dist-lib/motion/index.d.ts",
-      "import": "./dist-lib/motion/index.js",
-      "default": "./dist-lib/motion/index.js"
+      "types": "./dist-lib/motion.d.ts",
+      "import": "./dist-lib/motion.js",
+      "default": "./dist-lib/motion.js"
+    },
+    "./motion/*": {
+      "types": "./dist-lib/motion/*.d.ts",
+      "import": "./dist-lib/motion/*.js",
+      "default": "./dist-lib/motion/*.js"
     },
     "./components/ui/*": {
       "types": "./dist-lib/components/ui/*.d.ts",
@@ -336,6 +378,16 @@
       "import": "./dist-lib/components/AuthLayout.js",
       "default": "./dist-lib/components/AuthLayout.js"
     },
+    "./components/OnboardingLayout": {
+      "types": "./dist-lib/components/OnboardingLayout.d.ts",
+      "import": "./dist-lib/components/OnboardingLayout.js",
+      "default": "./dist-lib/components/OnboardingLayout.js"
+    },
+    "./components/Layout": {
+      "types": "./dist-lib/components/Layout.d.ts",
+      "import": "./dist-lib/components/Layout.js",
+      "default": "./dist-lib/components/Layout.js"
+    },
     "./app/providers/*": {
       "types": "./dist-lib/app/providers/*.d.ts",
       "import": "./dist-lib/app/providers/*.js",
@@ -345,6 +397,21 @@
       "types": "./dist-lib/app/*.d.ts",
       "import": "./dist-lib/app/*.js",
       "default": "./dist-lib/app/*.js"
+    },
+    "./plugin": {
+      "types": "./dist-lib/plugin/index.d.ts",
+      "import": "./dist-lib/plugin/index.js",
+      "default": "./dist-lib/plugin/index.js"
+    },
+    "./module": {
+      "types": "./dist-lib/module/index.d.ts",
+      "import": "./dist-lib/module/index.js",
+      "default": "./dist-lib/module/index.js"
+    },
+    "./module/*": {
+      "types": "./dist-lib/module/*.d.ts",
+      "import": "./dist-lib/module/*.js",
+      "default": "./dist-lib/module/*.js"
     },
     "./dev/*": {
       "types": "./dist-lib/dev/*.d.ts",

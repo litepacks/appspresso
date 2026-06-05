@@ -23,8 +23,10 @@ vi.mock("@capacitor-community/sqlite", () => ({
   CapacitorSQLite: sx,
 }));
 
-vi.mock("@/db/migrations", () => ({
-  getMigrationStatements: () => ["SELECT 1"],
+const runMigrations = vi.hoisted(() => vi.fn().mockResolvedValue(2));
+
+vi.mock("@/db/migrate", () => ({
+  runMigrations,
 }));
 
 import {
@@ -80,7 +82,7 @@ describe("sqlite", () => {
     await initDatabase(setStatus);
 
     expect(sx.createConnection).toHaveBeenCalled();
-    expect(sx.execute).toHaveBeenCalled();
+    expect(runMigrations).toHaveBeenCalled();
     expect(setStatus).toHaveBeenCalledWith({ available: true });
 
     sx.query.mockResolvedValue({ values: [["hello"]] });

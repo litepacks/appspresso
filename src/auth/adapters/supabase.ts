@@ -29,6 +29,8 @@ function mapSession(session: Session | null): {
 /**
  * Supabase Auth. `signIn` is not called: use `client.auth.signInWithPassword`, `signInWithOAuth`, … in UI;
  * Session is propagated via `onAuthStateChange`.
+ *
+ * Also published from `@appspresso/plugin-supabase-auth` for plugin-first imports.
  */
 export function createSupabaseAuthAdapter(client: SupabaseClient): AuthAdapter {
   return {

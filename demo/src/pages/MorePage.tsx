@@ -55,12 +55,18 @@ import { publicAssetUrl } from "appspresso/lib/public-asset";
 import { toast } from "appspresso/lib/toast";
 import { themePreferenceAtom } from "appspresso/state/atoms";
 import { useAtom } from "jotai";
-import { useMemo, useState } from "react";
+import { lazy, Suspense, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { z } from "zod";
-import { KitPlaygroundCard } from "../components/KitPlaygroundCard";
+
+// Lazy load heavy playground component (contains framer-motion)
+const KitPlaygroundCard = lazy(() =>
+  import("../components/KitPlaygroundCard").then((m) => ({
+    default: m.KitPlaygroundCard,
+  })),
+);
 
 export function MorePage() {
   const { t } = useTranslation("demo");
@@ -528,7 +534,9 @@ export function MorePage() {
         </CardHeader>
       </Card>
 
-      <KitPlaygroundCard />
+      <Suspense fallback={null}>
+        <KitPlaygroundCard />
+      </Suspense>
 
       <AppModal
         open={modalOpen}

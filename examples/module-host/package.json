@@ -1,0 +1,26 @@
+{
+  "name": "module-host-example",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@appspresso/module-auth": "file:../../packages/module-auth",
+    "@appspresso/module-onboarding": "file:../../packages/module-onboarding",
+    "@appspresso/module-settings": "file:../../packages/module-settings",
+    "appspresso": "file:../..",
+    "jotai": "^2.12.5",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-router-dom": "^7.6.2"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^6.0.1",
+    "typescript": "~5.9.3",
+    "vite": "^8.0.10"
+  }
+}

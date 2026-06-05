@@ -21,6 +21,8 @@ function mapUser(u: User | null): AuthUser | null {
 /**
  * `firebase/auth` instance. `signIn` opens an anonymous session by default;
  * Use Firebase API from UI for email / OAuth; state updates via `subscribe`.
+ *
+ * Also published from `@appspresso/plugin-firebase-auth` for plugin-first imports.
  */
 export function createFirebaseAuthAdapter(auth: Auth): AuthAdapter {
   return {

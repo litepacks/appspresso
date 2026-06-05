@@ -1,0 +1,26 @@
+[
+  {
+    "id": "full",
+    "omitted": null,
+    "reason": "baseline",
+    "alive": true,
+    "pid": "18829",
+    "oom": false,
+    "rendererCrash": false,
+    "tileMem": false,
+    "crashed": false,
+    "at": "2026-06-05T10:10:42.415Z"
+  },
+  {
+    "id": "omit-sqlite",
+    "omitted": "@capacitor-community/sqlite",
+    "reason": "libsqlcipher native + sync/sqlite JS + deferred initDatabase",
+    "alive": true,
+    "pid": "19237",
+    "oom": false,
+    "rendererCrash": false,
+    "tileMem": false,
+    "crashed": false,
+    "at": "2026-06-05T10:11:46.568Z"
+  }
+]

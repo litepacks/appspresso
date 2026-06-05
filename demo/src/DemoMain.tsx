@@ -1,7 +1,14 @@
 import { OutletErrorBoundary } from "appspresso/components/OutletErrorBoundary";
 import { AppMain, AppMainPane } from "appspresso/components/shell";
-import { PullToRefresh } from "appspresso/components/ui/pull-to-refresh";
-import { AnimatedOutlet } from "appspresso/motion";
+import { AnimatedOutlet } from "appspresso/motion/AnimatedOutlet";
+import { lazy, Suspense } from "react";
+
+// Lazy load PullToRefresh (heavy framer-motion dependency)
+const PullToRefresh = lazy(() =>
+  import("appspresso/components/ui/pull-to-refresh").then((m) => ({
+    default: m.PullToRefresh,
+  })),
+);
 
 export type DemoMainProps = {
   /** Full-height shell samples like `/features/shell`: pull-to-refresh off. */
@@ -29,13 +36,15 @@ export function DemoMain({
       {shellRoute ? (
         <AppMainPane>{outlet}</AppMainPane>
       ) : (
-        <PullToRefresh
-          className="px-4 py-5"
-          statusLabel={pullToRefreshStatusLabel}
-          onRefresh={onPullToRefresh}
-        >
-          {outlet}
-        </PullToRefresh>
+        <Suspense fallback={<AppMainPane>{outlet}</AppMainPane>}>
+          <PullToRefresh
+            className="px-4 py-5"
+            statusLabel={pullToRefreshStatusLabel}
+            onRefresh={onPullToRefresh}
+          >
+            {outlet}
+          </PullToRefresh>
+        </Suspense>
       )}
     </AppMain>
   );

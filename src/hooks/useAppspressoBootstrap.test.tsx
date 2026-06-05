@@ -1,6 +1,7 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, act } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { BOOTSTRAP_DEADLINE_MS } from "@/lib/bootstrap-timing";
 import { useAppspressoBootstrapState } from "./useAppspressoBootstrap";
 
 const runBootstrap = vi.hoisted(() => vi.fn());
@@ -40,6 +41,10 @@ function Probe() {
 }
 
 describe("useAppspressoBootstrapState", () => {
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   it("reaches ready when runBootstrap succeeds", async () => {
     runBootstrap.mockResolvedValue(undefined);
     render(<Probe />);
@@ -55,6 +60,22 @@ describe("useAppspressoBootstrapState", () => {
       expect(screen.getByTestId("phase").textContent).toBe("failed"),
     );
     expect(screen.getByTestId("error").textContent).toContain("boot fail");
+  });
+
+  it("fails when runBootstrap exceeds deadline", async () => {
+    vi.useFakeTimers();
+    runBootstrap.mockImplementation(
+      () =>
+        new Promise(() => {
+          /* never resolves */
+        }),
+    );
+    render(<Probe />);
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(BOOTSTRAP_DEADLINE_MS + 50);
+    });
+    expect(screen.getByTestId("phase").textContent).toBe("failed");
+    expect(screen.getByTestId("error").textContent).toContain("timed out");
   });
 
   it("retry re-runs bootstrap after failure", async () => {

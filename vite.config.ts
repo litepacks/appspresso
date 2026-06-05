@@ -22,6 +22,30 @@ export default defineConfig({
   build: {
     outDir: "dist",
     target: "es2020",
+    modulePreload: false,
+    chunkSizeWarningLimit: 500,
+    rollupOptions: {
+      output: {
+        manualChunks(id: string) {
+          // Heavy vendor libraries isolated to prevent main bundle bloat
+          if (id.includes("framer-motion") || id.includes("motion/react")) {
+            return "vendor-motion";
+          }
+          if (id.includes("@capacitor-community/sqlite")) {
+            return "vendor-sqlite";
+          }
+          if (id.includes("react-i18next") || id.includes("i18next")) {
+            return "vendor-i18n";
+          }
+          if (id.includes("react-router-dom")) {
+            return "vendor-router";
+          }
+          if (id.includes("jotai")) {
+            return "vendor-state";
+          }
+        },
+      },
+    },
   },
   resolve: {
     alias: {

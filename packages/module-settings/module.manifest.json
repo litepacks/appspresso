@@ -1,0 +1,9 @@
+{
+  "name": "settings",
+  "npm": "@appspresso/module-settings",
+  "peers": ["appspresso@^0.6.0"],
+  "env": [],
+  "modulesFile": "src/appspresso.modules.ts",
+  "importLine": "import { settingsModule } from \"@appspresso/module-settings\";",
+  "registerLine": "settingsModule({ showDebugSection: true }),"
+}

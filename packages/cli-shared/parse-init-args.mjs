@@ -1,3 +1,5 @@
+import cac from "cac";
+
 /**
  * @typedef {object} InitCliFlags
  * @property {boolean} help
@@ -16,108 +18,87 @@
  * @property {string} [srcDir]
  * @property {string} [publicDir]
  * @property {string} [version]
+ * @property {"minimal"|"showcase"} [template]
+ * @property {boolean} templateFromCli
  * @property {string[]} positional
  */
+
+/** @type {import("cac").CAC | undefined} */
+let initCli;
+
+function getInitCli() {
+  if (initCli) return initCli;
+
+  const cli = cac("init");
+
+  cli
+    .option("-h, --help", "Show help")
+    .option("-y, --yes", "Skip interactive prompts")
+    .option("--skip-install", "Skip npm install (scaffold)")
+    .option("--with-capacitor, --hybrid", "Add Capacitor dependencies")
+    .option("--web-only", "Web-first README note")
+    .option("--force", "Overwrite existing config (integrate)")
+    .option("--write-manifest", "Write appspresso.init.json")
+    .option("--config <file>", "Load appspresso.init.json")
+    .option("--appspresso <range>", "appspresso semver range", {
+      default: "^0.1.0",
+    })
+    .option("--package-name <name>", "npm package name")
+    .option("--scope <org>", "npm scope for package name")
+    .option("--app-id <id>", "Native bundle id")
+    .option("--display-name <name>", "App display name")
+    .option("--src-dir <path>", "Source folder (scaffold)")
+    .option("--public-dir <path>", "Public folder (scaffold)")
+    .option("--version <semver>", "Initial version")
+    .option("--template <name>", "minimal or showcase");
+
+  initCli = cli;
+  return cli;
+}
 
 /**
  * @param {string[]} argv
  * @returns {InitCliFlags}
  */
 export function parseInitArgs(argv) {
-  const args = [...argv];
-  /** @type {InitCliFlags} */
-  const out = {
-    help: false,
-    yes: false,
-    skipInstall: false,
-    withCapacitor: false,
-    webOnly: false,
-    force: false,
-    writeManifest: false,
-    appspresso: "^0.0.0",
-    positional: [],
-  };
+  const cli = getInitCli();
+  cli.parse(["node", "init", ...argv], { run: false });
+  cli.globalCommand.checkUnknownOptions();
 
-  for (let i = 0; i < args.length; i++) {
-    const a = args[i];
-    if (a === "--help" || a === "-h") {
-      out.help = true;
-      continue;
-    }
-    if (a === "--yes" || a === "-y") {
-      out.yes = true;
-      continue;
-    }
-    if (a === "--skip-install") {
-      out.skipInstall = true;
-      continue;
-    }
-    if (a === "--with-capacitor" || a === "--hybrid") {
-      out.withCapacitor = true;
-      continue;
-    }
-    if (a === "--web-only") {
-      out.webOnly = true;
-      continue;
-    }
-    if (a === "--force") {
-      out.force = true;
-      continue;
-    }
-    if (a === "--write-manifest") {
-      out.writeManifest = true;
-      continue;
-    }
-    if (a === "--config") {
-      out.config = args[++i] ?? "";
-      if (!out.config) throw new Error("--config needs a file path");
-      continue;
-    }
-    if (a === "--appspresso") {
-      out.appspresso = args[++i] ?? "";
-      if (!out.appspresso) throw new Error("--appspresso needs a value");
-      continue;
-    }
-    if (a === "--package-name") {
-      out.packageName = args[++i] ?? "";
-      if (!out.packageName) throw new Error("--package-name needs a value");
-      continue;
-    }
-    if (a === "--scope") {
-      out.scope = args[++i] ?? "";
-      if (!out.scope) throw new Error("--scope needs a value");
-      continue;
-    }
-    if (a === "--app-id") {
-      out.appId = args[++i] ?? "";
-      if (!out.appId) throw new Error("--app-id needs a value");
-      continue;
-    }
-    if (a === "--display-name") {
-      out.displayName = args[++i] ?? "";
-      if (!out.displayName) throw new Error("--display-name needs a value");
-      continue;
-    }
-    if (a === "--src-dir") {
-      out.srcDir = args[++i] ?? "";
-      if (!out.srcDir) throw new Error("--src-dir needs a value");
-      continue;
-    }
-    if (a === "--public-dir") {
-      out.publicDir = args[++i] ?? "";
-      if (!out.publicDir) throw new Error("--public-dir needs a value");
-      continue;
-    }
-    if (a === "--version") {
-      out.version = args[++i] ?? "";
-      if (!out.version) throw new Error("--version needs a value");
-      continue;
-    }
-    if (a.startsWith("-")) {
-      throw new Error(`Unknown flag: ${a}`);
-    }
-    out.positional.push(a);
+  const o = cli.options;
+  const templateFromCli = argv.some(
+    (a) => a === "--template" || a.startsWith("--template="),
+  );
+
+  if (
+    o.template != null &&
+    o.template !== "minimal" &&
+    o.template !== "showcase"
+  ) {
+    throw new Error('--template must be "minimal" or "showcase"');
   }
 
-  return out;
+  return {
+    help: Boolean(o.help),
+    yes: Boolean(o.yes),
+    skipInstall: Boolean(o.skipInstall),
+    withCapacitor: Boolean(o.withCapacitor),
+    webOnly: Boolean(o.webOnly),
+    force: Boolean(o.force),
+    writeManifest: Boolean(o.writeManifest),
+    config: o.config,
+    appspresso: o.appspresso,
+    packageName: o.packageName,
+    scope: o.scope,
+    appId: o.appId,
+    displayName: o.displayName,
+    srcDir: o.srcDir,
+    publicDir: o.publicDir,
+    version: o.version,
+    template: templateFromCli
+      ? /** @type {"minimal"|"showcase"} */ (o.template)
+      : undefined,
+    templateFromCli,
+    positional: [...cli.args],
+  };
 }

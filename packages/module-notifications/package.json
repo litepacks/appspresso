@@ -1,0 +1,33 @@
+{
+  "name": "@appspresso/module-notifications",
+  "version": "0.6.0",
+  "description": "Notification center and permission flow for Appspresso",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./module.manifest.json": "./module.manifest.json"
+  },
+  "files": ["dist", "module.manifest.json"],
+  "scripts": {
+    "build": "tsup src/index.ts --format esm --dts --tsconfig tsconfig.json --clean --external appspresso --external zod"
+  },
+  "peerDependencies": {
+    "appspresso": "^0.6.0"
+  },
+  "devDependencies": {
+    "appspresso": "file:../..",
+    "tsup": "^8.5.0",
+    "typescript": "~5.9.3",
+    "zod": "^4.4.3"
+  },
+  "dependencies": {
+    "zod": "^4.4.3"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

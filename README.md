@@ -110,12 +110,12 @@ After `native-android` / `native-ios` build jobs, Maestro smoke E2E runs:
 |-----|----------------|
 | `native-android` | `npm ci` → `demo/` build + `cap sync android` → `assembleDebug` (artifact gerekmez; ~40MB APK) |
 | `native-ios` | Aynı hazırlık `demo/` + `cap sync ios` + simulator build |
-| `native-e2e-android` | Emulator + install debug APK artifact → `maestro test e2e/maestro` |
-| `native-e2e-ios` | Simulator + install `.app` artifact → `maestro test e2e/maestro` |
+| `native-e2e-android` | Emulator + `scripts/e2e/android-install.mjs` → `scripts/e2e/maestro.mjs` |
+| `native-e2e-ios` | Simulator install + Maestro `--device <UDID>` (same simulator) |
 
-Flows live in [`e2e/maestro/`](e2e/maestro/) (e.g. `smoke.yaml`: `launchApp`, wait for **Word practice**, `takeScreenshot`). Maestro only discovers YAML files at that folder’s top level.
+Flows live in [`e2e/maestro/shared/`](e2e/maestro/shared/) (e.g. `smoke.yaml`). See [`docs/testing/e2e.md`](docs/testing/e2e.md).
 
-**Local E2E:** `brew install maestro` (macOS), build/install the app (`npm run ci:native:android` or `ci:native:ios`), start emulator/simulator, then `npm run e2e:native:android` or `e2e:native:ios`.
+**Local E2E:** `npm run e2e:android` or `npm run e2e:ios` (build, sync, emulator/simulator, install, Maestro).
 
 ## Playbooks (`docs/playbooks`)
 
@@ -170,10 +170,13 @@ Use **`appspresso/components/form`** with existing inputs:
 The published CLI package is **`create-appspresso`** (npm resolves `npm create appspresso` to that package). It shares **`@appspresso/cli-shared`** with `appspresso init`.
 
 ```bash
-npm create appspresso@latest my-app
+npm create appspresso@latest my-app   # minimal template (default)
 cd my-app
+cp .env.example .env
 npm run dev
 ```
+
+Docs: [docs/getting-started/01-create-app.md](docs/getting-started/01-create-app.md) · Showcase: `--template showcase`
 
 Options (also available on `appspresso init`):
 

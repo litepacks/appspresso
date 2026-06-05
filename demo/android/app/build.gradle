@@ -10,6 +10,12 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        // Native deps (libsqlcipher ~5 MB, background-runner JSEngine ~1.6 MB) ship
+        // per-ABI. Bundling all 4 ABIs is what inflated the APK to ~40 MB; modern
+        // devices/emulators only need 64-bit, so drop the legacy 32-bit ABIs.
+        ndk {
+            abiFilters 'arm64-v8a', 'x86_64'
+        }
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
              // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
@@ -27,8 +33,6 @@ android {
 repositories {
     flatDir{
         dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
-        // @capacitor/background-runner — android-js-engine-release.aar (monorepo: demo/ → repo root)
-        dirs '../../../node_modules/@capacitor/background-runner/android/src/main/libs'
     }
 }
 

@@ -1,28 +1,18 @@
 import { Capacitor } from "@capacitor/core";
-import { http } from "@/api/http";
-import { loadCapacitorSQLite } from "@/db/capacitor-sqlite";
-import { isSqliteOpen } from "@/db/sqlite";
-import { logger } from "@/lib/logger";
-import { initNetworkListeners } from "@/services/network.service";
+import { isSqliteOpen } from "@/db/sqlite-open";
+import { createIdempotencyKey } from "@/sync/idempotency";
+import { ensureNativeOutboxStore, getOutboxStore } from "@/sync/outbox";
+import { getOutboxCounts } from "@/sync/outbox/api";
 import { syncStatusAtom } from "@/state/atoms";
 import { appStore } from "@/state/store";
 import type { OutboxEnqueueInput } from "./types";
-import {
-  webOutboxClear,
-  webOutboxEnqueue,
-  webOutboxList,
-  webOutboxShift,
-} from "./web-outbox";
+import { STORAGE_KEY_PREFIX } from "@/config/constants";
 
-const DB = "app_kit_db";
-const MAX_NATIVE_ATTEMPTS = 5;
-const NATIVE_FLUSH_BACKOFF_MS = 400;
-
-/** Held until native SQLite opens (cold start defers DB init). */
 const nativePendingBuffer: OutboxEnqueueInput[] = [];
 
 let flushTimer: ReturnType<typeof setTimeout> | null = null;
-let onlineCleanup: (() => void) | null = null;
+
+const LEGACY_WEB_KEY = `${STORAGE_KEY_PREFIX}web_sync_outbox`;
 
 function patchSync(
   fn: (prev: {
@@ -48,23 +38,55 @@ function scheduleFlush(ms = 400) {
   }, ms);
 }
 
-async function nativeInsertRow(input: OutboxEnqueueInput): Promise<void> {
-  const CapacitorSQLite = await loadCapacitorSQLite();
-  await CapacitorSQLite.run({
-    database: DB,
-    statement:
-      "INSERT INTO sync_outbox(operation,payload,created_at,attempts,status) VALUES(?,?,?,?,?)",
-    values: [
-      input.operation,
-      JSON.stringify(input.payload),
-      new Date().toISOString(),
-      0,
-      "pending",
-    ],
-  });
+async function migrateLegacyWebOutbox(): Promise<void> {
+  if (Capacitor.getPlatform() !== "web") return;
+  try {
+    const raw = localStorage.getItem(LEGACY_WEB_KEY);
+    if (!raw) return;
+    const rows = JSON.parse(raw) as Array<{
+      operation: string;
+      payload: string;
+    }>;
+    if (!Array.isArray(rows) || rows.length === 0) return;
+    const store = getOutboxStore();
+    for (const row of rows) {
+      let payload: Record<string, unknown> = {};
+      try {
+        payload = JSON.parse(row.payload) as Record<string, unknown>;
+      } catch {
+        payload = {};
+      }
+      await store.enqueue({
+        entityType: "_legacy",
+        action: "custom",
+        operation: row.operation,
+        payload,
+        idempotencyKey: createIdempotencyKey({
+          entityType: "_legacy",
+          action: "custom",
+          payloadVersion: row.payload,
+        }),
+      });
+    }
+    localStorage.removeItem(LEGACY_WEB_KEY);
+  } catch {
+    /* ignore corrupt legacy store */
+  }
+}
+
+function toEnqueueOptions(input: OutboxEnqueueInput) {
+  return {
+    entityType: input.entityType ?? "_legacy",
+    entityLocalId: input.entityLocalId,
+    action: input.action ?? ("custom" as const),
+    operation: input.operation,
+    payload: input.payload,
+    idempotencyKey: input.idempotencyKey,
+  };
 }
 
 async function nativeEnqueue(input: OutboxEnqueueInput): Promise<void> {
+  const options = toEnqueueOptions(input);
   if (!isSqliteOpen()) {
     nativePendingBuffer.push(input);
     patchSync((s) => ({
@@ -73,178 +95,74 @@ async function nativeEnqueue(input: OutboxEnqueueInput): Promise<void> {
     }));
     return;
   }
-  await nativeInsertRow(input);
+  await getOutboxStore().enqueue(options);
 }
 
 /** Drain in-memory buffer after `initDatabase` on native. */
 export async function flushNativePendingBuffer(): Promise<void> {
   if (Capacitor.getPlatform() === "web" || !isSqliteOpen()) return;
+  await ensureNativeOutboxStore();
   while (nativePendingBuffer.length > 0) {
     const item = nativePendingBuffer.shift();
     if (!item) break;
-    await nativeInsertRow(item);
+    await getOutboxStore().enqueue(toEnqueueOptions(item));
   }
-  updatePendingCount();
-}
-
-async function nativePendingCount(): Promise<number> {
-  if (!isSqliteOpen()) return nativePendingBuffer.length;
-  const CapacitorSQLite = await loadCapacitorSQLite();
-  const res = await CapacitorSQLite.query({
-    database: DB,
-    statement: "SELECT COUNT(*) as c FROM sync_outbox WHERE status = 'pending'",
-  });
-  return Number(res?.values?.[0]?.[0] ?? 0);
-}
-
-async function nativeShiftOne(): Promise<{
-  id: number;
-  payload: string;
-} | null> {
-  if (!isSqliteOpen()) return null;
-  const CapacitorSQLite = await loadCapacitorSQLite();
-  const res = await CapacitorSQLite.query({
-    database: DB,
-    statement:
-      "SELECT id, payload FROM sync_outbox WHERE status = 'pending' ORDER BY id ASC LIMIT 1",
-  });
-  const row = res?.values?.[0];
-  if (!row) return null;
-  return { id: Number(row[0]), payload: String(row[1] ?? "") };
-}
-
-async function nativeDelete(id: number): Promise<void> {
-  const CapacitorSQLite = await loadCapacitorSQLite();
-  await CapacitorSQLite.run({
-    database: DB,
-    statement: "DELETE FROM sync_outbox WHERE id = ?",
-    values: [id],
-  });
-}
-
-async function nativeGetAttempts(id: number): Promise<number> {
-  const CapacitorSQLite = await loadCapacitorSQLite();
-  const res = await CapacitorSQLite.query({
-    database: DB,
-    statement: "SELECT attempts FROM sync_outbox WHERE id = ?",
-    values: [id],
-  });
-  return Number(res?.values?.[0]?.[0] ?? 0);
-}
-
-async function nativeMarkFailed(id: number): Promise<void> {
-  const prev = await nativeGetAttempts(id);
-  const attempts = prev + 1;
-  const CapacitorSQLite = await loadCapacitorSQLite();
-  await CapacitorSQLite.run({
-    database: DB,
-    statement: "UPDATE sync_outbox SET attempts = ?, status = ? WHERE id = ?",
-    values: [
-      attempts,
-      attempts >= MAX_NATIVE_ATTEMPTS ? "failed" : "pending",
-      id,
-    ],
-  });
+  await updatePendingCount();
 }
 
 export function enqueueMutationLikeOperation(input: OutboxEnqueueInput): void {
   if (Capacitor.getPlatform() === "web") {
-    webOutboxEnqueue(input);
-    updatePendingCount();
+    void getOutboxStore()
+      .enqueue(toEnqueueOptions(input))
+      .then(() => updatePendingCount());
     return;
   }
   void nativeEnqueue(input).then(() => updatePendingCount());
 }
 
-function updatePendingCount() {
-  if (Capacitor.getPlatform() === "web") {
-    patchSync((s) => ({ ...s, pendingCount: webOutboxList().length }));
-  } else {
-    void nativePendingCount().then((c) =>
-      patchSync((s) => ({ ...s, pendingCount: c })),
-    );
+export async function enqueueOutbox(
+  input: import("./types").OutboxEnqueueOptions,
+): Promise<void> {
+  await getOutboxStore().enqueue(input);
+  await updatePendingCount();
+}
+
+async function updatePendingCount() {
+  try {
+    const counts = await getOutboxCounts();
+    patchSync((s) => ({
+      ...s,
+      pendingCount: counts.pending + counts.processing,
+      deadCount: counts.dead,
+    }));
+  } catch {
+    if (Capacitor.getPlatform() !== "web") {
+      patchSync((s) => ({
+        ...s,
+        pendingCount: nativePendingBuffer.length,
+      }));
+    }
   }
 }
 
 export async function flushOutbox(): Promise<void> {
-  if (Capacitor.getPlatform() === "web") {
-    const next = webOutboxShift();
-    if (!next) {
-      patchSync((s) => ({ ...s, isFlushing: false, pendingCount: 0 }));
-      return;
-    }
-    patchSync((s) => ({ ...s, isFlushing: true }));
-    try {
-      const body = JSON.parse(next.payload) as Record<string, unknown>;
-      const path = typeof body.path === "string" ? body.path : "/api/dummy";
-      await http.post(path, body, {
-        timeout: 5000,
-        validateStatus: () => true,
-      });
-      patchSync((s) => ({
-        ...s,
-        isFlushing: false,
-        lastFlushAt: Date.now(),
-        pendingCount: webOutboxList().length,
-      }));
-      scheduleFlush(0);
-    } catch (e) {
-      logger.warn("flushOutbox web", { e: String(e) });
-      webOutboxEnqueue({
-        operation: next.operation,
-        payload: JSON.parse(next.payload) as Record<string, unknown>,
-      });
-      patchSync((s) => ({
-        ...s,
-        isFlushing: false,
-        lastError: String(e),
-      }));
-    }
-    return;
-  }
-
-  patchSync((s) => ({ ...s, isFlushing: true }));
-  const row = await nativeShiftOne();
-  if (!row) {
-    patchSync((s) => ({ ...s, isFlushing: false, pendingCount: 0 }));
-    return;
-  }
-  try {
-    const body = JSON.parse(row.payload) as Record<string, unknown>;
-    const path = typeof body.path === "string" ? body.path : "/api/dummy";
-    await http.post(path, body, { timeout: 5000, validateStatus: () => true });
-    await nativeDelete(row.id);
-    patchSync((s) => ({
-      ...s,
-      isFlushing: false,
-      lastFlushAt: Date.now(),
-    }));
-    const c = await nativePendingCount();
-    patchSync((s) => ({ ...s, pendingCount: c }));
-    scheduleFlush(0);
-  } catch (e) {
-    logger.warn("flushOutbox native", { e: String(e) });
-    await nativeMarkFailed(row.id);
-    patchSync((s) => ({
-      ...s,
-      isFlushing: false,
-      lastError: String(e),
-    }));
-    scheduleFlush(NATIVE_FLUSH_BACKOFF_MS);
+  const { syncEngineRunOnce } = await import("./engine");
+  await syncEngineRunOnce();
+  await updatePendingCount();
+  if (appStore.get(syncStatusAtom).pendingCount > 0) {
+    scheduleFlush(400);
   }
 }
 
-export function initSyncLayer(): void {
-  updatePendingCount();
-  onlineCleanup = initNetworkListeners(() => scheduleFlush(0));
+/** Web-only legacy outbox migration (called from `sync-lifecycle` on boot). */
+export function migrateLegacyWebOutboxOnBoot(): void {
+  void migrateLegacyWebOutbox().then(() => updatePendingCount());
 }
 
-export function teardownSyncLayer(): void {
-  onlineCleanup?.();
-  onlineCleanup = null;
-  if (flushTimer) clearTimeout(flushTimer);
-}
-
+/** @deprecated Use outbox store clear via sync reset in devtools */
 export function clearWebOutbox(): void {
-  webOutboxClear();
+  void getOutboxStore()
+    .clearDevOnly()
+    .then(() => updatePendingCount());
+  localStorage.removeItem(LEGACY_WEB_KEY);
 }

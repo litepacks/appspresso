@@ -1,0 +1,5 @@
+node_modules
+dist
+.capacitor
+capacitor.config.json
+android/local.properties

@@ -1,0 +1,10 @@
+{
+  "name": "auth",
+  "npm": "@appspresso/module-auth",
+  "peers": ["appspresso@^0.6.0"],
+  "suggests": ["@appspresso/plugin-firebase-auth", "@appspresso/plugin-supabase-auth"],
+  "env": [],
+  "modulesFile": "src/appspresso.modules.ts",
+  "importLine": "import { authModule } from \"@appspresso/module-auth\";",
+  "registerLine": "authModule({ basePath: \"/auth\" }),"
+}

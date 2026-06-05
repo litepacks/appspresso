@@ -8,6 +8,7 @@ import {
 } from "react";
 import type { AuthAdapter } from "@/auth/adapter";
 import { createDemoAuthAdapter } from "@/auth/adapters/demo";
+import { setAuthPluginSnapshot } from "@/auth/plugin-bridge";
 import { hydrateTokensFromStorage } from "@/auth/session-store";
 import type { AuthStatus, AuthUser } from "@/auth/types";
 
@@ -43,6 +44,7 @@ export function AuthProvider({
     return adapter.subscribe(({ user: u, status: s }) => {
       setUser(u);
       setStatus(s);
+      setAuthPluginSnapshot({ user: u, status: s });
     });
   }, [adapter]);
 

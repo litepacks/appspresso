@@ -23,7 +23,7 @@ Configured in `vitest.coverage.shared.ts`:
 
 Template pages (`src/pages/`), dev tools, and default `App`/`router` are excluded from the denominator.
 
-CI job `coverage` fails when thresholds are not met.
+On **main** / **master** pushes, CI job `coverage` fails when thresholds are not met. On pull requests, `coverage-pr` runs informatively and does not block `build`.
 
 ## What to test
 
@@ -42,4 +42,12 @@ CI job `coverage` fails when thresholds are not met.
 
 ## Native E2E
 
-Maestro flows in `e2e/maestro/`. Requires built app on emulator/simulator. Keep `appId` in sync: `npm run verify:maestro-app-id`.
+Maestro flows under `e2e/maestro/shared/`. Full guide: **[e2e.md](./e2e.md)**.
+
+```bash
+npm run e2e:list
+npm run e2e:android   # or e2e:ios on macOS
+npm run e2e:smoke
+```
+
+Keep `appId` in sync: `npm run verify:maestro-app-id`.

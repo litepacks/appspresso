@@ -1,0 +1,9 @@
+{
+  "name": "notifications",
+  "npm": "@appspresso/module-notifications",
+  "peers": ["appspresso@^0.6.0"],
+  "env": [],
+  "modulesFile": "src/appspresso.modules.ts",
+  "importLine": "import { notificationsModule } from \"@appspresso/module-notifications\";",
+  "registerLine": "notificationsModule(),"
+}

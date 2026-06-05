@@ -1,6 +1,7 @@
 import { type ComponentType, type ReactElement, StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { appspressoPackageConfig } from "@/config/appspresso.config";
+import { bootTrace } from "@/lib/boot-trace";
 
 export type BootAppspressoHostOptions = {
   rootComponent: ComponentType;
@@ -24,5 +25,10 @@ export function bootAppspressoHost(options: BootAppspressoHostOptions): void {
   const strict = options.strictMode ?? mountCfg.strictMode;
   const Cmp = options.rootComponent;
   const tree = wrapStrict(strict, <Cmp />);
+  bootTrace("react.createRoot.render.start", {
+    rootId: id,
+    strictMode: strict,
+  });
   createRoot(el).render(tree);
+  bootTrace("react.createRoot.render.done");
 }

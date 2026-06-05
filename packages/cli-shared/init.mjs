@@ -4,6 +4,7 @@ import { fileURLToPath } from "node:url";
 import * as p from "@clack/prompts";
 import pc from "picocolors";
 import { formatVersionBanner } from "./branding.mjs";
+import { runCapAddWizard } from "./cap-wizard.mjs";
 import { runIntegrate } from "./integrate.mjs";
 import {
   assertNpmPackageName,
@@ -15,8 +16,10 @@ import {
   validateManifest,
   writeInitManifest,
 } from "./manifest.mjs";
+import { buildNextStepsChecklist } from "./next-steps.mjs";
 import { parseInitArgs } from "./parse-init-args.mjs";
 import { ensureProjectDir, runNpmInstall, runScaffold } from "./scaffold.mjs";
+import { resolveScaffoldTemplateDir } from "./template-dir.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -42,7 +45,8 @@ Options:
   --src-dir <path>       Source folder (scaffold remap, default: src)
   --public-dir <path>    Public folder (scaffold remap, default: public)
   --version <semver>     Initial version (default: 0.0.0)
-  --appspresso <range>   appspresso semver range (default: ^0.0.0)
+  --appspresso <range>   appspresso semver range (default: ^0.1.0)
+  --template <name>      minimal (default) or showcase
   --with-capacitor       Capacitor deps and cap scripts
   --web-only             Web-first README note (not with --with-capacitor)
   --write-manifest       Write appspresso.init.json after setup
@@ -97,9 +101,9 @@ async function resolveManifest(flags, projectDir, dirArg, mode) {
   let base = normalizeManifest({
     paths: defaultPaths(),
     version: "0.0.0",
-    appspressoVersion: flags.appspresso ?? "^0.0.0",
+    appspressoVersion: flags.appspresso ?? "^0.1.0",
     capacitor: flags.withCapacitor,
-    scaffold: { template: "default" },
+    scaffold: { template: flags.templateFromCli ? flags.template : "minimal" },
   });
 
   if (flags.config) {
@@ -209,6 +213,27 @@ async function resolveManifest(flags, projectDir, dirArg, mode) {
       base.appId = id;
     }
 
+    if (mode === "scaffold" && !flags.templateFromCli) {
+      const tpl = await p.select({
+        message: "Starter template",
+        options: [
+          {
+            value: "minimal",
+            label: "Minimal",
+            hint: "One screen, short config (recommended)",
+          },
+          {
+            value: "showcase",
+            label: "Showcase",
+            hint: "Vocabulary demo with full kit samples",
+          },
+        ],
+        initialValue: "minimal",
+      });
+      if (p.isCancel(tpl)) p.cancel("Cancelled");
+      base.scaffold.template = /** @type {"minimal"|"showcase"} */ (tpl);
+    }
+
     if (mode === "scaffold" && !flags.srcDir && !flags.publicDir) {
       const customLayout = await p.confirm({
         message: "Customize src/public folders?",
@@ -280,7 +305,7 @@ function slugFromDir(dirArg) {
 
 /**
  * @param {string[]} argv
- * @param {{ entry?: "create"|"init", templateDir?: string }} [opts]
+ * @param {{ entry?: "create"|"init", templateDir?: string, findCapacitorCli?: (cwd: string) => string | null }} [opts]
  */
 export async function runInit(argv, opts = {}) {
   const entry = opts.entry ?? "init";
@@ -339,12 +364,32 @@ export async function runInit(argv, opts = {}) {
     mode,
   );
 
+  const templateName =
+    manifest.scaffold?.template === "showcase" ? "showcase" : "minimal";
   const templateDir =
-    opts.templateDir ?? join(__dirname, "..", "create-appspresso", "template");
+    opts.templateDir ?? resolveScaffoldTemplateDir(templateName);
 
   if (mode === "scaffold") {
     runScaffold({ templateDir, projectDir, manifest });
     if (!flags.skipInstall) runNpmInstall(projectDir);
+    if (manifest.capacitor) {
+      await runCapAddWizard(projectDir, {
+        interactive: isInteractive(flags),
+        findCapacitorCli:
+          opts.findCapacitorCli ??
+          ((cwd) => {
+            const cap = join(
+              cwd,
+              "node_modules",
+              "@capacitor",
+              "cli",
+              "bin",
+              "cap",
+            );
+            return existsSync(cap) ? cap : null;
+          }),
+      });
+    }
   } else {
     runIntegrate({ projectDir, manifest, force: flags.force });
   }
@@ -354,22 +399,20 @@ export async function runInit(argv, opts = {}) {
   }
 
   const relDir = dirArg || ".";
-  const next = [
-    `cd ${relDir}`,
-    mode === "scaffold" && flags.skipInstall ? "npm install" : null,
-    manifest.capacitor ? "npx cap add android" : null,
-    manifest.capacitor ? "npx cap add ios" : null,
-    manifest.capacitor ? "npm run cap:sync" : null,
-    "npm run dev",
-  ].filter(Boolean);
+  const next = buildNextStepsChecklist({
+    relDir,
+    skipInstall: mode === "scaffold" && flags.skipInstall,
+    capacitor: manifest.capacitor,
+    template: templateName,
+  });
 
   if (isInteractive(flags)) {
     p.outro(
-      `${pc.green("Done")} — ${manifest.displayName} at ${projectDir}\n\nNext:\n  ${next.join("\n  ")}`,
+      `${pc.green("Done")} — ${manifest.displayName} (${templateName}) at ${projectDir}\n\nNext:\n  ${next.join("\n  ")}`,
     );
   } else {
     console.log(`
-Created ${manifest.displayName} at ${projectDir}
+Created ${manifest.displayName} (${templateName}) at ${projectDir}
 Next:
   ${next.join("\n  ")}
 `);

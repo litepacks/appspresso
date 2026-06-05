@@ -2,6 +2,7 @@ import { Capacitor } from "@capacitor/core";
 import { SplashScreen } from "@capacitor/splash-screen";
 import { StatusBar, Style } from "@capacitor/status-bar";
 import { getInjectedAppMeta } from "@/build/injected-app-meta";
+import { bootTrace } from "@/lib/boot-trace";
 import { logger } from "@/lib/logger";
 
 /** Once: re-hide system bar when it reappears with `hidden: true` */
@@ -62,6 +63,10 @@ async function applyStatusBarFromAppMeta(): Promise<void> {
   if (!Capacitor.isNativePlatform()) return;
   const sb = getInjectedAppMeta()?.statusBar;
   if (sb == null) return;
+  bootTrace("appearance.statusBar.start", {
+    hidden: sb.hidden,
+    overlaysWebView: sb.overlaysWebView,
+  });
   try {
     if (sb.overlaysWebView === true) {
       await StatusBar.setOverlaysWebView({ overlay: true });
@@ -71,19 +76,29 @@ async function applyStatusBarFromAppMeta(): Promise<void> {
     if (sb.hidden === true) {
       await StatusBar.hide();
       // WebView layout may restore bar one frame later; delayed second hide.
+      // Race rAF with a timeout: on a busy WebView (emulator) rAF can be
+      // starved, and this must never block the bootstrap critical path.
       await new Promise<void>((resolve) => {
-        requestAnimationFrame(() => {
-          requestAnimationFrame(() => resolve());
-        });
+        let settled = false;
+        const done = () => {
+          if (settled) return;
+          settled = true;
+          resolve();
+        };
+        requestAnimationFrame(() => requestAnimationFrame(done));
+        setTimeout(done, 250);
       });
       await StatusBar.hide();
-      await attachStatusBarHiddenMaintenance();
+      // Maintenance listeners are not on the bootstrap critical path.
+      void attachStatusBarHiddenMaintenance();
     } else if (sb.hidden === false) {
       await StatusBar.show();
     }
   } catch (e) {
+    bootTrace("appearance.statusBar.error", { e: String(e) });
     logger.debug("applyStatusBarFromAppMeta", { e: String(e) });
   }
+  bootTrace("appearance.statusBar.done");
 }
 
 export async function initAppearance(
@@ -97,10 +112,12 @@ export async function initAppearance(
 
 export async function hideSplashScreen(): Promise<void> {
   if (!Capacitor.isNativePlatform()) return;
+  bootTrace("appearance.splash.hide.call");
   try {
-    // Initial native splash fade uses `launchFadeOutDuration` in capacitor.config.json.
     await SplashScreen.hide();
+    bootTrace("appearance.splash.hide.done");
   } catch (e) {
+    bootTrace("appearance.splash.hide.error", { e: String(e) });
     logger.warn("hideSplashScreen", { e: String(e) });
   }
 }
@@ -126,5 +143,10 @@ export async function setStatusBarTheme(
 }
 
 export function applySafeAreaClass(): void {
-  document.documentElement.classList.add("cap-safe");
+  const root = document.documentElement;
+  root.classList.add("cap-safe");
+  if (Capacitor.isNativePlatform()) {
+    root.classList.add("cap-native");
+    root.classList.add(`cap-${Capacitor.getPlatform()}`);
+  }
 }

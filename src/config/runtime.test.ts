@@ -81,4 +81,20 @@ describe("runtime config", () => {
       expect.any(Object),
     );
   });
+
+  it("passes AbortSignal timeout to feature flags fetch", async () => {
+    vi.stubEnv("VITE_FEATURE_FLAGS_URL", "https://flags.example/flags.json");
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({}),
+    });
+    vi.stubGlobal("fetch", fetchMock);
+    await loadRuntimeConfig();
+    expect(fetchMock).toHaveBeenCalledWith(
+      "https://flags.example/flags.json",
+      expect.objectContaining({
+        signal: expect.any(AbortSignal),
+      }),
+    );
+  });
 });

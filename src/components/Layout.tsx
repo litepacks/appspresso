@@ -6,7 +6,7 @@ import { OutletErrorBoundary } from "@/components/OutletErrorBoundary";
 import { AppBottomTabShell } from "@/components/shell/AppBottomTabShell";
 import { AppTopBar } from "@/components/shell/AppTopBar";
 import { cn } from "@/lib/utils";
-import { AnimatedOutlet } from "@/motion";
+import { AnimatedOutlet } from "@/motion/AnimatedOutlet";
 
 export function Layout() {
   const matches = useMatches();

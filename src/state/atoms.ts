@@ -87,7 +87,11 @@ export type SyncSlice = {
   pendingCount: number;
   isFlushing: boolean;
   lastFlushAt?: number;
+  lastPullAt?: number;
   lastError?: string;
+  deadCount?: number;
+  healthScore?: number;
+  pausedReason?: "auth" | string;
 };
 
 export const syncStatusAtom = atom<SyncSlice>({

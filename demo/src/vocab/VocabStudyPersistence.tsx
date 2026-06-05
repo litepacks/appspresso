@@ -1,4 +1,3 @@
-import { getSetting, setSetting } from "appspresso/db/sqlite";
 import { sqliteStatusAtom } from "appspresso/state/atoms";
 import { appStore } from "appspresso/state/store";
 import { useAtom, useAtomValue } from "jotai";
@@ -87,6 +86,7 @@ export function VocabStudyPersistence({ children }: { children: ReactNode }) {
     if (sqlite.available) {
       let cancelled = false;
       void (async () => {
+        const { getSetting } = await import("appspresso/db/sqlite");
         const raw = await getSetting(VOCAB_STUDY_STORAGE_KEY);
         const p = parsePersisted(raw);
         if (cancelled) return;
@@ -116,7 +116,9 @@ export function VocabStudyPersistence({ children }: { children: ReactNode }) {
       studyPassCount: passCount,
     } satisfies VocabStudyPersisted);
     if (sqlite.available) {
-      void setSetting(VOCAB_STUDY_STORAGE_KEY, payload);
+      void import("appspresso/db/sqlite").then(({ setSetting }) =>
+        setSetting(VOCAB_STUDY_STORAGE_KEY, payload),
+      );
     } else if (sqlite.messageKey === "sqlite.webUnavailable") {
       writeWebPersisted(payload);
     }

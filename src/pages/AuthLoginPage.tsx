@@ -56,6 +56,17 @@ export default function AuthLoginPage() {
         >
           {t("auth.signInCta")}
         </Button>
+        <div className="flex flex-col gap-1 text-center text-sm">
+          <Link to="/auth/register" className="text-primary underline-offset-4 hover:underline">
+            {t("auth.registerTitle")}
+          </Link>
+          <Link
+            to="/auth/forgot-password"
+            className="text-muted-foreground underline-offset-4 hover:underline"
+          >
+            {t("auth.forgotTitle")}
+          </Link>
+        </div>
       </div>
     </Page>
   );

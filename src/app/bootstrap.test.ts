@@ -26,8 +26,11 @@ vi.mock("@/db/sqlite", () => ({
   initDatabase,
 }));
 
-vi.mock("@/sync/sync.service", () => ({
+vi.mock("@/sync/sync-lifecycle", () => ({
   initSyncLayer,
+}));
+
+vi.mock("@/sync/sync.service", () => ({
   flushNativePendingBuffer: vi.fn().mockResolvedValue(undefined),
 }));
 
@@ -37,6 +40,10 @@ vi.mock("@/services/telemetry.service", () => ({
 
 vi.mock("@/lib/reportError", () => ({
   reportError,
+}));
+
+vi.mock("@/lib/boot-trace", () => ({
+  bootTrace: vi.fn(),
 }));
 
 describe("runBootstrap", () => {

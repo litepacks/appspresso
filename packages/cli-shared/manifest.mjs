@@ -83,14 +83,17 @@ export function normalizeManifest(raw) {
     appId: raw.appId ?? "",
     version: raw.version ?? "0.0.0",
     paths,
-    scaffold: { template: raw.scaffold?.template ?? "default" },
+    scaffold: { template: raw.scaffold?.template ?? "minimal" },
     capacitor: raw.capacitor === true,
-    appspressoVersion: raw.appspressoVersion ?? "^0.0.0",
+    appspressoVersion: raw.appspressoVersion ?? "^0.1.0",
   };
 
-  if (manifest.scaffold.template !== "default") {
+  if (
+    manifest.scaffold.template !== "minimal" &&
+    manifest.scaffold.template !== "showcase"
+  ) {
     throw new Error(
-      `Unknown scaffold template "${manifest.scaffold.template}" (only "default" is available).`,
+      `Unknown scaffold template "${manifest.scaffold.template}" (use "minimal" or "showcase").`,
     );
   }
 
@@ -114,13 +117,13 @@ export function validateManifest(manifest) {
   if (manifest.version && !semver.valid(semver.coerce(manifest.version))) {
     throw new Error(`Invalid version "${manifest.version}"`);
   }
-  if (
-    manifest.appspressoVersion &&
-    !semver.validRange(manifest.appspressoVersion)
-  ) {
-    throw new Error(
-      `Invalid appspresso semver range "${manifest.appspressoVersion}"`,
-    );
+  if (manifest.appspressoVersion) {
+    const isFileDep = /^file:/.test(manifest.appspressoVersion);
+    if (!isFileDep && !semver.validRange(manifest.appspressoVersion)) {
+      throw new Error(
+        `Invalid appspresso semver range "${manifest.appspressoVersion}"`,
+      );
+    }
   }
 }
 

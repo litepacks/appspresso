@@ -4,8 +4,19 @@ import {
   applySplashDocumentBackground,
   SPLASH_NATIVE_FALLBACK_HIDE_MS,
 } from "@/lib/splash-bootstrap";
+import { bootTrace } from "@/lib/boot-trace";
 
 applySplashDocumentBackground();
+bootTrace("entry.dismiss-native-splash.loaded", {
+  platform: Capacitor.getPlatform(),
+});
+
+function hideNativeSplashFallback(): void {
+  if (!Capacitor.isNativePlatform()) return;
+  if (!Capacitor.isPluginAvailable("SplashScreen")) return;
+  bootTrace("native.splash.fallback-hide");
+  void SplashScreen.hide().catch(() => {});
+}
 
 /**
  * Import as first side effect in host `main.tsx`.
@@ -14,7 +25,8 @@ applySplashDocumentBackground();
  * Long-term fallback hide only if JS never boots (e.g. import error).
  */
 if (Capacitor.isNativePlatform()) {
-  setTimeout(() => {
-    void SplashScreen.hide().catch(() => {});
-  }, SPLASH_NATIVE_FALLBACK_HIDE_MS);
+  bootTrace("native.splash.fallback-scheduled", {
+    ms: SPLASH_NATIVE_FALLBACK_HIDE_MS,
+  });
+  setTimeout(hideNativeSplashFallback, SPLASH_NATIVE_FALLBACK_HIDE_MS);
 }

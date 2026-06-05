@@ -24,6 +24,8 @@ public class MainActivity extends BridgeActivity {
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
+    // Maestro `androidWebViewHierarchy: devtools` needs a debuggable WebView.
+    WebView.setWebContentsDebuggingEnabled(true);
     super.onCreate(savedInstanceState);
     if (!shouldImmersiveStatusBar()) {
       return;

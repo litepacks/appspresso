@@ -91,6 +91,19 @@ html.dark {
   min-height: 100svh;
 }
 
+/**
+ * Android System WebView (özellikle emülatör/SwiftShader) `backdrop-filter`
+ * kompozisyonunda renderer'ı çökertebiliyor (SIGSEGV → tüm uygulama kapanır).
+ * Native Android'de blur'u kapatıyoruz; bileşenler zaten opak `bg-background/*`
+ * fallback'i taşıdığı için görünüm korunur.
+ */
+html.cap-android *,
+html.cap-android *::before,
+html.cap-android *::after {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
 @layer utilities {
   /** Alt sekme yatay kaydırma; ince scrollbar gizli */
   .appspresso-tab-scroll {
@@ -99,5 +112,76 @@ html.dark {
   }
   .appspresso-tab-scroll::-webkit-scrollbar {
     display: none;
+  }
+
+  /** CSS-only lightweight page transition (replaces framer-motion) */
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-fade-in {
+    animation: fade-in-up 250ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-fade-in {
+      animation: none;
+    }
+  }
+
+  /** Splash screen CSS animations (replacing framer-motion loops) */
+  @keyframes splash-pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.07); }
+  }
+  @keyframes splash-breathe {
+    0%, 100% { transform: scale(1); opacity: 0.9; }
+    50% { transform: scale(1.06); opacity: 1; }
+  }
+  @keyframes splash-float {
+    0%, 100% { transform: translateY(0); opacity: 0.88; }
+    50% { transform: translateY(-8px); opacity: 1; }
+  }
+  @keyframes splash-sway {
+    0%, 100% { transform: translateY(0) rotate(0); }
+    25% { transform: translateY(-5px) rotate(-1.25deg); }
+    75% { transform: translateY(-5px) rotate(1.25deg); }
+  }
+  @keyframes splash-glow {
+    0%, 100% { transform: scale(1); filter: brightness(1); }
+    50% { transform: scale(1.035); filter: brightness(1.1); }
+  }
+
+  .animate-splash-pulse {
+    animation: splash-pulse 1.75s ease-in-out infinite;
+  }
+  .animate-splash-breathe {
+    animation: splash-breathe 2.2s ease-in-out infinite;
+  }
+  .animate-splash-float {
+    animation: splash-float 2.25s ease-in-out infinite;
+  }
+  .animate-splash-sway {
+    animation: splash-sway 4s ease-in-out infinite;
+  }
+  .animate-splash-glow {
+    animation: splash-glow 2.8s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .animate-splash-pulse,
+    .animate-splash-breathe,
+    .animate-splash-float,
+    .animate-splash-sway,
+    .animate-splash-glow {
+      animation: none;
+    }
   }
 }
