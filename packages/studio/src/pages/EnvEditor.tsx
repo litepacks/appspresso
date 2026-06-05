@@ -3,7 +3,7 @@ import { useState } from "react";
 import { EditorItem } from "@/components/EditorItem";
 import { EmptyState } from "@/components/EmptyState";
 import { FormField } from "@/components/FormField";
-import { PageHeader } from "@/components/PageHeader";
+import { EditorLayout } from "@/components/EditorLayout";
 import { SwitchRow } from "@/components/SwitchRow";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -83,24 +83,19 @@ export function EnvEditor({ schema, exampleText, onChange }: Props) {
 
   return (
     <div className="space-y-3">
-      <PageHeader
-        title="Environment"
-        description="appspresso.env.schema.ts + .env.example"
-        actions={
-          <>
-            <Button type="button" variant="outline" size="sm" onClick={syncExampleFromSchema}>
-              <RefreshCw />
-              Sync
-            </Button>
-            <Button type="button" size="sm" onClick={addVar}>
-              <Plus />
-              Add
-            </Button>
-          </>
-        }
-      />
+      <div className="flex justify-end gap-2">
+        <Button type="button" variant="outline" size="sm" onClick={syncExampleFromSchema}>
+          <RefreshCw />
+          Sync example
+        </Button>
+        <Button type="button" size="sm" onClick={addVar}>
+          <Plus />
+          Add variable
+        </Button>
+      </div>
 
-      <div className="grid gap-3 lg:grid-cols-[1fr_17rem]">
+      <EditorLayout
+        list={
         <Card>
           <CardHeader className="py-2.5">
             <CardTitle>Variables ({vars.length})</CardTitle>
@@ -180,7 +175,8 @@ export function EnvEditor({ schema, exampleText, onChange }: Props) {
             )}
           </CardContent>
         </Card>
-
+        }
+        detail={
         <Card className="h-fit lg:sticky lg:top-3">
           <CardHeader className="py-2.5">
             <CardTitle>.env.example</CardTitle>
@@ -193,7 +189,8 @@ export function EnvEditor({ schema, exampleText, onChange }: Props) {
             />
           </CardContent>
         </Card>
-      </div>
+        }
+      />
     </div>
   );
 }

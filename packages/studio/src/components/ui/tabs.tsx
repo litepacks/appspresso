@@ -15,14 +15,14 @@ function useTabs() {
 }
 
 type TabsProps = {
-  defaultValue: string;
+  defaultValue?: string;
   value?: string;
   onValueChange?: (value: string) => void;
   className?: string;
   children: React.ReactNode;
 };
 
-function Tabs({ defaultValue, value, onValueChange, className, children }: TabsProps) {
+function Tabs({ defaultValue = "", value, onValueChange, className, children }: TabsProps) {
   const [internal, setInternal] = React.useState(defaultValue);
   const current = value ?? internal;
   const setValue = onValueChange ?? setInternal;

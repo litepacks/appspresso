@@ -1,0 +1,56 @@
+:root {
+  /* Surfaces */
+  --surface-0: 240 6% 4%;
+  --surface-1: 240 4% 7%;
+  --surface-2: 240 4% 10%;
+  --surface-3: 240 4% 13%;
+
+  /* Semantic aliases (shadcn compat — raw HSL components for hsl(var(--x))) */
+  --background: 240 6% 4%;
+  --foreground: 0 0% 96%;
+  --card: 240 4% 10%;
+  --card-foreground: 0 0% 96%;
+  --popover: 240 4% 10%;
+  --popover-foreground: 0 0% 96%;
+  --primary: 217 91% 60%;
+  --primary-foreground: 222 47% 6%;
+  --secondary: 240 4% 13%;
+  --secondary-foreground: 0 0% 90%;
+  --muted: 240 4% 12%;
+  --muted-foreground: 240 4% 58%;
+  --accent: 240 4% 15%;
+  --accent-foreground: 0 0% 96%;
+  --destructive: 0 72% 55%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 240 4% 17%;
+  --border-subtle: 240 4% 14%;
+  --border-strong: 240 4% 20%;
+  --input: 240 4% 14%;
+  --ring: 217 91% 60%;
+  --sidebar: 240 4% 7%;
+
+  /* Status */
+  --success: 152 60% 48%;
+  --warning: 38 92% 55%;
+  --error: 0 72% 55%;
+
+  /* Text */
+  --text-primary: 0 0% 96%;
+  --text-secondary: 240 4% 58%;
+
+  /* Spacing (4px base) */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+
+  --radius: 0.5rem;
+  --shadow-xs: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-sm: 0 1px 3px rgb(0 0 0 / 0.35);
+  --shadow-card: 0 0 0 1px rgb(255 255 255 / 0.04), var(--shadow-sm);
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}

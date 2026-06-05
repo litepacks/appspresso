@@ -1,5 +1,4 @@
 import { FormField } from "@/components/FormField";
-import { PageHeader } from "@/components/PageHeader";
 import {
   Card,
   CardContent,
@@ -64,11 +63,6 @@ export function ThemeEditor({ value, onChange }: Props) {
 
   return (
     <div>
-      <PageHeader
-        title="Theme Tokens"
-        description="Brand palette and asset paths — written to appspresso.theme.ts."
-      />
-
       <div className="grid gap-4 lg:grid-cols-2">
         <Card>
           <CardHeader>

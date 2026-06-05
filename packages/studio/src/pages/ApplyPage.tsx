@@ -1,16 +1,10 @@
 import { Loader2, Play, Save } from "lucide-react";
-import type { CheckDomain } from "@/lib/api";
-import { CheckResults } from "@/components/CheckResults";
-import { PageHeader } from "@/components/PageHeader";
+import { useStudio } from "@/context/StudioContext";
+import { useStudioNavigate } from "@/hooks/useStudioNavigate";
+import { ValidationDomainCard } from "@/validation/ValidationDomainCard";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { DOMAIN_SCREEN } from "@/shell/types";
 
 const ALLOWLIST = [
   "appspresso.routes.ts",
@@ -20,61 +14,67 @@ const ALLOWLIST = [
   ".env.example",
 ];
 
-type Props = {
-  check: CheckDomain[] | null;
-  checking?: boolean;
-  saving?: boolean;
-  onCheck: () => void;
-  onApply: () => void;
-};
-
-export function ApplyPage({ check, checking, saving, onCheck, onApply }: Props) {
+export function ApplyPage() {
+  const { check, checking, saving, onCheck, onApply } = useStudio();
+  const navigate = useStudioNavigate();
   const hasErrors = check?.some((d) => !d.ok);
 
   return (
-    <div>
-      <PageHeader
-        title="Validate & Apply"
-        description="Run validation, then save allowlisted config files."
-        actions={
-          <>
-            <Button variant="outline" size="sm" onClick={onCheck} disabled={checking || saving}>
-              {checking ? <Loader2 className="animate-spin" /> : <Play />}
-              Check
-            </Button>
-            <Button size="sm" onClick={onApply} disabled={saving}>
-              {saving ? <Loader2 className="animate-spin" /> : <Save />}
-              Save
-            </Button>
-          </>
-        }
-      />
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center justify-end gap-2">
+        <Button variant="outline" size="sm" onClick={onCheck} disabled={checking || saving}>
+          {checking ? <Loader2 className="animate-spin" /> : <Play />}
+          Validate
+        </Button>
+        <Button size="sm" onClick={onApply} disabled={saving}>
+          {saving ? <Loader2 className="animate-spin" /> : <Save />}
+          Save
+        </Button>
+      </div>
 
       <div className="grid gap-4 lg:grid-cols-5">
-        <Card className="h-fit lg:col-span-2">
-          <CardHeader>
-            <CardTitle>Write allowlist</CardTitle>
-            <CardDescription>Studio never touches src/pages or .env</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-1.5 p-0 pb-2">
+        <div className="studio-panel h-fit lg:col-span-2">
+          <div className="border-b border-border px-4 py-3">
+            <p className="text-xs font-semibold">Write allowlist</p>
+            <p className="mt-0.5 text-[11px] text-muted-foreground">
+              Studio never touches src/pages or .env
+            </p>
+          </div>
+          <ul className="divide-y divide-border/40">
             {ALLOWLIST.map((file) => (
-              <div key={file} className="studio-row py-2.5">
+              <li key={file} className="px-4 py-2.5">
                 <code className="font-mono text-[11px] text-foreground/85">{file}</code>
-              </div>
+              </li>
             ))}
-          </CardContent>
-        </Card>
+          </ul>
+        </div>
 
-        <div className="space-y-4 lg:col-span-3">
+        <div className="space-y-3 lg:col-span-3">
           {!check ? (
             <Alert className="border-border/50 bg-muted/15">
               <AlertTitle className="text-sm">Validate before saving</AlertTitle>
               <AlertDescription className="text-xs">
-                Run validation to ensure all domains pass Zod and safety checks.
+                Run validation to ensure all domains pass Zod and safety checks. Or open the{" "}
+                <button
+                  type="button"
+                  className="text-primary underline-offset-2 hover:underline"
+                  onClick={() => navigate("validation")}
+                >
+                  validation hub
+                </button>
+                .
               </AlertDescription>
             </Alert>
           ) : (
-            <CheckResults domains={check} />
+            check.map((d) => (
+              <ValidationDomainCard
+                key={d.domain}
+                domain={d}
+                onOpenEditor={
+                  DOMAIN_SCREEN[d.domain] ? () => navigate(DOMAIN_SCREEN[d.domain]) : undefined
+                }
+              />
+            ))
           )}
 
           {check && hasErrors ? (

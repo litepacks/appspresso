@@ -3,7 +3,6 @@ import { useState } from "react";
 import { EditorItem } from "@/components/EditorItem";
 import { EmptyState } from "@/components/EmptyState";
 import { FormField } from "@/components/FormField";
-import { PageHeader } from "@/components/PageHeader";
 import { SwitchRow } from "@/components/SwitchRow";
 import { Button } from "@/components/ui/button";
 import {
@@ -228,28 +227,22 @@ export function RoutesEditor({ value, onChange }: Props) {
 
   return (
     <div className="space-y-3">
-      <PageHeader
-        title="Routes"
-        description="appspresso.routes.ts"
-        toolbar={
-          <div className="flex items-center gap-2">
-            <span className="text-[11px] text-muted-foreground">Shell</span>
-            <Select
-              value={config.shell ?? "bottomTabs"}
-              onValueChange={(shell) => onChange({ ...config, shell })}
-            >
-              <SelectTrigger className="h-8 w-36">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="bottomTabs">Bottom tabs</SelectItem>
-                <SelectItem value="stack">Stack</SelectItem>
-                <SelectItem value="minimal">Minimal</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        }
-      />
+      <div className="flex items-center justify-end gap-2">
+        <span className="text-[11px] text-muted-foreground">Shell</span>
+        <Select
+          value={config.shell ?? "bottomTabs"}
+          onValueChange={(shell) => onChange({ ...config, shell })}
+        >
+          <SelectTrigger className="h-8 w-36">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="bottomTabs">Bottom tabs</SelectItem>
+            <SelectItem value="stack">Stack</SelectItem>
+            <SelectItem value="minimal">Minimal</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
 
       <Tabs defaultValue="tabs" className="space-y-3">
         <TabsList>

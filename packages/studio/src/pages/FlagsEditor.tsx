@@ -3,7 +3,6 @@ import { useState } from "react";
 import { EditorItem } from "@/components/EditorItem";
 import { EmptyState } from "@/components/EmptyState";
 import { FormField } from "@/components/FormField";
-import { PageHeader } from "@/components/PageHeader";
 import { SwitchRow } from "@/components/SwitchRow";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -59,23 +58,18 @@ export function FlagsEditor({ value, onChange }: Props) {
 
   return (
     <div>
-      <PageHeader
-        title="Feature Flags"
-        description="Registry defaults merge before VITE_FEATURE_FLAGS and optional remote URL."
-        actions={
+      <Card>
+        <CardHeader className="flex flex-row items-start justify-between gap-3 space-y-0">
+          <div>
+            <CardTitle>Flag registry</CardTitle>
+            <CardDescription>
+              {entries.length} flag{entries.length === 1 ? "" : "s"} defined
+            </CardDescription>
+          </div>
           <Button type="button" variant="outline" size="sm" onClick={addFlag}>
             <Plus />
             Add flag
           </Button>
-        }
-      />
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Flag registry</CardTitle>
-          <CardDescription>
-            {entries.length} flag{entries.length === 1 ? "" : "s"} defined
-          </CardDescription>
         </CardHeader>
         <CardContent className="p-0">
           {entries.length === 0 ? (
