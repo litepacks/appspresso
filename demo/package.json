@@ -42,6 +42,6 @@
     "appspresso": "file:.."
   },
   "devDependencies": {
-    "@capacitor/cli": "^7.4.4"
+    "@capacitor/cli": "^7.6.6"
   }
 }

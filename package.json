@@ -152,7 +152,7 @@
     "@capacitor/action-sheet": "^7.0.0",
     "@capacitor/android": "^7.4.4",
     "@capacitor/app": "^7.1.0",
-    "@capacitor/cli": "^7.4.4",
+    "@capacitor/cli": "^7.6.6",
     "@capacitor/core": "^7.0.0",
     "@capacitor/device": "^7.0.2",
     "@capacitor/dialog": "^7.0.0",
@@ -224,10 +224,14 @@
     "@appspresso/module-settings": "file:packages/module-settings",
     "@appspresso/module-subscriptions": "file:packages/module-subscriptions",
     "tsup": "^8.5.1",
-    "tsx": "^4.21.0",
+    "tsx": "^4.22.4",
     "typescript": "~6.0.2",
     "vite": "^8.0.10",
     "vitest": "^4.1.5"
+  },
+  "overrides": {
+    "esbuild": "0.28.1",
+    "brace-expansion": ">=5.0.6"
   },
   "files": [
     "bin",
